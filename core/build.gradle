@@ -1,0 +1,16 @@
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+eclipse.project.name = appName + '-core'
+
+dependencies {
+  api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+  api "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+  api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+  api "com.badlogicgames.gdx:gdx:$gdxVersion"
+
+  if(enableGraalNative == 'true') {
+    implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
+  }
+  implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:2.2.1"
+  implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:2.2.1"
+  implementation "com.badlogicgames.jamepad:jamepad:2.0.14.2"
+}
