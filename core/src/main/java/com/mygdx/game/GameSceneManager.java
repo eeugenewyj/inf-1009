@@ -7,8 +7,8 @@ import com.mygdx.game.AbstractScene.AbstractSceneManager;
 
 public class GameSceneManager extends AbstractSceneManager {
     private Audio backgroundMusic;
-    private final IInputManager inputManager;   // Store input manager reference
-    private final IOutputManager outputManager; // Store output manager reference
+    private final IInputManager inputManager;
+    private final IOutputManager outputManager;
 
     public GameSceneManager(IInputManager inputManager, IOutputManager outputManager) {
         this.inputManager = inputManager;
@@ -17,10 +17,10 @@ public class GameSceneManager extends AbstractSceneManager {
     }
 
     public void initializeScenes() {
-        addScene("home", new MainMenuScene(this, inputManager, outputManager));
-        addScene("play", new GameScene(this, inputManager, outputManager));
-        addScene("stop", new StopScene(this, inputManager, outputManager));
-        addScene("settings", new SettingsScene(this, inputManager, outputManager));
+        addScene("home", SceneFactory.createScene("home", this, inputManager, outputManager));
+        addScene("play", SceneFactory.createScene("play", this, inputManager, outputManager));
+        addScene("stop", SceneFactory.createScene("stop", this, inputManager, outputManager));
+        addScene("settings", SceneFactory.createScene("settings", this, inputManager, outputManager));
         setScene("home");
     }
 
@@ -28,7 +28,9 @@ public class GameSceneManager extends AbstractSceneManager {
         backgroundMusic.playMusic();
     }
 
-    public float getBackgroundMusicVolume() { return backgroundMusic.getVolume(); }
+    public float getBackgroundMusicVolume() {
+        return backgroundMusic.getVolume();
+    }
 
     public void setBackgroundMusicVolume(float volume) {
         backgroundMusic.setVolume(volume);
