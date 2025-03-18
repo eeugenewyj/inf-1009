@@ -28,7 +28,7 @@ public class GameScene extends Scene {
     private GameCollisionManager collisionManager;
 
     public GameScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
-        super(sceneManager, inputManager, outputManager,"background2.png");
+        super(sceneManager, inputManager, outputManager, "background2.png");
 
         // Initialize game components
         entityManager = new GameEntityManager();
@@ -72,7 +72,7 @@ public class GameScene extends Scene {
     @Override
     public void show() {
         super.show();
-        Gdx.input.setInputProcessor(stage);  // Fix: Ensure input processor is reset when scene is shown
+        Gdx.input.setInputProcessor(stage); // Fix: Ensure input processor is reset when scene is shown
     }
 
     @Override
@@ -114,17 +114,22 @@ public class GameScene extends Scene {
         entityManager = new GameEntityManager();
         collisionManager = new GameCollisionManager(entityManager); // Initialize CollisionManager
         // Spawn different entities
-        entityManager.spawnPlayers(5, inputManager);
-        entityManager.spawnEnemies(5); // Spawn enemies using EntityManager
+        entityManager.spawnPlayers(1, inputManager);
+        // entityManager.spawnEnemies(5); // Spawn enemies using EntityManager
         entityManager.spawnTrees(5); // Spawn trees using EntityManager
+        entityManager.spawnBallsRow(); // Spawn balls using EntityManager
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        if (stage != null) stage.dispose();
-        if (skin != null) skin.dispose();  // Fix: Dispose Skin to prevent memory leak
-        if (entityManager != null) entityManager.dispose();
-        if (collisionManager != null) collisionManager.dispose();
+        if (stage != null)
+            stage.dispose();
+        if (skin != null)
+            skin.dispose(); // Fix: Dispose Skin to prevent memory leak
+        if (entityManager != null)
+            entityManager.dispose();
+        if (collisionManager != null)
+            collisionManager.dispose();
     }
 }
