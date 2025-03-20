@@ -44,9 +44,7 @@ public class GameEntityManager extends AbstractEntityManager {
         makeBallsFall();
     }
 
-    /**
-     * Makes all active balls fall down.
-     */
+    /* Makes all active balls fall down. */
     private void makeBallsFall() {
         for (Entity entity : getEntities()) {
             if (entity instanceof Ball) {
@@ -100,42 +98,6 @@ public class GameEntityManager extends AbstractEntityManager {
 
     }
 
-    // public void spawnEnemy(float x, float y, float speed) {
-    // addEntity(new Enemy(x, y, speed));
-    // }
-
-    // // Spawn multiple enemies
-    // public void spawnEnemies(int count) {
-    // int maxWidth = Gdx.graphics.getWidth();
-    // int maxHeight = Gdx.graphics.getHeight();
-    // int enemySize = 50; // Adjust based on actual enemy size
-
-    // for (int i = 0; i < count; i++) {
-    // float x, y;
-    // boolean validPosition;
-
-    // do {
-    // // Randomly generates x and y within screen boundary
-    // validPosition = true;
-    // x = MathUtils.random(50, maxWidth - enemySize);
-    // y = MathUtils.random(50, maxHeight - enemySize);
-    // Rectangle newEnemyBounds = new Rectangle(x, y, enemySize, enemySize);
-
-    // // Check if new enemy position overlaps any existing enemies
-    // for (Entity entity : entities) {
-    // if (entity instanceof Enemy &&
-    // newEnemyBounds.overlaps(entity.getBoundingBox())) {
-    // validPosition = false;
-    // break;
-    // }
-    // }
-
-    // } while (!validPosition); // Keep retrying until a valid position is found
-
-    // spawnEnemy(x, y, 200);
-    // }
-    // }
-
     public void spawnTree(float x, float y) {
         addEntity(new Tree(x, y));
     }
@@ -150,31 +112,6 @@ public class GameEntityManager extends AbstractEntityManager {
             addEntity(tree);
         }
 
-        // int maxWidth = Gdx.graphics.getWidth();
-        // int maxHeight = Gdx.graphics.getHeight();
-        // int treeSize = 50;
-
-        // for (int i = 0; i < count; i++) {
-        // float x, y;
-        // boolean validPosition;
-
-        // do {
-        // validPosition = true;
-        // x = random.nextInt(maxWidth - treeSize);
-        // y = random.nextInt(maxHeight - treeSize);
-        // Rectangle newTreeBounds = new Rectangle(x, y, treeSize, treeSize);
-
-        // // Check if tree overlaps with any existing players or enemies
-        // for (Entity entity : entities) {
-        // if (newTreeBounds.overlaps(entity.getBoundingBox())) {
-        // validPosition = false;
-        // break;
-        // }
-        // }
-        // } while (!validPosition); // Keep retrying until a valid position is found
-
-        // spawnTree(x, y);
-        // }
     }
 
     public void updateEntities(float deltaTime) {
