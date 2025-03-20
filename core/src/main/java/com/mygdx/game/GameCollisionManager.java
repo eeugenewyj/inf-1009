@@ -34,7 +34,7 @@ public class GameCollisionManager extends AbstractCollisionManager {
 
                 // Call removeBallRow() from GameEntityManager to remove all balls in the same
                 // row
-                ((GameEntityManager) entityManager).removeBallRow(collidedBall);
+                ((GameEntityManager) entityManager).removeBallsRow(collidedBall);
 
                 // Play collision sound
                 audio.playSoundEffect("player");

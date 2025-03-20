@@ -53,7 +53,7 @@ public class GameEntityManager extends AbstractEntityManager {
         }
     }
 
-    public void removeBallRow(Ball collidedBall) {
+    public void removeBallsRow(Ball collidedBall) {
         float rowY = collidedBall.getY(); // Get Y position of the collided ball
 
         // Remove all balls in the same row
