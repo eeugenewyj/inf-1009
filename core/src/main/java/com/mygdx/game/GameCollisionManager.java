@@ -18,24 +18,80 @@ public class GameCollisionManager extends AbstractCollisionManager {
         // Handle Player and Ball collision
         if (entity instanceof Player) {
             Player player = (Player) entity;
+            Ball collidedBall = null;
 
+            // Detect collision between Player and a Ball
             for (Entity other : entityManager.getEntities()) {
                 if (other instanceof Ball && player.getBoundingBox().overlaps(other.getBoundingBox())) {
-                    Ball ball = (Ball) other;
+                    collidedBall = (Ball) other;
+                    break; // Only detect first collision
+                }
+            }
 
-                    // Add Ball's value to the Player's score
-                    player.handleCollision(ball);
+            if (collidedBall != null) {
+                // Add Ball's value to the Player's score
+                player.handleCollision(collidedBall);
 
-                    // Remove the Ball from the game
-                    ball.setActive(false);
+                // Call removeBallRow() from GameEntityManager to remove all balls in the same
+                // row
+                ((GameEntityManager) entityManager).removeBallRow(collidedBall);
 
-                    // Play collision sound
-                    audio.playSoundEffect("player");
+                // Play collision sound
+                audio.playSoundEffect("player");
 
-                    break; // Exit loop after first collision
+                // Spawn the next row of balls
+                ((GameEntityManager) entityManager).spawnBallsRow();
+            }
+        }
+
+        // Handle Tree and Ball collision
+        if (entity instanceof Ball) {
+            Ball ball = (Ball) entity;
+
+            for (Entity other : entityManager.getEntities()) {
+                if (other instanceof Tree && ball.getBoundingBox().overlaps(other.getBoundingBox())) {
+                    ball.setActive(false); // Remove only the ball that touches the tree
+                    break;
                 }
             }
         }
+
+        if (entity instanceof Player) {
+            Player player = (Player) entity;
+
+            for (Entity other : entityManager.getEntities()) {
+                if (other instanceof Tree && player.getBoundingBox().overlaps(other.getBoundingBox())) {
+                    player.setX(player.getPreviousX());
+                    player.setY(player.getPreviousY());
+                    break;
+                }
+            }
+        }
+
+        // // Handle Player and Ball collision
+        // if (entity instanceof Player) {
+        // Player player = (Player) entity;
+
+        // for (Entity other : entityManager.getEntities()) {
+        // if (other instanceof Ball &&
+        // player.getBoundingBox().overlaps(other.getBoundingBox())) {
+        // Ball ball = (Ball) other;
+
+        // // Add Ball's value to the Player's score
+        // player.handleCollision(ball);
+
+        // // Remove the Ball from the game
+        // ball.setActive(false);
+
+        // // Play collision sound
+        // audio.playSoundEffect("player");
+
+        // break; // Exit loop after first collision
+        // }
+        // }
+        // }
+
+        // -----------------------------------------------------
         // // Check for collisions between player and enemy
         // if (entity instanceof Enemy) {
         // boolean hasCollided = false;

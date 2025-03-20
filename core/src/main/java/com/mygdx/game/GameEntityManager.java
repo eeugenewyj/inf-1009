@@ -5,9 +5,10 @@ import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractIO.IInputManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
+//import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
+import java.util.Iterator;
 
 public class GameEntityManager extends AbstractEntityManager {
     private static final Random random = new Random();
@@ -15,6 +16,10 @@ public class GameEntityManager extends AbstractEntityManager {
     private static final float GAP_RATIO = 0.1f; // 10% gap between balls
 
     private int rowsSpawned = 0; // Tracks the number of spawned rows
+
+    private float treeSpawnTimer = 0; // Timer to track tree spawn intervals
+    private static final float TREE_LIFETIME = 5f; // Trees disappear after 5 seconds
+    private static final float TREE_SPAWN_INTERVAL = 5f; // Every 5 seconds
 
     public GameEntityManager() {
         // spawnBallsRow(); // Ensure the first row spawns at game start
@@ -26,14 +31,42 @@ public class GameEntityManager extends AbstractEntityManager {
 
     public void spawnBallsRow() {
         float startX = 0;
-        float yPosition = Gdx.graphics.getHeight() - (rowsSpawned * (Ball.getBallWidth() + 10));
+        float topYPosition = Gdx.graphics.getHeight() + (Ball.getBallWidth() / 2); // Place it just outside the screen
 
         for (int i = 0; i < NUM_BALLS; i++) {
             float xPosition = startX + i * (Ball.getBallWidth() * (1 + GAP_RATIO));
-            addEntity(new Ball(xPosition, yPosition));
+            addEntity(new Ball(xPosition, topYPosition));
         }
 
         rowsSpawned++;
+
+        // Start falling animation for previous row
+        makeBallsFall();
+    }
+
+    /**
+     * Makes all active balls fall down.
+     */
+    private void makeBallsFall() {
+        for (Entity entity : getEntities()) {
+            if (entity instanceof Ball) {
+                ((Ball) entity).moveAIControlled();
+            }
+        }
+    }
+
+    public void removeBallRow(Ball collidedBall) {
+        float rowY = collidedBall.getY(); // Get Y position of the collided ball
+
+        // Remove all balls in the same row
+        Iterator<Entity> iterator = getEntities().iterator();
+        while (iterator.hasNext()) {
+            Entity entity = iterator.next();
+            if (entity instanceof Ball && entity.getY() == rowY) {
+                entity.setActive(false); // Mark ball as inactive
+                iterator.remove(); // Remove ball from entity list
+            }
+        }
     }
 
     public void spawnPlayers(int count, IInputManager inputManager) {
@@ -109,31 +142,39 @@ public class GameEntityManager extends AbstractEntityManager {
 
     // Spawn multiple trees
     public void spawnTrees(int count) {
-        int maxWidth = Gdx.graphics.getWidth();
-        int maxHeight = Gdx.graphics.getHeight();
-        int treeSize = 50;
-
         for (int i = 0; i < count; i++) {
-            float x, y;
-            boolean validPosition;
-
-            do {
-                validPosition = true;
-                x = random.nextInt(maxWidth - treeSize);
-                y = random.nextInt(maxHeight - treeSize);
-                Rectangle newTreeBounds = new Rectangle(x, y, treeSize, treeSize);
-
-                // Check if tree overlaps with any existing players or enemies
-                for (Entity entity : entities) {
-                    if (newTreeBounds.overlaps(entity.getBoundingBox())) {
-                        validPosition = false;
-                        break;
-                    }
-                }
-            } while (!validPosition); // Keep retrying until a valid position is found
-
-            spawnTree(x, y);
+            float x = MathUtils.random(50, Gdx.graphics.getWidth() - 50);
+            float y = MathUtils.random(50, Gdx.graphics.getHeight() - 50);
+            Tree tree = new Tree(x, y);
+            tree.setLifetime(TREE_LIFETIME); // Use the setter to set the tree lifetime
+            addEntity(tree);
         }
+
+        // int maxWidth = Gdx.graphics.getWidth();
+        // int maxHeight = Gdx.graphics.getHeight();
+        // int treeSize = 50;
+
+        // for (int i = 0; i < count; i++) {
+        // float x, y;
+        // boolean validPosition;
+
+        // do {
+        // validPosition = true;
+        // x = random.nextInt(maxWidth - treeSize);
+        // y = random.nextInt(maxHeight - treeSize);
+        // Rectangle newTreeBounds = new Rectangle(x, y, treeSize, treeSize);
+
+        // // Check if tree overlaps with any existing players or enemies
+        // for (Entity entity : entities) {
+        // if (newTreeBounds.overlaps(entity.getBoundingBox())) {
+        // validPosition = false;
+        // break;
+        // }
+        // }
+        // } while (!validPosition); // Keep retrying until a valid position is found
+
+        // spawnTree(x, y);
+        // }
     }
 
     public void updateEntities(float deltaTime) {
@@ -150,6 +191,28 @@ public class GameEntityManager extends AbstractEntityManager {
         // : means "for each element in the list of"
         for (Entity entity : entities) {
             entity.update(deltaTime);
+        }
+
+        // Handle tree spawning timer
+        treeSpawnTimer += deltaTime;
+        if (treeSpawnTimer >= TREE_SPAWN_INTERVAL) {
+            spawnTrees(4); // Spawn 4 trees
+            treeSpawnTimer = 0; // Reset timer
+        }
+
+        // Remove trees that have existed longer than TREE_LIFETIME
+        removeExpiredTrees(deltaTime);
+    }
+
+    private void removeExpiredTrees(float deltaTime) {
+        for (Entity entity : getEntities()) {
+            if (entity instanceof Tree) {
+                Tree tree = (Tree) entity;
+                tree.updateLifeTime(deltaTime);
+                if (tree.isExpired()) {
+                    entity.setActive(false);
+                }
+            }
         }
     }
 
