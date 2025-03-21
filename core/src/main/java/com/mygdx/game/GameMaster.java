@@ -8,6 +8,7 @@ import com.mygdx.game.AbstractIO.IKeyboardInput;
 import com.mygdx.game.AbstractIO.IOutputManager;
 import com.mygdx.game.AbstractIO.Keyboard;
 import com.mygdx.game.AbstractScene.ISceneManager;
+import com.mygdx.game.AbstractScene.Scene;
 
 
 
@@ -31,6 +32,14 @@ public class GameMaster extends ApplicationAdapter {
         if (sceneManager != null) {
             sceneManager.renderScene(Gdx.graphics.getDeltaTime());
         }
+    }
+    
+    // Get the current active scene
+    public Scene getCurrentScene() {
+        if (sceneManager != null) {
+            return sceneManager.getCurrentScene();
+        }
+        return null;
     }
 
     @Override

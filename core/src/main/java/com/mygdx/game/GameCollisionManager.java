@@ -8,9 +8,16 @@ import com.mygdx.game.AbstractIO.Audio;
 
 public class GameCollisionManager extends AbstractCollisionManager {
     private final Audio audio = Audio.getInstance();
+    private GameScene gameScene; // Reference to GameScene for score updates
 
-    public GameCollisionManager(IEntityManager entityManager) { // Fixed: Uses AbstractEntityManager
+    public GameCollisionManager(IEntityManager entityManager) {
         super(entityManager);
+    }
+    
+    // Additional constructor that takes a reference to the GameScene
+    public GameCollisionManager(IEntityManager entityManager, GameScene gameScene) {
+        super(entityManager);
+        this.gameScene = gameScene;
     }
 
     @Override
@@ -31,6 +38,11 @@ public class GameCollisionManager extends AbstractCollisionManager {
             if (collidedBall != null) {
                 // Add Ball's value to the Player's score
                 player.handleCollision(collidedBall);
+                
+                // Update score in GameScene if available
+                if (gameScene != null) {
+                    gameScene.addScore(collidedBall.getValue());
+                }
 
                 // Call removeBallRow() from GameEntityManager to remove all balls in the same
                 // row

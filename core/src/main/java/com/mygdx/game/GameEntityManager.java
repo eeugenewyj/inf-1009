@@ -18,13 +18,19 @@ public class GameEntityManager extends AbstractEntityManager {
     private static final float GAP_RATIO = 0.1f; // 10% gap between balls
 
     private int rowsSpawned = 0; // Tracks the number of spawned rows
+    private GameScene gameScene; // Reference to GameScene
 
     private float treeSpawnTimer = 0; // Timer to track tree spawn intervals
     private static final float TREE_LIFETIME = 5f; // Trees disappear after 5 seconds
     private static final float TREE_SPAWN_INTERVAL = 5f; // Every 5 seconds
 
     public GameEntityManager() {
-        // spawnBallsRow(); // Ensure the first row spawns at game start
+        // Default constructor
+    }
+    
+    // Constructor with GameScene reference
+    public GameEntityManager(GameScene gameScene) {
+        this.gameScene = gameScene;
     }
 
     public void spawnPlayer(float x, float y, float speed, IInputManager inputManager) {
@@ -57,15 +63,29 @@ public class GameEntityManager extends AbstractEntityManager {
 
     public void removeBallsRow(Ball collidedBall) {
         float rowY = collidedBall.getY(); // Get Y position of the collided ball
+        int totalRowValue = 0; // Track the total value of balls in the row
 
-        // Remove all balls in the same row
+        // Remove all balls in the same row and calculate total value
         Iterator<Entity> iterator = getEntities().iterator();
-        while (iterator.hasNext()) {
-            Entity entity = iterator.next();
+        List<Ball> ballsToRemove = new ArrayList<>();
+        
+        // First identify all balls to remove and calculate their total value
+        for (Entity entity : getEntities()) {
             if (entity instanceof Ball && entity.getY() == rowY) {
-                entity.setActive(false); // Mark ball as inactive
-                iterator.remove(); // Remove ball from entity list
+                Ball ball = (Ball) entity;
+                totalRowValue += ball.getValue();
+                ballsToRemove.add(ball);
             }
+        }
+        
+        // Remove the balls
+        for (Ball ball : ballsToRemove) {
+            ball.setActive(false);
+        }
+        
+        // Update score if GameScene reference exists
+        if (gameScene != null) {
+            gameScene.addScore(totalRowValue);
         }
     }
 
@@ -127,7 +147,6 @@ public class GameEntityManager extends AbstractEntityManager {
 
             System.out.println("Spawned Player " + (i + 1) + " at: " + playerX + ", " + playerY);
         }
-
     }
 
     public void spawnTree(float x, float y) {
@@ -143,7 +162,6 @@ public class GameEntityManager extends AbstractEntityManager {
             tree.setLifetime(TREE_LIFETIME); // Use the setter to set the tree lifetime
             addEntity(tree);
         }
-
     }
 
     public void updateEntities(float deltaTime) {
@@ -191,5 +209,10 @@ public class GameEntityManager extends AbstractEntityManager {
         for (Entity entity : getEntities()) {
             entity.dispose();
         }
+    }
+    
+    // Set GameScene reference after initialization if needed
+    public void setGameScene(GameScene gameScene) {
+        this.gameScene = gameScene;
     }
 }
