@@ -8,7 +8,9 @@ import com.badlogic.gdx.math.MathUtils;
 //import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public class GameEntityManager extends AbstractEntityManager {
     private static final Random random = new Random();
@@ -63,6 +65,36 @@ public class GameEntityManager extends AbstractEntityManager {
             if (entity instanceof Ball && entity.getY() == rowY) {
                 entity.setActive(false); // Mark ball as inactive
                 iterator.remove(); // Remove ball from entity list
+            }
+        }
+    }
+
+    private void removeRowIfAtBottomAndSpawn() {
+        float bottomThreshold = 0; // bottom of the screen
+
+        List<Float> rowYs = new ArrayList<>();
+        for (Entity e : getEntities()) {
+            if (e instanceof Ball) {
+                float y = e.getY();
+                if (!rowYs.contains(y))
+                    rowYs.add(y);
+            }
+        }
+
+        for (float rowY : rowYs) {
+            List<Ball> rowBalls = new ArrayList<>();
+            for (Entity e : getEntities()) {
+                if (e instanceof Ball && e.getY() == rowY) {
+                    rowBalls.add((Ball) e);
+                }
+            }
+
+            if (!rowBalls.isEmpty() && rowBalls.get(0).getY() <= bottomThreshold) {
+                // Remove and spawn
+                for (Ball ball : rowBalls) {
+                    ball.setActive(false);
+                }
+                spawnBallsRow();
             }
         }
     }
@@ -139,6 +171,7 @@ public class GameEntityManager extends AbstractEntityManager {
 
         // Remove trees that have existed longer than TREE_LIFETIME
         removeExpiredTrees(deltaTime);
+        removeRowIfAtBottomAndSpawn();
     }
 
     private void removeExpiredTrees(float deltaTime) {
