@@ -36,12 +36,15 @@ public class GameCollisionManager extends AbstractCollisionManager {
             }
 
             if (collidedBall != null) {
+                // Get the ball's value before processing collision
+                int ballValue = collidedBall.getValue();
+                
                 // Add Ball's value to the Player's score
                 player.handleCollision(collidedBall);
                 
-                // Update score in GameScene if available
+                // Update score in GameScene if available - add only this individual ball's value
                 if (gameScene != null) {
-                    gameScene.addScore(collidedBall.getValue());
+                    gameScene.addScore(ballValue);
                 }
 
                 // Call removeBallRow() from GameEntityManager to remove all balls in the same

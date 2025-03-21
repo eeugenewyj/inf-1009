@@ -63,17 +63,14 @@ public class GameEntityManager extends AbstractEntityManager {
 
     public void removeBallsRow(Ball collidedBall) {
         float rowY = collidedBall.getY(); // Get Y position of the collided ball
-        int totalRowValue = 0; // Track the total value of balls in the row
-
-        // Remove all balls in the same row and calculate total value
-        Iterator<Entity> iterator = getEntities().iterator();
+        
+        // Just remove all balls in the same row (don't calculate total value)
         List<Ball> ballsToRemove = new ArrayList<>();
         
-        // First identify all balls to remove and calculate their total value
+        // Identify all balls to remove
         for (Entity entity : getEntities()) {
             if (entity instanceof Ball && entity.getY() == rowY) {
                 Ball ball = (Ball) entity;
-                totalRowValue += ball.getValue();
                 ballsToRemove.add(ball);
             }
         }
@@ -83,10 +80,7 @@ public class GameEntityManager extends AbstractEntityManager {
             ball.setActive(false);
         }
         
-        // Update score if GameScene reference exists
-        if (gameScene != null) {
-            gameScene.addScore(totalRowValue);
-        }
+        // Note: We don't update the score here anymore - that's handled in GameCollisionManager
     }
 
     private void removeRowIfAtBottomAndSpawn() {
