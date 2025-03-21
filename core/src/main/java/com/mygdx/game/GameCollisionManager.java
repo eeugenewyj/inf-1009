@@ -22,12 +22,37 @@ public class GameCollisionManager extends AbstractCollisionManager {
 
     @Override
     protected void handleCollision(Entity entity) {
-        // Handle Player and Ball collision
+        // Improved tree collision handling for players
         if (entity instanceof Player) {
             Player player = (Player) entity;
+            
+            // First check for tree collisions
+            boolean hasTreeCollision = false;
+            for (Entity other : entityManager.getEntities()) {
+                if (other instanceof Tree && player.getBoundingBox().overlaps(other.getBoundingBox())) {
+                    hasTreeCollision = true;
+                    
+                    // Play sound if this is a new collision
+                    if (!player.hasCollided()) {
+                        player.handleCollision((Tree)other);
+                        audio.playSoundEffect("tree");
+                        player.setCollided(true);
+                    }
+                    
+                    // Move player back to previous position before collision
+                    player.setX(player.getPreviousX());
+                    player.setY(player.getPreviousY());
+                    break;
+                }
+            }
+            
+            // Reset collision state when no longer colliding with any tree
+            if (!hasTreeCollision && player.hasCollided()) {
+                player.setCollided(false);
+            }
+            
+            // After handling tree collisions, check for ball collisions
             Ball collidedBall = null;
-
-            // Detect collision between Player and a Ball
             for (Entity other : entityManager.getEntities()) {
                 if (other instanceof Ball && player.getBoundingBox().overlaps(other.getBoundingBox())) {
                     collidedBall = (Ball) other;
@@ -47,8 +72,7 @@ public class GameCollisionManager extends AbstractCollisionManager {
                     gameScene.addScore(ballValue);
                 }
 
-                // Call removeBallRow() from GameEntityManager to remove all balls in the same
-                // row
+                // Call removeBallRow() from GameEntityManager to remove all balls in the same row
                 ((GameEntityManager) entityManager).removeBallsRow(collidedBall);
 
                 // Play collision sound
@@ -59,7 +83,7 @@ public class GameCollisionManager extends AbstractCollisionManager {
             }
         }
 
-        // Handle Tree and Ball collision
+        // Handle Ball and Tree collision
         if (entity instanceof Ball) {
             Ball ball = (Ball) entity;
 
@@ -68,46 +92,6 @@ public class GameCollisionManager extends AbstractCollisionManager {
                     ball.setActive(false); // Remove only the ball that touches the tree
                     break;
                 }
-            }
-        }
-
-        if (entity instanceof Player) {
-            Player player = (Player) entity;
-
-            for (Entity other : entityManager.getEntities()) {
-                if (other instanceof Tree && player.getBoundingBox().overlaps(other.getBoundingBox())) {
-                    player.setX(player.getPreviousX());
-                    player.setY(player.getPreviousY());
-                    break;
-                }
-            }
-        }
-
-        // Prevent players from moving into trees
-        if (entity instanceof Player) {
-            boolean isColliding = false;
-            for (Entity other : entityManager.getEntities()) {
-                if (other instanceof Tree) {
-                    Player player = (Player) entity;
-                    Tree tree = (Tree) other;
-                    if (player.getBoundingBox().overlaps(tree.getBoundingBox())) {
-                        isColliding = true; // is colliding
-                        if (player.hasCollided()) {
-                            player.handleCollision(tree);
-                            audio.playSoundEffect("tree");
-                            player.setCollided(true);
-                        }
-
-                        // Move player back to prevent moving into the tree
-                        player.setX(player.getPreviousX());
-                        player.setY(player.getPreviousY());
-                        break;
-                    }
-                }
-            }
-            // Reset `hasCollided` only when the entity moves away from all trees
-            if (!isColliding && entity.hasCollided()) {
-                entity.setCollided(false);
             }
         }
     }

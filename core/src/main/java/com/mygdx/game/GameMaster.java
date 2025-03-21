@@ -8,9 +8,6 @@ import com.mygdx.game.AbstractIO.IKeyboardInput;
 import com.mygdx.game.AbstractIO.IOutputManager;
 import com.mygdx.game.AbstractIO.Keyboard;
 import com.mygdx.game.AbstractScene.ISceneManager;
-import com.mygdx.game.AbstractScene.Scene;
-
-
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class GameMaster extends ApplicationAdapter {
@@ -33,19 +30,16 @@ public class GameMaster extends ApplicationAdapter {
             sceneManager.renderScene(Gdx.graphics.getDeltaTime());
         }
     }
-    
-    // Get the current active scene
-    public Scene getCurrentScene() {
-        if (sceneManager != null) {
-            return sceneManager.getCurrentScene();
-        }
-        return null;
-    }
 
     @Override
     public void dispose() {
         if (inputManager != null) inputManager.dispose();
         if (outputManager != null) outputManager.dispose();
         if (sceneManager != null) sceneManager.dispose();
+    }
+    
+    // Add getter for SceneManager to allow access from other classes
+    public ISceneManager getSceneManager() {
+        return sceneManager;
     }
 }

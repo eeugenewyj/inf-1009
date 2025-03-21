@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.game.AbstractEntity.StaticObject;
 import com.mygdx.game.AbstractEntity.iCollidable;
 
@@ -29,6 +30,13 @@ public class Tree extends StaticObject {
 
     public float getLifeTime() {
         return lifetime;
+    }
+    
+    @Override
+    public Rectangle getBoundingBox() {
+        // Return a slightly smaller bounding box for better collision feel
+        // This creates a 5-pixel "buffer" around the tree
+        return new Rectangle(x + 5, y + 5, width - 10, height - 10);
     }
 
     @Override

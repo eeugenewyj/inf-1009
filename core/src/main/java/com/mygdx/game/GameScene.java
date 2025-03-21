@@ -10,7 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;  // This import is crucial
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -47,6 +47,9 @@ public class GameScene extends Scene {
     private Label finalScoreLabel;
     private TextButton restartButton;
     private TextButton homeButton;
+    
+    // Flag to track if this is a new game or resume
+    private boolean isFirstLoad = true;
 
     public GameScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
@@ -145,8 +148,13 @@ public class GameScene extends Scene {
     @Override
     public void show() {
         super.show();
-        // Reset the game when shown
-        restartGame();
+        
+        // Check if we should restart the game (flag set from StopScene)
+        if (StopScene.shouldRestartGame()) {
+            System.out.println("Restart flag detected - restarting game");
+            restartGame();
+        }
+        
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -240,9 +248,9 @@ public class GameScene extends Scene {
     }
     
     /**
-     * Restarts the game
+     * Restarts the game - public so it can be called from StopScene
      */
-    private void restartGame() {
+    public void restartGame() {
         // Reset game state
         gameActive = true;
         gameTimer = 0;
@@ -267,6 +275,8 @@ public class GameScene extends Scene {
         }
         
         initializeGame();
+        
+        System.out.println("Game restarted!");
     }
 
     @Override

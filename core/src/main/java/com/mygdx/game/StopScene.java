@@ -22,12 +22,14 @@ public class StopScene extends Scene {
     private TextButton restartButton;
     private TextButton homeButton;
     private Audio audio;
+    
+    // Flag to indicate if game should restart on next show
+    private static boolean shouldRestart = false;
 
     public StopScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager,"background2.png");
 
         // Initialize stage
-        // Fix: Use ScreenViewport for better UI scaling
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
@@ -36,12 +38,12 @@ public class StopScene extends Scene {
 
         audio = Audio.getInstance(); // Get the singleton instance of Audio
 
-        // Fix: Create buttons using the skin
+        // Create buttons using the skin
         resumeButton = new TextButton("Resume Game", skin);
         restartButton = new TextButton("Restart Game", skin);
         homeButton = new TextButton("Home", skin);
 
-        // Fix: Set button positions
+        // Set button positions
         float centerX = Gdx.graphics.getWidth() / 2f - 75;
         float centerY = Gdx.graphics.getHeight() / 2f;
 
@@ -53,7 +55,7 @@ public class StopScene extends Scene {
         restartButton.setSize(150, 50);
         homeButton.setSize(150, 50);
 
-        // Fix: Add button listeners for scene switching
+        // Add button listeners for scene switching
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -66,10 +68,11 @@ public class StopScene extends Scene {
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Restart Game Button Clicked! Restarting game...");
+                System.out.println("Restart Game Button Clicked! Setting restart flag...");
+                shouldRestart = true; // Set flag to restart on next show
                 audio.stopMusic(); // Stop the current music
                 audio.playMusic(); // Restart the music
-                sceneManager.setScene("play"); // Switch back to the game scene
+                sceneManager.setScene("play"); // Switch to play scene
             }
         });
 
@@ -79,7 +82,7 @@ public class StopScene extends Scene {
                 System.out.println("Back to Main Menu Button Clicked! Returning to Main Menu...");
                 audio.stopMusic(); // Stop the current music
                 audio.playMusic(); // Restart the music
-                sceneManager.setScene("home"); // Switch back to the game scene
+                sceneManager.setScene("home"); // Switch back to the home scene
             }
         });
 
@@ -107,11 +110,24 @@ public class StopScene extends Scene {
         stage.draw();
     }
 
-
     @Override
     public void dispose() {
         super.dispose();
         stage.dispose();
         skin.dispose();
+    }
+    
+    // Static method to check if game should restart
+    public static boolean shouldRestartGame() {
+        if (shouldRestart) {
+            shouldRestart = false; // Reset the flag
+            return true;
+        }
+        return false;
+    }
+    
+    // Method to set the restart flag externally
+    public static void setRestartFlag(boolean value) {
+        shouldRestart = value;
     }
 }

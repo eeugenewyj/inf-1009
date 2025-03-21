@@ -1,15 +1,18 @@
 package com.mygdx.game;
 
+
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
 import com.mygdx.game.AbstractEntity.AbstractEntityManager;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractIO.IInputManager;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
-//import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class GameEntityManager extends AbstractEntityManager {
@@ -34,7 +37,8 @@ public class GameEntityManager extends AbstractEntityManager {
     }
 
     public void spawnPlayer(float x, float y, float speed, IInputManager inputManager) {
-        addEntity(new Player(x, y, speed, inputManager));
+        Player player = new Player(x, y, speed, inputManager, this); // Pass this entity manager
+        addEntity(player);
     }
 
     public void spawnBallsRow() {
@@ -64,7 +68,7 @@ public class GameEntityManager extends AbstractEntityManager {
     public void removeBallsRow(Ball collidedBall) {
         float rowY = collidedBall.getY(); // Get Y position of the collided ball
         
-        // Just remove all balls in the same row (don't calculate total value)
+        // Just remove all balls in the same row
         List<Ball> ballsToRemove = new ArrayList<>();
         
         // Identify all balls to remove
@@ -79,8 +83,6 @@ public class GameEntityManager extends AbstractEntityManager {
         for (Ball ball : ballsToRemove) {
             ball.setActive(false);
         }
-        
-        // Note: We don't update the score here anymore - that's handled in GameCollisionManager
     }
 
     private void removeRowIfAtBottomAndSpawn() {
@@ -113,50 +115,107 @@ public class GameEntityManager extends AbstractEntityManager {
         }
     }
 
+    // Spawn player at bottom center
     public void spawnPlayers(int count, IInputManager inputManager) {
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
         int playerSize = 50; // Adjust based on actual player size
-
-        // Define spawn zones (e.g., quadrants of the screen)
-        float[][] spawnZones = {
-                { 0, screenWidth / 2, screenHeight / 2, screenHeight }, // Top Left
-                { screenWidth / 2, screenWidth, screenHeight / 2, screenHeight }, // Top Right
-                { 0, screenWidth / 2, 0, screenHeight / 2 }, // Bottom Left
-                { screenWidth / 2, screenWidth, 0, screenHeight / 2 } // Bottom Right
-        };
-
-        for (int i = 0; i < count; i++) {
-            // Ensure max player count is 4 (Number of spawn zones)
-            if (i >= spawnZones.length) {
-                System.err.println("Too many players! Max allowed: " + spawnZones.length);
-                break;
-            }
-
-            float[] zone = spawnZones[i];
-            float playerX = MathUtils.random(zone[0] + playerSize, zone[1] - playerSize);
-            float playerY = MathUtils.random(zone[2] + playerSize, zone[3] - playerSize);
-
-            spawnPlayer(playerX, playerY, 200, inputManager);
-
-            System.out.println("Spawned Player " + (i + 1) + " at: " + playerX + ", " + playerY);
-        }
+        
+        // Calculate the bottom quarter position
+        float bottomQuarterYMin = 0;
+        float bottomQuarterYMax = screenHeight / 4;
+        
+        // Player starts in the middle-bottom of the screen
+        float playerX = screenWidth / 2 - playerSize / 2; // Center horizontally
+        float playerY = bottomQuarterYMax / 2; // Middle of bottom quarter
+        
+        spawnPlayer(playerX, playerY, 200, inputManager);
+        System.out.println("Spawned Player at: " + playerX + ", " + playerY);
     }
 
     public void spawnTree(float x, float y) {
         addEntity(new Tree(x, y));
     }
 
-    // Spawn multiple trees
-    public void spawnTrees(int count) {
-        for (int i = 0; i < count; i++) {
-            float x = MathUtils.random(50, Gdx.graphics.getWidth() - 50);
-            float y = MathUtils.random(50, Gdx.graphics.getHeight() - 50);
-            Tree tree = new Tree(x, y);
-            tree.setLifetime(TREE_LIFETIME); // Use the setter to set the tree lifetime
-            addEntity(tree);
+    // Spawn multiple trees in the middle row of the screen
+// Spawn multiple trees in the middle row of the screen, avoiding player position
+public void spawnTrees(int count) {
+    // Get screen dimensions
+    float screenWidth = Gdx.graphics.getWidth();
+    float screenHeight = Gdx.graphics.getHeight();
+    
+    // Define middle row area (middle third of the screen)
+    float middleYMin = screenHeight / 3;
+    float middleYMax = screenHeight * 2 / 3;
+    
+    // Find player position to avoid spawning trees on top of them
+    Player player = null;
+    for (Entity entity : getEntities()) {
+        if (entity instanceof Player) {
+            player = (Player) entity;
+            break;
         }
     }
+    
+    // Buffer distance to keep between trees and player
+    float safeDistance = 70; // Adjust as needed
+    
+    // Keep track of placed trees to avoid overlapping trees
+    List<Rectangle> placedTreeBounds = new ArrayList<>();
+    
+    // Try to place each tree
+    int treesPlaced = 0;
+    int maxAttempts = 100; // Prevent infinite loops
+    
+    for (int i = 0; i < count; i++) {
+        boolean validPosition = false;
+        int attempts = 0;
+        float x = 0, y = 0;
+        
+        while (!validPosition && attempts < maxAttempts) {
+            // Generate random position in the middle row
+            x = MathUtils.random(50, screenWidth - 50);
+            y = MathUtils.random(middleYMin, middleYMax);
+            
+            // Create a rectangle for this potential tree position
+            Rectangle potentialTreeBounds = new Rectangle(x, y, 50, 50);
+            
+            // Assume position is valid until proven otherwise
+            validPosition = true;
+            
+            // Check if too close to player
+            if (player != null) {
+                float playerDistance = Vector2.dst(x, y, player.getX(), player.getY());
+                if (playerDistance < safeDistance) {
+                    validPosition = false;
+                    attempts++;
+                    continue;
+                }
+            }
+            
+            // Check if overlapping with existing trees
+            for (Rectangle existingTree : placedTreeBounds) {
+                if (existingTree.overlaps(potentialTreeBounds)) {
+                    validPosition = false;
+                    break;
+                }
+            }
+            
+            attempts++;
+        }
+        
+        // If we found a valid position, place the tree
+        if (validPosition) {
+            Tree tree = new Tree(x, y);
+            tree.setLifetime(TREE_LIFETIME);
+            addEntity(tree);
+            placedTreeBounds.add(new Rectangle(x, y, 50, 50));
+            treesPlaced++;
+        }
+    }
+    
+    System.out.println("Spawned " + treesPlaced + " trees in middle row");
+}
 
     public void updateEntities(float deltaTime) {
         // Removes inactive entities from list
@@ -169,7 +228,6 @@ public class GameEntityManager extends AbstractEntityManager {
         });
 
         // Updates the behavior of each entity
-        // : means "for each element in the list of"
         for (Entity entity : entities) {
             entity.update(deltaTime);
         }

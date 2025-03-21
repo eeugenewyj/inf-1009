@@ -21,14 +21,10 @@ public abstract class MovableEntity extends Entity implements iMovable {
 
     public abstract void draw(SpriteBatch batch);
 
-    // Extracted common movement logic
+    // Modified movement logic - doesn't automatically store previous position
+    // as that should happen in the child classes before calling this
     protected void move(float deltaTime, float directionX, float directionY) {
-        // Store last position before movement
-        this.previousX = this.x;
-        this.previousY = this.y;
-
-        // deltaTime ensures that the movement is move - deltaTime = the time taken per
-        // frame
+        // deltaTime ensures that the movement is consistent regardless of frame rate
         this.x += speed * deltaTime * directionX;
         this.y += speed * deltaTime * directionY;
 
@@ -69,9 +65,5 @@ public abstract class MovableEntity extends Entity implements iMovable {
 
     public void reverseYDirection() {
         directionY *= -1;
-    }
-
-    public void updateDirection() {
-        move(Gdx.graphics.getDeltaTime(), directionX, directionY);
     }
 }

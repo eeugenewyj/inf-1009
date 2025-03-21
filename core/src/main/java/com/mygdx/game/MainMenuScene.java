@@ -59,6 +59,8 @@ public class MainMenuScene extends Scene {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Start Button Clicked! Switching to game scene...");
+                // Set flag to restart the game when shown
+                StopScene.setRestartFlag(true);
                 sceneManager.setScene("play");
             }
         });
@@ -110,4 +112,3 @@ public class MainMenuScene extends Scene {
         if (skin != null) skin.dispose();  // Fix: Properly dispose of UI skin
     }
 }
-
