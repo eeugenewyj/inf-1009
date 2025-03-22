@@ -4,11 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.graphics.Color;
 
 import com.mygdx.game.AbstractIO.IInputManager;
 import com.mygdx.game.AbstractIO.IOutputManager;
@@ -24,6 +27,9 @@ public class MainMenuScene extends Scene {
     private final TextButton exitButton;
     private boolean isMuted = false;
     private ImageButton muteButton;
+    private Label titleLabel;
+    private Label subtitleLabel;
+    private Table titleTable; // For layout
 
     public MainMenuScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
@@ -35,6 +41,28 @@ public class MainMenuScene extends Scene {
         // Fix: Properly initialize UI Skin
         skin = new Skin(Gdx.files.internal("uiskin.json"));
 
+        // Create a table for the title layout to ensure proper positioning
+        titleTable = new Table();
+        titleTable.setFillParent(true); // Make it fill the stage
+
+        // Create title label with large font and attractive style
+        titleLabel = new Label("NUMBERS RUSH", skin);
+        titleLabel.setFontScale(3.5f); // Make it prominent
+        titleLabel.setColor(Color.GOLD); // Gold color for attractive look
+
+        // Optional: Create subtitle label with additional info
+        subtitleLabel = new Label("Collect balls to score points!", skin);
+        subtitleLabel.setFontScale(1.5f); // Increased font size for better visibility
+        subtitleLabel.setColor(Color.CYAN); // Bright cyan color for high contrast
+
+        // Add labels to the table with proper spacing
+        titleTable.top().padTop(50); // Position at top with padding
+        titleTable.add(titleLabel).padBottom(15).row(); // Add main title with spacing below
+        titleTable.add(subtitleLabel).row(); // Add subtitle below main title
+
+        // Add the table to the stage before adding buttons
+        stage.addActor(titleTable);
+
         // Use centralized background music
         sceneManager.playBackgroundMusic();
 
@@ -44,9 +72,9 @@ public class MainMenuScene extends Scene {
         settingsButton = new TextButton("Settings", skin);
         exitButton = new TextButton("Exit", skin);
 
-        // Fix: Set button positions
+        // Fix: Set button positions with lower placement to avoid subtitle overlap
         float centerX = Gdx.graphics.getWidth() / 2f - 75;
-        float centerY = Gdx.graphics.getHeight() / 2f;
+        float centerY = Gdx.graphics.getHeight() / 2f - 50; // Move buttons 50 pixels lower
 
         startButton.setPosition(centerX, centerY + 75);
         highScoresButton.setPosition(centerX, centerY + 25); // Position between Start and Settings
