@@ -17,6 +17,8 @@ public class SceneFactory {
                 return new SettingsScene(sceneManager, inputManager, outputManager);
             case "highscores":
                 return new HighScoresScene(sceneManager, inputManager, outputManager);
+            case "difficulty":
+                return new DifficultySelectionScene(sceneManager, inputManager, outputManager);
             default:
                 throw new IllegalArgumentException("Unknown scene: " + sceneName);
         }

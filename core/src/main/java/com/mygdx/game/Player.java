@@ -118,7 +118,7 @@ public class Player extends MovableEntity {
             List<Entity> entities = entityManager.getEntities();
             for (Entity entity : entities) {
                 if (entity instanceof Tree && potentialPosition.overlaps(entity.getBoundingBox())) {
-                    System.out.println("Would collide with tree - movement prevented");
+                    // System.out.println("Would collide with tree - movement prevented");
                     return true; // Would collide with a tree
                 }
             }

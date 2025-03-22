@@ -22,6 +22,10 @@ public class GameSceneManager extends AbstractSceneManager {
         addScene("stop", SceneFactory.createScene("stop", this, inputManager, outputManager));
         addScene("settings", SceneFactory.createScene("settings", this, inputManager, outputManager));
         addScene("highscores", SceneFactory.createScene("highscores", this, inputManager, outputManager));
+        
+        // Add the new difficulty selection scene
+        addScene("difficulty", SceneFactory.createScene("difficulty", this, inputManager, outputManager));
+        
         setScene("home");
     }
 

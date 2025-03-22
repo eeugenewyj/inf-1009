@@ -11,7 +11,12 @@ import com.mygdx.game.AbstractEntity.iCollidable;
 import java.util.Random;
 
 public class Ball extends MovableEntity {
-    private int value;
+    private int value;                  // Numeric value
+    private String displayText;         // Text to display (number or math expression)
+    private boolean usesMathOperation;  // Whether this ball displays a math operation
+    private String operation;           // The math operation (+, -, ×)
+    private int operand1, operand2;     // The numbers in the operation
+    
     private boolean collected = false;
     private boolean isFalling = false;
 
@@ -23,13 +28,60 @@ public class Ball extends MovableEntity {
 
     private ShapeRenderer shapeRenderer;
     private BitmapFont font;
+    private static final Random random = new Random();
 
     public Ball(float x, float y) {
         super(x, y, 100); // Falling speed
-        this.value = new Random().nextInt(9) + 1; // Random number 1-9
+        
+        // Determine if this ball should use math operation based on difficulty
+        usesMathOperation = GameSettings.isHardMode();
+        
+        if (usesMathOperation) {
+            generateMathOperation();
+        } else {
+            // Simple number for easy mode
+            this.value = random.nextInt(9) + 1; // Random number 1-9
+            this.displayText = String.valueOf(value);
+        }
+        
         shapeRenderer = new ShapeRenderer();
         font = new BitmapFont();
         font.setColor(Color.BLACK);
+    }
+
+    /**
+     * Generates a random math operation
+     */
+    private void generateMathOperation() {
+        // Generate random numbers for the operation
+        operand1 = random.nextInt(9) + 1;  // 1-9
+        operand2 = random.nextInt(9) + 1;  // 1-9
+        
+        // Choose a random operation
+        String[] operations = {"+", "-", "*"};
+        operation = operations[random.nextInt(operations.length)];
+        
+        // Calculate the result
+        switch(operation) {
+            case "+": 
+                value = operand1 + operand2; 
+                break;
+            case "-": 
+                // Ensure result is positive
+                if (operand1 < operand2) {
+                    int temp = operand1;
+                    operand1 = operand2;
+                    operand2 = temp;
+                }
+                value = operand1 - operand2; 
+                break;
+            case "*": 
+                value = operand1 * operand2; 
+                break;
+        }
+        
+        // Set the display text
+        displayText = operand1 + operation + operand2;
     }
 
     public int getValue() {
@@ -63,7 +115,20 @@ public class Ball extends MovableEntity {
 
         batch.begin(); // Restart batch for font rendering
 
-        font.draw(batch, String.valueOf(value), x + BALL_RADIUS - 10, y + BALL_RADIUS + 10); // Center number
+        // Center the text for proper display
+        float textX, textY;
+        
+        // Simple number requires less space than math operation
+        if (usesMathOperation) {
+            textX = x + BALL_RADIUS - 15;  // Wider expression needs more offset
+        } else {
+            textX = x + BALL_RADIUS - 10;  // Single digit needs less offset
+        }
+        
+        textY = y + BALL_RADIUS + 10;
+        
+        // Draw the text (number or math expression)
+        font.draw(batch, displayText, textX, textY);
     }
 
     @Override
@@ -86,5 +151,13 @@ public class Ball extends MovableEntity {
 
     public static float getBallWidth() {
         return BALL_WIDTH;
+    }
+    
+    public String getDisplayText() {
+        return displayText;
+    }
+    
+    public boolean usesMathOperation() {
+        return usesMathOperation;
     }
 }

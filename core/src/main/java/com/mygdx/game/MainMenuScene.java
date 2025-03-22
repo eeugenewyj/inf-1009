@@ -90,10 +90,8 @@ public class MainMenuScene extends Scene {
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Start Button Clicked! Switching to game scene...");
-                // Set flag to restart the game when shown
-                StopScene.setRestartFlag(true);
-                sceneManager.setScene("play");
+                System.out.println("Start Button Clicked! Opening difficulty selection...");
+                sceneManager.setScene("difficulty"); // Show difficulty selection instead of going directly to play
             }
         });
 

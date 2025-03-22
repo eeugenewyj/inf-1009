@@ -466,15 +466,12 @@ public class GameScene extends Scene {
         if (!scoreSaved) {
             HighScoresManager highScoresManager = HighScoresManager.getInstance();
             
-            // Get current best score before adding new score
-            int previousBest = highScoresManager.getBestScore();
-            
-            // Add score to high scores list
+            // The addScore method in HighScoresManager will automatically use the current difficulty
             boolean isNewBestScore = highScoresManager.addScore(playerScore);
             
             // Debug logs to help troubleshoot
             System.out.println("Game ended with score: " + playerScore);
-            System.out.println("Previous best score: " + previousBest);
+            System.out.println("Game difficulty: " + GameSettings.getDifficultyName());
             System.out.println("Is new best score: " + isNewBestScore);
             
             // Only show NEW HIGH SCORE label if it's a truly new best score
