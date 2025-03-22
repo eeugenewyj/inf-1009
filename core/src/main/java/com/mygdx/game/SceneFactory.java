@@ -15,9 +15,10 @@ public class SceneFactory {
                 return new StopScene(sceneManager, inputManager, outputManager);
             case "settings":
                 return new SettingsScene(sceneManager, inputManager, outputManager);
+            case "highscores":
+                return new HighScoresScene(sceneManager, inputManager, outputManager);
             default:
                 throw new IllegalArgumentException("Unknown scene: " + sceneName);
         }
     }
 }
-

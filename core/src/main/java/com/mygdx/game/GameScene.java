@@ -45,11 +45,15 @@ public class GameScene extends Scene {
     // Game over elements
     private Label gameOverLabel;
     private Label finalScoreLabel;
+    private Label highScoreLabel; // New label for high score notification
     private TextButton restartButton;
     private TextButton homeButton;
     
     // Flag to track if this is a new game or resume
     private boolean isFirstLoad = true;
+    
+    // Flag to track if the current game score has been saved
+    private boolean scoreSaved = false;
 
     public GameScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
@@ -109,14 +113,22 @@ public class GameScene extends Scene {
         finalScoreLabel.setAlignment(Align.center);
         finalScoreLabel.setVisible(false);
         
+        // New high score label
+        highScoreLabel = new Label("NEW HIGH SCORE!", skin);
+        highScoreLabel.setFontScale(1.5f);
+        highScoreLabel.setColor(Color.YELLOW);
+        highScoreLabel.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 35);
+        highScoreLabel.setAlignment(Align.center);
+        highScoreLabel.setVisible(false);
+        
         restartButton = new TextButton("Play Again", skin);
         restartButton.setSize(200, 50);
-        restartButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 70);
+        restartButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 90);
         restartButton.setVisible(false);
         
         homeButton = new TextButton("Main Menu", skin);
         homeButton.setSize(200, 50);
-        homeButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 140);
+        homeButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 160);
         homeButton.setVisible(false);
         
         restartButton.addListener(new ClickListener() {
@@ -139,6 +151,7 @@ public class GameScene extends Scene {
         stage.addActor(timerLabel);
         stage.addActor(gameOverLabel);
         stage.addActor(finalScoreLabel);
+        stage.addActor(highScoreLabel);
         stage.addActor(restartButton);
         stage.addActor(homeButton);
 
@@ -215,6 +228,9 @@ public class GameScene extends Scene {
         entityManager = new GameEntityManager(this);
         collisionManager = new GameCollisionManager(entityManager, this); // Initialize CollisionManager with reference to GameScene
         
+        // Reset score saved flag
+        scoreSaved = false;
+        
         // Spawn different entities
         entityManager.spawnPlayers(1, inputManager);
         entityManager.spawnTrees(5); // Spawn trees using EntityManager
@@ -236,6 +252,27 @@ public class GameScene extends Scene {
     private void endGame() {
         gameActive = false;
         
+        // Save the score to high scores if not already done
+        if (!scoreSaved) {
+            HighScoresManager highScoresManager = HighScoresManager.getInstance();
+            
+            // Get current best score before adding new score
+            int previousBest = highScoresManager.getBestScore();
+            
+            // Add score to high scores list
+            boolean isNewBestScore = highScoresManager.addScore(playerScore);
+            
+            // Debug logs to help troubleshoot
+            System.out.println("Game ended with score: " + playerScore);
+            System.out.println("Previous best score: " + previousBest);
+            System.out.println("Is new best score: " + isNewBestScore);
+            
+            // Only show NEW HIGH SCORE label if it's a truly new best score
+            highScoreLabel.setVisible(isNewBestScore);
+            
+            scoreSaved = true;
+        }
+        
         // Update game over UI
         gameOverLabel.setVisible(true);
         finalScoreLabel.setText("Final Score: " + playerScore);
@@ -255,6 +292,7 @@ public class GameScene extends Scene {
         gameActive = true;
         gameTimer = 0;
         playerScore = 0;
+        scoreSaved = false;
         
         // Reset UI
         scoreLabel.setText("Score: 0");
@@ -263,6 +301,7 @@ public class GameScene extends Scene {
         // Hide game over UI
         gameOverLabel.setVisible(false);
         finalScoreLabel.setVisible(false);
+        highScoreLabel.setVisible(false);
         restartButton.setVisible(false);
         homeButton.setVisible(false);
         

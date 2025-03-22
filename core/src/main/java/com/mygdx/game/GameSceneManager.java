@@ -21,6 +21,7 @@ public class GameSceneManager extends AbstractSceneManager {
         addScene("play", SceneFactory.createScene("play", this, inputManager, outputManager));
         addScene("stop", SceneFactory.createScene("stop", this, inputManager, outputManager));
         addScene("settings", SceneFactory.createScene("settings", this, inputManager, outputManager));
+        addScene("highscores", SceneFactory.createScene("highscores", this, inputManager, outputManager));
         setScene("home");
     }
 

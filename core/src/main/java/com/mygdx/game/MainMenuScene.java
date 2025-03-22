@@ -19,6 +19,7 @@ public class MainMenuScene extends Scene {
     private final Stage stage;
     private final Skin skin;
     private final TextButton startButton;
+    private final TextButton highScoresButton; // New high scores button
     private final TextButton settingsButton;
     private final TextButton exitButton;
     private boolean isMuted = false;
@@ -39,6 +40,7 @@ public class MainMenuScene extends Scene {
 
         // Fix: Create buttons using the skin
         startButton = new TextButton("Start Game", skin);
+        highScoresButton = new TextButton("High Scores", skin); // New high scores button
         settingsButton = new TextButton("Settings", skin);
         exitButton = new TextButton("Exit", skin);
 
@@ -46,11 +48,13 @@ public class MainMenuScene extends Scene {
         float centerX = Gdx.graphics.getWidth() / 2f - 75;
         float centerY = Gdx.graphics.getHeight() / 2f;
 
-        startButton.setPosition(centerX, centerY + 50);
-        settingsButton.setPosition(centerX, centerY);
-        exitButton.setPosition(centerX, centerY - 50);
+        startButton.setPosition(centerX, centerY + 75);
+        highScoresButton.setPosition(centerX, centerY + 25); // Position between Start and Settings
+        settingsButton.setPosition(centerX, centerY - 25);
+        exitButton.setPosition(centerX, centerY - 75);
 
         startButton.setSize(150, 50);
+        highScoresButton.setSize(150, 50);
         settingsButton.setSize(150, 50);
         exitButton.setSize(150, 50);
 
@@ -62,6 +66,14 @@ public class MainMenuScene extends Scene {
                 // Set flag to restart the game when shown
                 StopScene.setRestartFlag(true);
                 sceneManager.setScene("play");
+            }
+        });
+
+        highScoresButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                System.out.println("High Scores Button Clicked! Opening high scores...");
+                sceneManager.setScene("highscores");
             }
         });
 
@@ -83,6 +95,7 @@ public class MainMenuScene extends Scene {
 
         // Fix: Add buttons to the stage
         stage.addActor(startButton);
+        stage.addActor(highScoresButton); // Add the high scores button
         stage.addActor(settingsButton);
         stage.addActor(exitButton);
     }
