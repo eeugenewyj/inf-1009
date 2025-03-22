@@ -84,4 +84,11 @@ public class PowerUpEffect extends Entity {
     public static PowerUpEffect createTimeExtensionEffect(float x, float y) {
         return new PowerUpEffect(x, y, "+5 SECONDS!", Color.CYAN, 2.0f);
     }
+    
+    /**
+     * Creates a general power-up effect with custom text and color
+     */
+    public static PowerUpEffect createEffect(float x, float y, String text, Color color, float duration) {
+        return new PowerUpEffect(x, y, text, color, duration);
+    }
 }

@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.graphics.Color;
 import com.mygdx.game.AbstractCollision.AbstractCollisionManager;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractEntity.IEntityManager;
@@ -113,13 +114,41 @@ public class GameCollisionManager extends AbstractCollisionManager {
                             ((GameEntityManager) entityManager).addEntity(effect);
                         }
                         break;
+                    case PowerUp.TYPE_REDUCE_TIME:
+                        if (gameScene != null) {
+                            gameScene.reduceGameTime(3f); // Subtract 3 seconds
+                            // Add visual effect for time reduction
+                            PowerUpEffect effect = PowerUpEffect.createEffect(effectX, effectY, "-3 SECONDS!", Color.RED, 2.0f);
+                            ((GameEntityManager) entityManager).addEntity(effect);
+                        }
+                        break;
+                    case PowerUp.TYPE_INVERT_CONTROLS:
+                        if (gameScene != null) {
+                            gameScene.activateInvertControls();
+                            // Add visual effect for inverted controls
+                            PowerUpEffect effect = PowerUpEffect.createEffect(effectX, effectY, "CONTROLS INVERTED!", Color.PURPLE, 2.0f);
+                            ((GameEntityManager) entityManager).addEntity(effect);
+                        }
+                        break;
+                    case PowerUp.TYPE_SLOW_PLAYER:
+                        if (gameScene != null) {
+                            gameScene.activateSlowPlayer();
+                            // Add visual effect for slow player
+                            PowerUpEffect effect = PowerUpEffect.createEffect(effectX, effectY, "SPEED REDUCED!", Color.ORANGE, 2.0f);
+                            ((GameEntityManager) entityManager).addEntity(effect);
+                        }
+                        break;
                 }
                 
                 // Mark power-up as collected
                 collidedPowerUp.setActive(false);
                 
-                // Play power-up sound effect
-                audio.playSoundEffect("powerup");
+                // Play power-up sound effect - different sound for debuffs
+                if (collidedPowerUp.isDebuff()) {
+                    audio.playSoundEffect("debuff"); // Create this sound or use an existing one
+                } else {
+                    audio.playSoundEffect("powerup");
+                }
             }
         }
 

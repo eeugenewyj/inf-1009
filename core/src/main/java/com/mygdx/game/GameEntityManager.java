@@ -26,8 +26,8 @@ public class GameEntityManager extends AbstractEntityManager {
     
     // Power-up related fields
     private float powerUpSpawnTimer = 0;
-    private static final float POWERUP_SPAWN_INTERVAL = 8f; // Every 8 seconds
-    private static final float POWERUP_SPAWN_CHANCE = 0.7f; // 70% chance to spawn
+    private static final float POWERUP_SPAWN_INTERVAL = 3.5f; // Every 8 seconds
+    private static final float POWERUP_SPAWN_CHANCE = 0.9f; // 70% chance to spawn
 
     public GameEntityManager() {
         // Default constructor

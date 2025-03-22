@@ -62,6 +62,16 @@ public class GameScene extends Scene {
     private float doublePointsTimer = 0;
     private static final float DOUBLE_POINTS_DURATION = 3f; // 3 seconds
     private Label powerUpLabel; // For displaying active power-ups
+    
+    // Debuff timers and states
+    private boolean invertControlsActive = false;
+    private float invertControlsTimer = 0;
+    private static final float INVERT_CONTROLS_DURATION = 5f; // 5 seconds
+
+    private boolean slowPlayerActive = false;
+    private float slowPlayerTimer = 0;
+    private static final float SLOW_PLAYER_DURATION = 4f; // 4 seconds
+    private float originalPlayerSpeed = 200f; // Store original speed to restore later
 
     public GameScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
@@ -85,6 +95,8 @@ public class GameScene extends Scene {
         audio.loadSoundEffect("player", "Music/collisioneffect.mp3");
         // Add power-up sound effect (create this file or use an existing one)
         audio.loadSoundEffect("powerup", "Music/collisioneffect.mp3"); // Using existing sound as fallback
+        // Add debuff sound effect (you can create this file or use an existing one)
+        audio.loadSoundEffect("debuff", "Music/collisioneffect.mp3"); // Using existing sound as fallback
 
         // Load Pause Button
         pauseButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("pause.png"))));
@@ -228,6 +240,44 @@ public class GameScene extends Scene {
                     }
                 }
                 
+                // Handle invert controls timer
+                if (invertControlsActive) {
+                    invertControlsTimer += delta;
+                    updatePowerUpLabel();
+                    
+                    if (invertControlsTimer >= INVERT_CONTROLS_DURATION) {
+                        invertControlsActive = false;
+                        // Reset invert flag on all players
+                        for (Entity entity : entityManager.getEntities()) {
+                            if (entity instanceof Player) {
+                                Player player = (Player) entity;
+                                player.setInvertControls(false);
+                            }
+                        }
+                        updatePowerUpLabel();
+                        System.out.println("Controls back to normal!");
+                    }
+                }
+
+                // Handle slow player timer
+                if (slowPlayerActive) {
+                    slowPlayerTimer += delta;
+                    updatePowerUpLabel();
+                    
+                    if (slowPlayerTimer >= SLOW_PLAYER_DURATION) {
+                        slowPlayerActive = false;
+                        // Reset speed on all players
+                        for (Entity entity : entityManager.getEntities()) {
+                            if (entity instanceof Player) {
+                                Player player = (Player) entity;
+                                player.setSpeed(originalPlayerSpeed);
+                            }
+                        }
+                        updatePowerUpLabel();
+                        System.out.println("Player speed back to normal!");
+                    }
+                }
+                
                 // Update player movement using the new input system
                 for (Entity entity : entityManager.getEntities()) {
                     if (entity instanceof Player) {
@@ -304,6 +354,55 @@ public class GameScene extends Scene {
         updatePowerUpLabel();
         System.out.println("Game time extended by " + seconds + " seconds!");
     }
+    
+    /**
+     * Reduces the game time by the specified amount
+     * @param seconds The number of seconds to subtract
+     */
+    public void reduceGameTime(float seconds) {
+        gameTimer = Math.min(GAME_DURATION - 1, gameTimer + seconds); // Add to timer to reduce time, ensure at least 1 second remains
+        updatePowerUpLabel();
+        System.out.println("Game time reduced by " + seconds + " seconds!");
+    }
+
+    /**
+     * Activates inverted controls for a fixed duration
+     */
+    public void activateInvertControls() {
+        invertControlsActive = true;
+        invertControlsTimer = 0;
+        
+        // Set invert flag on all players
+        for (Entity entity : entityManager.getEntities()) {
+            if (entity instanceof Player) {
+                Player player = (Player) entity;
+                player.setInvertControls(true);
+            }
+        }
+        
+        updatePowerUpLabel();
+        System.out.println("Controls inverted!");
+    }
+
+    /**
+     * Activates slow player movement for a fixed duration
+     */
+    public void activateSlowPlayer() {
+        slowPlayerActive = true;
+        slowPlayerTimer = 0;
+        
+        // Slow down all players
+        for (Entity entity : entityManager.getEntities()) {
+            if (entity instanceof Player) {
+                Player player = (Player) entity;
+                originalPlayerSpeed = player.getSpeed(); // Save original speed
+                player.setSpeed(originalPlayerSpeed * 0.5f); // Reduce to 50%
+            }
+        }
+        
+        updatePowerUpLabel();
+        System.out.println("Player slowed!");
+    }
 
     /**
      * Updates the power-up label to show active effects
@@ -317,7 +416,25 @@ public class GameScene extends Scene {
             labelText.append(String.format("(%.1fs)", remaining));
         }
         
-        powerUpLabel.setText(labelText.toString()); // This will set to empty string if no power-ups active
+        if (invertControlsActive) {
+            if (labelText.length() > 0) {
+                labelText.append(" | ");
+            }
+            labelText.append("INVERTED CONTROLS! ");
+            float remaining = INVERT_CONTROLS_DURATION - invertControlsTimer;
+            labelText.append(String.format("(%.1fs)", remaining));
+        }
+        
+        if (slowPlayerActive) {
+            if (labelText.length() > 0) {
+                labelText.append(" | ");
+            }
+            labelText.append("SLOWED! ");
+            float remaining = SLOW_PLAYER_DURATION - slowPlayerTimer;
+            labelText.append(String.format("(%.1fs)", remaining));
+        }
+        
+        powerUpLabel.setText(labelText.toString());
     }
     
     /**
@@ -329,7 +446,18 @@ public class GameScene extends Scene {
         // Clear power-up status
         doublePointsActive = false;
         doublePointsTimer = 0;
+        invertControlsActive = false;
+        slowPlayerActive = false;
         powerUpLabel.setText(""); // Clear the power-up label text
+        
+        // Reset any player modifications
+        for (Entity entity : entityManager.getEntities()) {
+            if (entity instanceof Player) {
+                Player player = (Player) entity;
+                player.setInvertControls(false);
+                player.setSpeed(originalPlayerSpeed);
+            }
+        }
         
         // Save the score to high scores if not already done
         if (!scoreSaved) {
@@ -371,7 +499,11 @@ public class GameScene extends Scene {
         scoreSaved = false;
         doublePointsActive = false;
         doublePointsTimer = 0;
-        updatePowerUpLabel(); // This will clear the power-up label
+        invertControlsActive = false;
+        invertControlsTimer = 0;
+        slowPlayerActive = false;
+        slowPlayerTimer = 0;
+        updatePowerUpLabel();
         
         // Reset UI
         scoreLabel.setText("Score: 0");

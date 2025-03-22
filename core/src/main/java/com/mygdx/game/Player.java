@@ -18,6 +18,9 @@ public class Player extends MovableEntity {
     
     // Define the movement boundary - player cannot go above this line
     private final float MAX_Y_POSITION;
+    
+    // Add this field for inverted controls
+    private boolean invertControls = false;
 
     public Player(float x, float y, float speed, IInputManager inputManager, GameEntityManager entityManager) {
         super(x, y, speed);
@@ -57,6 +60,12 @@ public class Player extends MovableEntity {
         float horizontal = inputManager.getMoveX(); // Uses IOManager for movement input
         float vertical = inputManager.getMoveY();
         
+        // Invert controls if the debuff is active
+        if (invertControls) {
+            horizontal = -horizontal;
+            vertical = -vertical;
+        }
+        
         // Try moving horizontally
         if (horizontal != 0) {
             float newX = this.x + speed * deltaTime * horizontal;
@@ -81,6 +90,22 @@ public class Player extends MovableEntity {
                 this.y = newY; // Only move if no collision would occur
             }
         }
+    }
+    
+    /**
+     * Sets whether controls should be inverted
+     * @param invert true to invert controls, false for normal controls
+     */
+    public void setInvertControls(boolean invert) {
+        this.invertControls = invert;
+    }
+
+    /**
+     * Checks if controls are currently inverted
+     * @return true if controls are inverted
+     */
+    public boolean areControlsInverted() {
+        return invertControls;
     }
     
     // Check if moving to a position would cause a collision with any tree

@@ -16,6 +16,14 @@ public class PowerUp extends MovableEntity {
     public static final int TYPE_DOUBLE_POINTS = 0;
     public static final int TYPE_EXTEND_TIME = 1;
     
+    // Debuff types
+    public static final int TYPE_REDUCE_TIME = 2;
+    public static final int TYPE_INVERT_CONTROLS = 3;
+    public static final int TYPE_SLOW_PLAYER = 4;
+    
+    // Flag to determine if this is a buff or debuff
+    private boolean isDebuff;
+    
     private int type;
     private String symbol; // Symbol to display inside the star
     
@@ -25,22 +33,37 @@ public class PowerUp extends MovableEntity {
     private Color powerUpColor;
     
     // Constants for rendering
-    private static final float POWERUP_SIZE = 40;
-    private static final float STAR_INNER_RATIO = 0.4f; // Inner star size relative to outer
+    private static final float POWERUP_SIZE = 55; // Larger size
+    private static final float STAR_INNER_RATIO = 0.6f; // Fuller star ratio
     
     public PowerUp(float x, float y, int type) {
         super(x, y, 120); // Slightly faster than balls
         this.type = type;
         
-        // Set symbol and color based on type
+        // Determine if this is a buff or debuff
+        this.isDebuff = type >= TYPE_REDUCE_TIME;
+        
+        // Set symbol and color based on type - using simpler, more visible symbols
         switch(type) {
             case TYPE_DOUBLE_POINTS:
-                symbol = "x2";
+                symbol = "2X";
                 powerUpColor = Color.GOLD;
                 break;
             case TYPE_EXTEND_TIME:
-                symbol = "+5s";
+                symbol = "+5";
                 powerUpColor = Color.CYAN;
+                break;
+            case TYPE_REDUCE_TIME:
+                symbol = "-3";
+                powerUpColor = Color.RED;
+                break;
+            case TYPE_INVERT_CONTROLS:
+                symbol = "INV";
+                powerUpColor = Color.PURPLE;
+                break;
+            case TYPE_SLOW_PLAYER:
+                symbol = "SLOW";
+                powerUpColor = Color.ORANGE;
                 break;
             default:
                 symbol = "?";
@@ -49,12 +72,20 @@ public class PowerUp extends MovableEntity {
         
         shapeRenderer = new ShapeRenderer();
         font = new BitmapFont();
-        font.setColor(Color.BLACK);
+        font.setColor(Color.WHITE); // White text for ALL power-ups
+        
+        // Slightly smaller text size (1.6 instead of 2.0)
+        font.getData().setScale(1.6f);
+        
         glyphLayout = new GlyphLayout(); // Initialize the GlyphLayout
     }
     
     public int getType() {
         return type;
+    }
+    
+    public boolean isDebuff() {
+        return isDebuff;
     }
     
     @Override
@@ -85,6 +116,12 @@ public class PowerUp extends MovableEntity {
         // Draw the power-up star
         drawStar(x + POWERUP_SIZE/2, y + POWERUP_SIZE/2, POWERUP_SIZE/2, POWERUP_SIZE*STAR_INNER_RATIO/2, 5, powerUpColor);
         
+        shapeRenderer.end();
+        
+        // Draw outline for better visibility
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(Color.BLACK); // Black outline for all stars
+        drawStar(x + POWERUP_SIZE/2, y + POWERUP_SIZE/2, POWERUP_SIZE/2, POWERUP_SIZE*STAR_INNER_RATIO/2, 5, shapeRenderer.getColor());
         shapeRenderer.end();
         
         // Restart batch for text
@@ -158,9 +195,20 @@ public class PowerUp extends MovableEntity {
         }
     }
     
-    // Static method to spawn a random power-up
+    // Static method to spawn a random power-up (including debuffs)
     public static PowerUp createRandomPowerUp(float x, float y) {
-        int type = new Random().nextInt(2); // 0 or 1 for our two power-up types
+        // 50% chance for a debuff (with 5 total power-up types)
+        Random rand = new Random();
+        int type;
+        
+        if (rand.nextFloat() < 0.5f) {
+            // Select a random debuff (2-4)
+            type = rand.nextInt(3) + 2;
+        } else {
+            // Select a random buff (0-1)
+            type = rand.nextInt(2);
+        }
+        
         return new PowerUp(x, y, type);
     }
 }
