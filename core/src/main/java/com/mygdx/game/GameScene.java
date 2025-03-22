@@ -94,9 +94,12 @@ public class GameScene extends Scene {
         audio.loadSoundEffect("tree", "Music/tree.mp3");
         audio.loadSoundEffect("player", "Music/collisioneffect.mp3");
         // Add power-up sound effect (create this file or use an existing one)
-        audio.loadSoundEffect("powerup", "Music/collisioneffect.mp3"); // Using existing sound as fallback
-        // Add debuff sound effect (you can create this file or use an existing one)
-        audio.loadSoundEffect("debuff", "Music/collisioneffect.mp3"); // Using existing sound as fallback
+        audio.loadSoundEffect("powerup", "Music/powerup.mp3");
+        // Add debuff sound effect 
+        audio.loadSoundEffect("debuff", "Music/debuff.mp3"); 
+
+        audio.setSoundEffectVolume("powerup", 0.3f); // Reduce to 30% volume
+        audio.setSoundEffectVolume("debuff", 0.3f); // Reduce to 30% volume
 
         // Load Pause Button
         pauseButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("pause.png"))));
