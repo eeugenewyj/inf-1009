@@ -11,8 +11,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 
 import java.util.Random;
-import java.util.ArrayList;
-import java.util.List;
 
 public class GameEntityManager extends AbstractEntityManager {
     private static final Random random = new Random();
@@ -25,6 +23,11 @@ public class GameEntityManager extends AbstractEntityManager {
     private float treeSpawnTimer = 0; // Timer to track tree spawn intervals
     private static final float TREE_LIFETIME = 5f; // Trees disappear after 5 seconds
     private static final float TREE_SPAWN_INTERVAL = 5f; // Every 5 seconds
+    
+    // Power-up related fields
+    private float powerUpSpawnTimer = 0;
+    private static final float POWERUP_SPAWN_INTERVAL = 8f; // Every 8 seconds
+    private static final float POWERUP_SPAWN_CHANCE = 0.7f; // 70% chance to spawn
 
     public GameEntityManager() {
         // Default constructor
@@ -218,7 +221,23 @@ public class GameEntityManager extends AbstractEntityManager {
         
         System.out.println("Spawned " + treesPlaced + " trees throughout the screen");
     }
+    
+    // Method to spawn a power-up
+    public void spawnPowerUp() {
+        float screenWidth = Gdx.graphics.getWidth();
+        float topYPosition = Gdx.graphics.getHeight() + 20; // Just above screen
+        
+        // Randomly position the power-up horizontally
+        float xPosition = MathUtils.random(50, screenWidth - 50);
+        
+        PowerUp powerUp = PowerUp.createRandomPowerUp(xPosition, topYPosition);
+        addEntity(powerUp);
+        
+        System.out.println("Spawned PowerUp of type: " + 
+                          (powerUp.getType() == PowerUp.TYPE_DOUBLE_POINTS ? "Double Points" : "Extend Time"));
+    }
 
+    @Override
     public void updateEntities(float deltaTime) {
         // Removes inactive entities from list
         entities.removeIf(entity -> {
@@ -239,6 +258,16 @@ public class GameEntityManager extends AbstractEntityManager {
         if (treeSpawnTimer >= TREE_SPAWN_INTERVAL) {
             spawnTrees(4); // Spawn 4 trees
             treeSpawnTimer = 0; // Reset timer
+        }
+        
+        // Handle power-up spawning timer
+        powerUpSpawnTimer += deltaTime;
+        if (powerUpSpawnTimer >= POWERUP_SPAWN_INTERVAL) {
+            // Chance-based spawning
+            if (MathUtils.random() < POWERUP_SPAWN_CHANCE) {
+                spawnPowerUp();
+            }
+            powerUpSpawnTimer = 0; // Reset timer
         }
 
         // Remove trees that have existed longer than TREE_LIFETIME

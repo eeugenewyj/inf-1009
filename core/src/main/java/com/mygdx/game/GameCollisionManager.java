@@ -4,7 +4,6 @@ import com.mygdx.game.AbstractCollision.AbstractCollisionManager;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractEntity.IEntityManager;
 import com.mygdx.game.AbstractIO.Audio;
-//import com.badlogic.gdx.Gdx;
 
 public class GameCollisionManager extends AbstractCollisionManager {
     private final Audio audio = Audio.getInstance();
@@ -80,6 +79,47 @@ public class GameCollisionManager extends AbstractCollisionManager {
 
                 // Spawn the next row of balls
                 ((GameEntityManager) entityManager).spawnBallsRow();
+            }
+            
+            // Check for power-up collisions
+            PowerUp collidedPowerUp = null;
+            for (Entity other : entityManager.getEntities()) {
+                if (other instanceof PowerUp && player.getBoundingBox().overlaps(other.getBoundingBox())) {
+                    collidedPowerUp = (PowerUp) other;
+                    break; // Only detect first collision
+                }
+            }
+
+            if (collidedPowerUp != null) {
+                // Get the position where the effect should appear (near where the power-up was collected)
+                float effectX = collidedPowerUp.getX();
+                float effectY = collidedPowerUp.getY();
+                
+                // Process power-up effect
+                switch (collidedPowerUp.getType()) {
+                    case PowerUp.TYPE_DOUBLE_POINTS:
+                        if (gameScene != null) {
+                            gameScene.activateDoublePoints();
+                            // Add visual effect for double points
+                            PowerUpEffect effect = PowerUpEffect.createDoublePointsEffect(effectX, effectY);
+                            ((GameEntityManager) entityManager).addEntity(effect);
+                        }
+                        break;
+                    case PowerUp.TYPE_EXTEND_TIME:
+                        if (gameScene != null) {
+                            gameScene.extendGameTime(5f); // Add 5 seconds
+                            // Add visual effect for time extension
+                            PowerUpEffect effect = PowerUpEffect.createTimeExtensionEffect(effectX, effectY);
+                            ((GameEntityManager) entityManager).addEntity(effect);
+                        }
+                        break;
+                }
+                
+                // Mark power-up as collected
+                collidedPowerUp.setActive(false);
+                
+                // Play power-up sound effect
+                audio.playSoundEffect("powerup");
             }
         }
 

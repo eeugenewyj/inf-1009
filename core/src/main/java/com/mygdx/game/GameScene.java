@@ -56,6 +56,12 @@ public class GameScene extends Scene {
     
     // Flag to track if the current game score has been saved
     private boolean scoreSaved = false;
+    
+    // Power-up related fields
+    private boolean doublePointsActive = false;
+    private float doublePointsTimer = 0;
+    private static final float DOUBLE_POINTS_DURATION = 3f; // 3 seconds
+    private Label powerUpLabel; // For displaying active power-ups
 
     public GameScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
@@ -77,6 +83,8 @@ public class GameScene extends Scene {
         audio = Audio.getInstance();
         audio.loadSoundEffect("tree", "Music/tree.mp3");
         audio.loadSoundEffect("player", "Music/collisioneffect.mp3");
+        // Add power-up sound effect (create this file or use an existing one)
+        audio.loadSoundEffect("powerup", "Music/collisioneffect.mp3"); // Using existing sound as fallback
 
         // Load Pause Button
         pauseButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("pause.png"))));
@@ -103,6 +111,12 @@ public class GameScene extends Scene {
         timerLabel.setPosition(20, Gdx.graphics.getHeight() - 80);
         timerLabel.setFontScale(1.5f);
         timerLabel.setColor(Color.WHITE); // White for better visibility
+        
+        // Set up power-up status label
+        powerUpLabel = new Label("", skin);
+        powerUpLabel.setPosition(20, Gdx.graphics.getHeight() - 120);
+        powerUpLabel.setFontScale(1.5f);
+        powerUpLabel.setColor(Color.YELLOW); // Yellow for better visibility
         
         // Create game over table for centered layout
         gameOverTable = new Table();
@@ -158,6 +172,7 @@ public class GameScene extends Scene {
         stage.addActor(pauseButton);
         stage.addActor(scoreLabel);
         stage.addActor(timerLabel);
+        stage.addActor(powerUpLabel);
         stage.addActor(gameOverTable);
 
         initializeGame();
@@ -200,6 +215,18 @@ public class GameScene extends Scene {
             } else {
                 // Update timer display
                 timerLabel.setText(String.format("Time: %.1f", timeRemaining));
+                
+                // Handle power-up timers
+                if (doublePointsActive) {
+                    doublePointsTimer += delta;
+                    updatePowerUpLabel();
+                    
+                    if (doublePointsTimer >= DOUBLE_POINTS_DURATION) {
+                        doublePointsActive = false;
+                        updatePowerUpLabel();
+                        System.out.println("Double Points expired!");
+                    }
+                }
                 
                 // Update player movement using the new input system
                 for (Entity entity : entityManager.getEntities()) {
@@ -247,8 +274,50 @@ public class GameScene extends Scene {
      * @param points The points to add
      */
     public void addScore(int points) {
-        playerScore += points;
+        // Double the points if the power-up is active
+        int actualPoints = doublePointsActive ? points * 2 : points;
+        playerScore += actualPoints;
         scoreLabel.setText("Score: " + playerScore);
+        
+        // Show a visual indicator of the points gained
+        if (doublePointsActive) {
+            System.out.println("Double points bonus! Added " + actualPoints + " points!");
+        }
+    }
+    
+    /**
+     * Activates double points for a fixed duration
+     */
+    public void activateDoublePoints() {
+        doublePointsActive = true;
+        doublePointsTimer = 0;
+        updatePowerUpLabel();
+        System.out.println("Double Points activated!");
+    }
+
+    /**
+     * Extends the game time by the specified amount
+     * @param seconds The number of seconds to add
+     */
+    public void extendGameTime(float seconds) {
+        gameTimer = Math.max(0, gameTimer - seconds); // Subtract from timer to extend time
+        updatePowerUpLabel();
+        System.out.println("Game time extended by " + seconds + " seconds!");
+    }
+
+    /**
+     * Updates the power-up label to show active effects
+     */
+    private void updatePowerUpLabel() {
+        StringBuilder labelText = new StringBuilder();
+        
+        if (doublePointsActive) {
+            labelText.append("DOUBLE POINTS! ");
+            float remaining = DOUBLE_POINTS_DURATION - doublePointsTimer;
+            labelText.append(String.format("(%.1fs)", remaining));
+        }
+        
+        powerUpLabel.setText(labelText.toString()); // This will set to empty string if no power-ups active
     }
     
     /**
@@ -256,6 +325,11 @@ public class GameScene extends Scene {
      */
     private void endGame() {
         gameActive = false;
+        
+        // Clear power-up status
+        doublePointsActive = false;
+        doublePointsTimer = 0;
+        powerUpLabel.setText(""); // Clear the power-up label text
         
         // Save the score to high scores if not already done
         if (!scoreSaved) {
@@ -295,6 +369,9 @@ public class GameScene extends Scene {
         gameTimer = 0;
         playerScore = 0;
         scoreSaved = false;
+        doublePointsActive = false;
+        doublePointsTimer = 0;
+        updatePowerUpLabel(); // This will clear the power-up label
         
         // Reset UI
         scoreLabel.setText("Score: 0");
