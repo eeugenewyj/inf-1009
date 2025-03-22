@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -43,6 +44,7 @@ public class GameScene extends Scene {
     private boolean gameActive = true;
     
     // Game over elements
+    private Table gameOverTable; // Container for game over UI elements
     private Label gameOverLabel;
     private Label finalScoreLabel;
     private Label highScoreLabel; // New label for high score notification
@@ -94,43 +96,38 @@ public class GameScene extends Scene {
         scoreLabel = new Label("Score: 0", skin);
         scoreLabel.setPosition(20, Gdx.graphics.getHeight() - 40);
         scoreLabel.setFontScale(1.5f);
+        scoreLabel.setColor(Color.WHITE); // White for better visibility
         
         // Set up timer label
         timerLabel = new Label("Time: 20.0", skin);
         timerLabel.setPosition(20, Gdx.graphics.getHeight() - 80);
         timerLabel.setFontScale(1.5f);
+        timerLabel.setColor(Color.WHITE); // White for better visibility
         
-        // Set up game over elements (initially hidden)
+        // Create game over table for centered layout
+        gameOverTable = new Table();
+        gameOverTable.setFillParent(true);
+        gameOverTable.setVisible(false);
+        
+        // Set up game over elements
         gameOverLabel = new Label("GAME OVER", skin);
         gameOverLabel.setFontScale(2.5f);
-        gameOverLabel.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f + 50);
         gameOverLabel.setAlignment(Align.center);
-        gameOverLabel.setVisible(false);
+        gameOverLabel.setColor(Color.RED); // Bright red for game over text
         
         finalScoreLabel = new Label("Final Score: 0", skin);
-        finalScoreLabel.setFontScale(2f);
-        finalScoreLabel.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f);
+        finalScoreLabel.setFontScale(2.0f);
         finalScoreLabel.setAlignment(Align.center);
-        finalScoreLabel.setVisible(false);
+        finalScoreLabel.setColor(Color.CYAN); // Bright cyan for better visibility
         
         // New high score label
         highScoreLabel = new Label("NEW HIGH SCORE!", skin);
         highScoreLabel.setFontScale(1.5f);
-        highScoreLabel.setColor(Color.YELLOW);
-        highScoreLabel.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 35);
+        highScoreLabel.setColor(Color.GOLD); // Brighter gold color for high score
         highScoreLabel.setAlignment(Align.center);
-        highScoreLabel.setVisible(false);
         
         restartButton = new TextButton("Play Again", skin);
-        restartButton.setSize(200, 50);
-        restartButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 90);
-        restartButton.setVisible(false);
-        
-        homeButton = new TextButton("Main Menu", skin);
-        homeButton.setSize(200, 50);
-        homeButton.setPosition(Gdx.graphics.getWidth() / 2f - 100, Gdx.graphics.getHeight() / 2f - 160);
-        homeButton.setVisible(false);
-        
+        restartButton.getLabel().setColor(Color.WHITE); // Ensure text is white
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -138,22 +135,30 @@ public class GameScene extends Scene {
             }
         });
         
+        homeButton = new TextButton("Main Menu", skin);
+        homeButton.getLabel().setColor(Color.WHITE); // Ensure text is white
         homeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 sceneManager.setScene("home");
             }
         });
+        
+        // Add elements to the game over table
+        gameOverTable.add(gameOverLabel).padBottom(30).row();
+        gameOverTable.add(finalScoreLabel).padBottom(20).row();
+        gameOverTable.add(highScoreLabel).padBottom(30).row();
+        gameOverTable.add(restartButton).size(200, 50).padBottom(20).row();
+        gameOverTable.add(homeButton).size(200, 50).row();
+        
+        // Initially hide the high score label
+        highScoreLabel.setVisible(false);
 
         // Add UI elements to stage
         stage.addActor(pauseButton);
         stage.addActor(scoreLabel);
         stage.addActor(timerLabel);
-        stage.addActor(gameOverLabel);
-        stage.addActor(finalScoreLabel);
-        stage.addActor(highScoreLabel);
-        stage.addActor(restartButton);
-        stage.addActor(homeButton);
+        stage.addActor(gameOverTable);
 
         initializeGame();
     }
@@ -274,11 +279,8 @@ public class GameScene extends Scene {
         }
         
         // Update game over UI
-        gameOverLabel.setVisible(true);
         finalScoreLabel.setText("Final Score: " + playerScore);
-        finalScoreLabel.setVisible(true);
-        restartButton.setVisible(true);
-        homeButton.setVisible(true);
+        gameOverTable.setVisible(true);
         
         // Hide game UI
         pauseButton.setVisible(false);
@@ -299,11 +301,8 @@ public class GameScene extends Scene {
         timerLabel.setText("Time: " + GAME_DURATION);
         
         // Hide game over UI
-        gameOverLabel.setVisible(false);
-        finalScoreLabel.setVisible(false);
+        gameOverTable.setVisible(false);
         highScoreLabel.setVisible(false);
-        restartButton.setVisible(false);
-        homeButton.setVisible(false);
         
         // Show game UI
         pauseButton.setVisible(true);

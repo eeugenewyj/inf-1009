@@ -42,21 +42,24 @@ public class HighScoresScene extends Scene {
         table = new Table();
         table.setFillParent(true);
         
-        // Create title
+        // Create title with improved visibility
         titleLabel = new Label("HIGH SCORES", skin);
         titleLabel.setFontScale(2.0f);
         titleLabel.setAlignment(Align.center);
+        titleLabel.setColor(Color.YELLOW); // Bright yellow for the title
         
-        // Create score labels (we'll update them later)
+        // Create score labels with improved visibility
         scoreLabels = new Label[MAX_SCORES];
         for (int i = 0; i < MAX_SCORES; i++) {
             scoreLabels[i] = new Label("", skin);
             scoreLabels[i].setFontScale(1.5f);
             scoreLabels[i].setAlignment(Align.center);
+            scoreLabels[i].setColor(Color.WHITE); // White for better visibility
         }
         
         // Create back button
         backButton = new TextButton("Back", skin);
+        backButton.getLabel().setColor(Color.WHITE); // Ensure button text is white
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

@@ -1,6 +1,5 @@
 package com.mygdx.game;
 
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Rectangle;
 import java.util.ArrayList;
@@ -137,85 +136,88 @@ public class GameEntityManager extends AbstractEntityManager {
         addEntity(new Tree(x, y));
     }
 
-    // Spawn multiple trees in the middle row of the screen
-// Spawn multiple trees in the middle row of the screen, avoiding player position
-public void spawnTrees(int count) {
-    // Get screen dimensions
-    float screenWidth = Gdx.graphics.getWidth();
-    float screenHeight = Gdx.graphics.getHeight();
-    
-    // Define middle row area (middle third of the screen)
-    float middleYMin = screenHeight / 3;
-    float middleYMax = screenHeight * 2 / 3;
-    
-    // Find player position to avoid spawning trees on top of them
-    Player player = null;
-    for (Entity entity : getEntities()) {
-        if (entity instanceof Player) {
-            player = (Player) entity;
-            break;
-        }
-    }
-    
-    // Buffer distance to keep between trees and player
-    float safeDistance = 70; // Adjust as needed
-    
-    // Keep track of placed trees to avoid overlapping trees
-    List<Rectangle> placedTreeBounds = new ArrayList<>();
-    
-    // Try to place each tree
-    int treesPlaced = 0;
-    int maxAttempts = 100; // Prevent infinite loops
-    
-    for (int i = 0; i < count; i++) {
-        boolean validPosition = false;
-        int attempts = 0;
-        float x = 0, y = 0;
+    // Updated method to spawn trees anywhere on screen except near the player
+    public void spawnTrees(int count) {
+        // Get screen dimensions
+        float screenWidth = Gdx.graphics.getWidth();
+        float screenHeight = Gdx.graphics.getHeight();
         
-        while (!validPosition && attempts < maxAttempts) {
-            // Generate random position in the middle row
-            x = MathUtils.random(50, screenWidth - 50);
-            y = MathUtils.random(middleYMin, middleYMax);
-            
-            // Create a rectangle for this potential tree position
-            Rectangle potentialTreeBounds = new Rectangle(x, y, 50, 50);
-            
-            // Assume position is valid until proven otherwise
-            validPosition = true;
-            
-            // Check if too close to player
-            if (player != null) {
-                float playerDistance = Vector2.dst(x, y, player.getX(), player.getY());
-                if (playerDistance < safeDistance) {
-                    validPosition = false;
-                    attempts++;
-                    continue;
-                }
+        // Find player position to avoid spawning trees on top of them
+        Player player = null;
+        for (Entity entity : getEntities()) {
+            if (entity instanceof Player) {
+                player = (Player) entity;
+                break;
             }
-            
-            // Check if overlapping with existing trees
-            for (Rectangle existingTree : placedTreeBounds) {
-                if (existingTree.overlaps(potentialTreeBounds)) {
-                    validPosition = false;
-                    break;
-                }
-            }
-            
-            attempts++;
         }
         
-        // If we found a valid position, place the tree
-        if (validPosition) {
-            Tree tree = new Tree(x, y);
-            tree.setLifetime(TREE_LIFETIME);
-            addEntity(tree);
-            placedTreeBounds.add(new Rectangle(x, y, 50, 50));
-            treesPlaced++;
+        // Buffer distance to keep between trees and player
+        float safeDistance = 100; // Increased for better gameplay experience
+        
+        // Keep track of placed trees to avoid overlapping trees
+        List<Rectangle> placedTreeBounds = new ArrayList<>();
+        
+        // Try to place each tree
+        int treesPlaced = 0;
+        int maxAttempts = 100; // Prevent infinite loops
+        
+        for (int i = 0; i < count; i++) {
+            boolean validPosition = false;
+            int attempts = 0;
+            float x = 0, y = 0;
+            
+            while (!validPosition && attempts < maxAttempts) {
+                // Generate random position ANYWHERE on screen
+                x = MathUtils.random(50, screenWidth - 50);
+                y = MathUtils.random(50, screenHeight - 50);
+                
+                // Create a rectangle for this potential tree position
+                Rectangle potentialTreeBounds = new Rectangle(x, y, 50, 50);
+                
+                // Assume position is valid until proven otherwise
+                validPosition = true;
+                
+                // Check if too close to player
+                if (player != null) {
+                    float playerDistance = Vector2.dst(x, y, player.getX(), player.getY());
+                    if (playerDistance < safeDistance) {
+                        validPosition = false;
+                        attempts++;
+                        continue;
+                    }
+                }
+                
+                // Check if too close to ball rows
+                for (Entity entity : getEntities()) {
+                    if (entity instanceof Ball && potentialTreeBounds.overlaps(entity.getBoundingBox())) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+                
+                // Check if overlapping with existing trees
+                for (Rectangle existingTree : placedTreeBounds) {
+                    if (existingTree.overlaps(potentialTreeBounds)) {
+                        validPosition = false;
+                        break;
+                    }
+                }
+                
+                attempts++;
+            }
+            
+            // If we found a valid position, place the tree
+            if (validPosition) {
+                Tree tree = new Tree(x, y);
+                tree.setLifetime(TREE_LIFETIME);
+                addEntity(tree);
+                placedTreeBounds.add(new Rectangle(x, y, 50, 50));
+                treesPlaced++;
+            }
         }
+        
+        System.out.println("Spawned " + treesPlaced + " trees throughout the screen");
     }
-    
-    System.out.println("Spawned " + treesPlaced + " trees in middle row");
-}
 
     public void updateEntities(float deltaTime) {
         // Removes inactive entities from list

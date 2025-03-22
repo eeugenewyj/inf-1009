@@ -15,6 +15,9 @@ public class Player extends MovableEntity {
     private Texture texture;
     private IInputManager inputManager; // Injected Input Manager
     private GameEntityManager entityManager; // Reference to entity manager
+    
+    // Define the movement boundary - player cannot go above this line
+    private final float MAX_Y_POSITION;
 
     public Player(float x, float y, float speed, IInputManager inputManager, GameEntityManager entityManager) {
         super(x, y, speed);
@@ -25,6 +28,10 @@ public class Player extends MovableEntity {
         this.previousY = y;
         this.width = 50; // Make sure width and height are explicitly set
         this.height = 50;
+        
+        // Set the movement boundary at 3/4 of the screen height
+        // This prevents the player from entering the top quarter of the screen
+        this.MAX_Y_POSITION = Gdx.graphics.getHeight() * 0.75f - this.height;
     }
 
     @Override
@@ -65,8 +72,9 @@ public class Player extends MovableEntity {
         // Try moving vertically
         if (vertical != 0) {
             float newY = this.y + speed * deltaTime * vertical;
-            // Ensure entity stays within screen bounds
-            newY = Math.max(0, Math.min(newY, Gdx.graphics.getHeight() - height));
+            
+            // Ensure player stays within vertical bounds (bottom of screen to MAX_Y_POSITION)
+            newY = Math.max(0, Math.min(newY, MAX_Y_POSITION));
             
             // Check if new position would cause a tree collision
             if (!wouldCollideWithTree(this.x, newY)) {
@@ -107,7 +115,9 @@ public class Player extends MovableEntity {
         this.previousX = this.x;
         this.previousY = this.y;
         this.x = x;
-        this.y = y;
+        
+        // Apply the vertical movement restriction when setting position
+        this.y = Math.min(y, MAX_Y_POSITION);
     }
     
     // Set entity manager after creation if needed
