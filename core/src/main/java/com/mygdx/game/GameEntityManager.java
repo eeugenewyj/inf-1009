@@ -145,6 +145,9 @@ public class GameEntityManager extends AbstractEntityManager {
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
         
+        // Calculate the top quarter boundary - spikes won't spawn above this line
+        float topQuarterBoundary = screenHeight * 0.75f;
+        
         // Find player position to avoid spawning trees on top of them
         Player player = null;
         for (Entity entity : getEntities()) {
@@ -170,9 +173,9 @@ public class GameEntityManager extends AbstractEntityManager {
             float x = 0, y = 0;
             
             while (!validPosition && attempts < maxAttempts) {
-                // Generate random position ANYWHERE on screen
+                // Generate random position but restrict Y to be below the top quarter
                 x = MathUtils.random(50, screenWidth - 50);
-                y = MathUtils.random(50, screenHeight - 50);
+                y = MathUtils.random(50, topQuarterBoundary - 50); // Keep below top quarter boundary
                 
                 // Create a rectangle for this potential tree position
                 Rectangle potentialTreeBounds = new Rectangle(x, y, 50, 50);
@@ -219,7 +222,7 @@ public class GameEntityManager extends AbstractEntityManager {
             }
         }
         
-        System.out.println("Spawned " + treesPlaced + " trees throughout the screen");
+        System.out.println("Spawned " + treesPlaced + " spikes below the top quarter of the screen");
     }
     
     // Method to spawn a power-up

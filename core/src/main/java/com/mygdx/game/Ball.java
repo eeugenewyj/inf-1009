@@ -2,9 +2,9 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.game.AbstractEntity.MovableEntity;
 import com.mygdx.game.AbstractEntity.iCollidable;
 
@@ -19,6 +19,7 @@ public class Ball extends MovableEntity {
     
     private boolean collected = false;
     private boolean isFalling = false;
+    private Texture balloonTexture;
 
     private static final int NUM_BALLS = 8;
     private static final float GAP_RATIO = 0.1f;
@@ -26,9 +27,15 @@ public class Ball extends MovableEntity {
     private static final float BALL_WIDTH = SCREEN_WIDTH / (NUM_BALLS + (NUM_BALLS - 1) * GAP_RATIO);
     private static final float BALL_RADIUS = BALL_WIDTH / 2;
 
-    private ShapeRenderer shapeRenderer;
     private BitmapFont font;
     private static final Random random = new Random();
+    
+    // Different balloon colors for visual variety
+    private static final Color[] BALLOON_COLORS = {
+        Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, 
+        Color.PINK, Color.CYAN, Color.ORANGE, Color.PURPLE
+    };
+    private Color balloonColor;
 
     public Ball(float x, float y) {
         super(x, y, 100); // Falling speed
@@ -44,9 +51,15 @@ public class Ball extends MovableEntity {
             this.displayText = String.valueOf(value);
         }
         
-        shapeRenderer = new ShapeRenderer();
+        // Choose a random color for this balloon
+        balloonColor = BALLOON_COLORS[random.nextInt(BALLOON_COLORS.length)];
+        
+        // Load balloon texture
+        balloonTexture = new Texture(Gdx.files.internal("balloon.png"));
+        
         font = new BitmapFont();
         font.setColor(Color.BLACK);
+        font.getData().setScale(1.1f); // Slightly larger font for better visibility
     }
 
     /**
@@ -96,6 +109,9 @@ public class Ball extends MovableEntity {
         
         float delta = Gdx.graphics.getDeltaTime();
         y -= speed * delta;
+        
+        // Add a small horizontal wobble for balloon effect
+        x += Math.sin(y * 0.05) * 0.5f;
     }
 
     @Override
@@ -110,16 +126,11 @@ public class Ball extends MovableEntity {
 
     @Override
     public void draw(SpriteBatch batch) {
-        batch.end(); // End the sprite batch before using ShapeRenderer
-
-        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.WHITE);
-        shapeRenderer.circle(x + BALL_RADIUS, y + BALL_RADIUS, BALL_RADIUS);
-        shapeRenderer.end();
-
-        batch.begin(); // Restart batch for font rendering
-
+        // Draw the balloon texture with the selected color
+        batch.setColor(balloonColor);
+        batch.draw(balloonTexture, x, y, BALL_WIDTH, BALL_WIDTH * 1.2f); // Slightly taller for balloon shape
+        batch.setColor(Color.WHITE); // Reset color
+        
         // Center the text for proper display
         float textX, textY;
         
@@ -127,24 +138,42 @@ public class Ball extends MovableEntity {
         if (usesMathOperation) {
             textX = x + BALL_RADIUS - 15;  // Wider expression needs more offset
         } else {
-            textX = x + BALL_RADIUS - 10;  // Single digit needs less offset
+            textX = x + BALL_RADIUS - 8;  // Single digit needs less offset
         }
         
-        textY = y + BALL_RADIUS + 10;
+        textY = y + BALL_RADIUS + 5;
         
-        // Draw the text (number or math expression)
+        // Choose text color based on balloon color for better contrast
+        if (balloonColor.equals(Color.BLUE) || 
+            balloonColor.equals(Color.PURPLE) || 
+            balloonColor.equals(Color.RED) || 
+            balloonColor.equals(Color.GREEN)) {
+            // Use white text on dark balloons
+            font.setColor(Color.WHITE);
+        } else {
+            // Use black text on light balloons
+            font.setColor(Color.BLACK);
+        }
+        
+        // Add a slight outline effect for better readability
+        // First draw the text slightly offset in each direction with black/white
+        Color outlineColor = font.getColor().equals(Color.WHITE) ? Color.BLACK : Color.WHITE;
+        
+        // Save original color
+        Color originalColor = new Color(font.getColor());
+        
+        // Draw outline
+        font.setColor(outlineColor);
+        // Small offsets for outline effect
+        font.draw(batch, displayText, textX - 1, textY - 1);
+        font.draw(batch, displayText, textX + 1, textY - 1);
+        font.draw(batch, displayText, textX - 1, textY + 1);
+        font.draw(batch, displayText, textX + 1, textY + 1);
+        
+        // Restore original color and draw the main text
+        font.setColor(originalColor);
         font.draw(batch, displayText, textX, textY);
     }
-
-    public float getPreviousX() {
-        return previousX;
-    }
-    
-    // Method to get previous Y position
-    public float getPreviousY() {
-        return previousY;
-    }
-    
 
     @Override
     public void handleCollision(iCollidable other) {
@@ -156,8 +185,12 @@ public class Ball extends MovableEntity {
 
     @Override
     public void dispose() {
-        shapeRenderer.dispose();
-        font.dispose();
+        if (balloonTexture != null) {
+            balloonTexture.dispose();
+        }
+        if (font != null) {
+            font.dispose();
+        }
     }
 
     public static float getBallRadius() {
