@@ -88,7 +88,12 @@ public class Ball extends MovableEntity {
         return value;
     }
 
+    @Override
     public void moveAIControlled() {
+        // Store current position before moving
+        this.previousX = this.x;
+        this.previousY = this.y;
+        
         float delta = Gdx.graphics.getDeltaTime();
         y -= speed * delta;
     }
@@ -130,6 +135,16 @@ public class Ball extends MovableEntity {
         // Draw the text (number or math expression)
         font.draw(batch, displayText, textX, textY);
     }
+
+    public float getPreviousX() {
+        return previousX;
+    }
+    
+    // Method to get previous Y position
+    public float getPreviousY() {
+        return previousY;
+    }
+    
 
     @Override
     public void handleCollision(iCollidable other) {
