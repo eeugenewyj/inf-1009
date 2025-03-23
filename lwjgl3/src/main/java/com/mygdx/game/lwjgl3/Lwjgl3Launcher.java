@@ -29,7 +29,7 @@ public class Lwjgl3Launcher {
         configuration.setResizable(false);
         
         // Window icons
-        configuration.setWindowIcon("game-icon.png");
+        configuration.setWindowIcon("game-icon128.png", "game-icon64.png", "game-icon32.png", "game-icon16.png");
         return configuration;
     }
 }
