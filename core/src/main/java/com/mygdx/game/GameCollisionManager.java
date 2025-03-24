@@ -10,17 +10,19 @@ import com.mygdx.game.AbstractEntity.IEntityManager;
 import com.mygdx.game.AbstractIO.Audio;
 
 public class GameCollisionManager extends AbstractCollisionManager {
-    private final Audio audio = Audio.getInstance();
+    private Audio audio;
     private GameScene gameScene; // Reference to GameScene for score updates
     private Circle tempCircle = new Circle(); // Reusable circle for collision detection
 
     public GameCollisionManager(IEntityManager entityManager) {
         super(entityManager);
+        this.audio = Audio.getInstance();
     }
     
-    // Additional constructor that takes a reference to the GameScene
-    public GameCollisionManager(IEntityManager entityManager, GameScene gameScene) {
+    // Constructor with GameScene reference
+    public GameCollisionManager(GameEntityManager entityManager, GameScene gameScene) {
         super(entityManager);
+        this.audio = Audio.getInstance();
         this.gameScene = gameScene;
     }
 
@@ -101,47 +103,39 @@ public class GameCollisionManager extends AbstractCollisionManager {
                 float effectY = collidedPowerUp.getY();
                 
                 // Process power-up effect
-                switch (collidedPowerUp.getType()) {
-                    case PowerUp.TYPE_DOUBLE_POINTS:
-                        if (gameScene != null) {
+                if (gameScene != null) {
+                    switch (collidedPowerUp.getType()) {
+                        case PowerUp.TYPE_DOUBLE_POINTS:
                             gameScene.activateDoublePoints();
                             // Add visual effect for double points
                             PowerUpEffect effect = PowerUpEffect.createDoublePointsEffect(effectX, effectY);
                             ((GameEntityManager) entityManager).addEntity(effect);
-                        }
-                        break;
-                    case PowerUp.TYPE_EXTEND_TIME:
-                        if (gameScene != null) {
+                            break;
+                        case PowerUp.TYPE_EXTEND_TIME:
                             gameScene.extendGameTime(5f); // Add 5 seconds
                             // Add visual effect for time extension
-                            PowerUpEffect effect = PowerUpEffect.createTimeExtensionEffect(effectX, effectY);
-                            ((GameEntityManager) entityManager).addEntity(effect);
-                        }
-                        break;
-                    case PowerUp.TYPE_REDUCE_TIME:
-                        if (gameScene != null) {
+                            PowerUpEffect timeEffect = PowerUpEffect.createTimeExtensionEffect(effectX, effectY);
+                            ((GameEntityManager) entityManager).addEntity(timeEffect);
+                            break;
+                        case PowerUp.TYPE_REDUCE_TIME:
                             gameScene.reduceGameTime(3f); // Subtract 3 seconds
                             // Add visual effect for time reduction
-                            PowerUpEffect effect = PowerUpEffect.createEffect(effectX, effectY, "-3 SECONDS!", Color.RED, 2.0f);
-                            ((GameEntityManager) entityManager).addEntity(effect);
-                        }
-                        break;
-                    case PowerUp.TYPE_INVERT_CONTROLS:
-                        if (gameScene != null) {
+                            PowerUpEffect reduceTimeEffect = PowerUpEffect.createEffect(effectX, effectY, "-3 SECONDS!", Color.RED, 2.0f);
+                            ((GameEntityManager) entityManager).addEntity(reduceTimeEffect);
+                            break;
+                        case PowerUp.TYPE_INVERT_CONTROLS:
                             gameScene.activateInvertControls();
                             // Add visual effect for inverted controls
-                            PowerUpEffect effect = PowerUpEffect.createEffect(effectX, effectY, "CONTROLS INVERTED!", Color.PURPLE, 2.0f);
-                            ((GameEntityManager) entityManager).addEntity(effect);
-                        }
-                        break;
-                    case PowerUp.TYPE_SLOW_PLAYER:
-                        if (gameScene != null) {
+                            PowerUpEffect invertEffect = PowerUpEffect.createEffect(effectX, effectY, "CONTROLS INVERTED!", Color.PURPLE, 2.0f);
+                            ((GameEntityManager) entityManager).addEntity(invertEffect);
+                            break;
+                        case PowerUp.TYPE_SLOW_PLAYER:
                             gameScene.activateSlowPlayer();
                             // Add visual effect for slow player
-                            PowerUpEffect effect = PowerUpEffect.createEffect(effectX, effectY, "SPEED REDUCED!", Color.ORANGE, 2.0f);
-                            ((GameEntityManager) entityManager).addEntity(effect);
-                        }
-                        break;
+                            PowerUpEffect slowEffect = PowerUpEffect.createEffect(effectX, effectY, "SPEED REDUCED!", Color.ORANGE, 2.0f);
+                            ((GameEntityManager) entityManager).addEntity(slowEffect);
+                            break;
+                    }
                 }
                 
                 // Mark power-up as collected

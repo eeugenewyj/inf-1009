@@ -19,6 +19,7 @@ public class GameEntityManager extends AbstractEntityManager {
 
     private int rowsSpawned = 0; // Tracks the number of spawned rows
     private GameScene gameScene; // Reference to GameScene
+    private IInputManager inputManager; // Store reference to input manager for player
 
     private float treeSpawnTimer = 0; // Timer to track tree spawn intervals
     private static final float TREE_LIFETIME = 5f; // Trees disappear after 5 seconds
@@ -38,12 +39,22 @@ public class GameEntityManager extends AbstractEntityManager {
         this.gameScene = gameScene;
     }
 
+    /**
+     * Sets the input manager for player movement
+     */
+    public void setInputManager(IInputManager inputManager) {
+        this.inputManager = inputManager;
+    }
+
     public void spawnPlayer(float x, float y, float speed, IInputManager inputManager) {
-        Player player = new Player(x, y, speed, inputManager, this); // Pass this entity manager
+        // Use either the provided input manager or the class-level one
+        IInputManager inputToUse = inputManager != null ? inputManager : this.inputManager;
+        Player player = new Player(x, y, speed, inputToUse, this); // Pass this entity manager
         addEntity(player);
     }
 
     public void spawnBallsRow() {
+        // EXACTLY THE SAME AS ORIGINAL
         float startX = 0;
         float topYPosition = Gdx.graphics.getHeight() + (Ball.getBallWidth() / 2); // Place it just outside the screen
 
@@ -60,6 +71,7 @@ public class GameEntityManager extends AbstractEntityManager {
 
     /* Makes all active balls fall down. */
     private void makeBallsFall() {
+        // EXACTLY THE SAME AS ORIGINAL
         for (Entity entity : getEntities()) {
             if (entity instanceof Ball) {
                 ((Ball) entity).moveAIControlled();
@@ -68,6 +80,7 @@ public class GameEntityManager extends AbstractEntityManager {
     }
 
     public void removeBallsRow(Ball collidedBall) {
+        // EXACTLY THE SAME AS ORIGINAL
         float rowY = collidedBall.getY(); // Get Y position of the collided ball
         
         // Just remove all balls in the same row
@@ -88,6 +101,7 @@ public class GameEntityManager extends AbstractEntityManager {
     }
 
     private void removeRowIfAtBottomAndSpawn() {
+        // EXACTLY THE SAME AS ORIGINAL
         float bottomThreshold = 0; // bottom of the screen
 
         List<Float> rowYs = new ArrayList<>();
@@ -119,6 +133,7 @@ public class GameEntityManager extends AbstractEntityManager {
 
     // Spawn player at bottom center
     public void spawnPlayers(int count, IInputManager inputManager) {
+        // EXACTLY THE SAME AS ORIGINAL
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
         int playerSize = 50; // Adjust based on actual player size
@@ -136,11 +151,13 @@ public class GameEntityManager extends AbstractEntityManager {
     }
 
     public void spawnTree(float x, float y) {
+        // EXACTLY THE SAME AS ORIGINAL
         addEntity(new Tree(x, y));
     }
 
     // Updated method to spawn trees anywhere on screen except near the player
     public void spawnTrees(int count) {
+        // EXACTLY THE SAME AS ORIGINAL
         // Get screen dimensions
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
@@ -227,6 +244,7 @@ public class GameEntityManager extends AbstractEntityManager {
     
     // Method to spawn a power-up
     public void spawnPowerUp() {
+        // EXACTLY THE SAME AS ORIGINAL
         float screenWidth = Gdx.graphics.getWidth();
         float topYPosition = Gdx.graphics.getHeight() + 20; // Just above screen
         
@@ -242,6 +260,7 @@ public class GameEntityManager extends AbstractEntityManager {
 
     @Override
     public void updateEntities(float deltaTime) {
+        // EXACTLY THE SAME AS ORIGINAL
         // Removes inactive entities from list
         entities.removeIf(entity -> {
             if (!entity.isActive()) {
@@ -279,6 +298,7 @@ public class GameEntityManager extends AbstractEntityManager {
     }
 
     private void removeExpiredTrees(float deltaTime) {
+        // EXACTLY THE SAME AS ORIGINAL
         for (Entity entity : getEntities()) {
             if (entity instanceof Tree) {
                 Tree tree = (Tree) entity;
@@ -292,13 +312,14 @@ public class GameEntityManager extends AbstractEntityManager {
 
     @Override
     public void dispose() {
+        // EXACTLY THE SAME AS ORIGINAL
         for (Entity entity : getEntities()) {
             entity.dispose();
         }
     }
     
-    // Set GameScene reference after initialization if needed
-    public void setGameScene(GameScene gameScene) {
-        this.gameScene = gameScene;
+    // Get GameScene reference for collision manager
+    public GameScene getGameScene() {
+        return gameScene;
     }
 }

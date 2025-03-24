@@ -91,4 +91,5 @@ public class PowerUpEffect extends Entity {
     public static PowerUpEffect createEffect(float x, float y, String text, Color color, float duration) {
         return new PowerUpEffect(x, y, text, color, duration);
     }
+    
 }
