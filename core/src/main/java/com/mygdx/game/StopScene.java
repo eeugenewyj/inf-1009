@@ -72,7 +72,7 @@ public class StopScene extends Scene {
                 shouldRestart = true; // Set flag to restart on next show
                 audio.stopMusic(); // Stop the current music
                 audio.playMusic(); // Restart the music
-                sceneManager.setScene("play"); // Switch to play scene
+                sceneManager.setScene("play"); // Switch to play scene directly
             }
         });
 
@@ -82,7 +82,7 @@ public class StopScene extends Scene {
                 System.out.println("Back to Main Menu Button Clicked! Returning to Main Menu...");
                 audio.stopMusic(); // Stop the current music
                 audio.playMusic(); // Restart the music
-                sceneManager.setScene("home"); // Switch back to the home scene
+                sceneManager.setScene("home"); // Switch back to the home scene directly
             }
         });
 

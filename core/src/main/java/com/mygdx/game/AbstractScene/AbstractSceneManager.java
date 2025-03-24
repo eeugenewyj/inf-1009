@@ -31,6 +31,15 @@ public abstract class AbstractSceneManager implements ISceneManager {
         return currentScene;
     }
 
+    /**
+     * Gets a scene by its name
+     * @param name the name of the scene
+     * @return the scene, or null if not found
+     */
+    public Scene getScene(String name) {
+        return scenes.get(name);
+    }
+
     public final void renderScene(float deltaTime) {
         if (currentScene != null) {
             currentScene.render(deltaTime);

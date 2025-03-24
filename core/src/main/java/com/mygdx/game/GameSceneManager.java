@@ -16,14 +16,13 @@ public class GameSceneManager extends AbstractSceneManager {
         backgroundMusic = Audio.getInstance("Music/MainScreenMusic.mp3", 0.5f, true);
     }
 
+    @Override
     public void initializeScenes() {
         addScene("home", SceneFactory.createScene("home", this, inputManager, outputManager));
         addScene("play", SceneFactory.createScene("play", this, inputManager, outputManager));
         addScene("stop", SceneFactory.createScene("stop", this, inputManager, outputManager));
         addScene("settings", SceneFactory.createScene("settings", this, inputManager, outputManager));
         addScene("highscores", SceneFactory.createScene("highscores", this, inputManager, outputManager));
-        
-        // Add the new difficulty selection scene
         addScene("difficulty", SceneFactory.createScene("difficulty", this, inputManager, outputManager));
         
         setScene("home");

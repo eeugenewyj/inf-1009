@@ -39,7 +39,7 @@ public class GameScene extends Scene {
     
     // Added for timer
     private float gameTimer = 0;
-    private static final float GAME_DURATION = 20f; // 20 seconds
+    private static final float GAME_DURATION = 2f; // 20 seconds
     private Label timerLabel;
     private boolean gameActive = true;
     
@@ -160,6 +160,7 @@ public class GameScene extends Scene {
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                // Directly restart the game without showing a math fact
                 restartGame();
             }
         });
@@ -169,6 +170,7 @@ public class GameScene extends Scene {
         homeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                // Directly go to home without showing a math fact
                 sceneManager.setScene("home");
             }
         });
@@ -441,7 +443,7 @@ public class GameScene extends Scene {
     }
     
     /**
-     * Ends the game and shows the game over screen
+     * Ends the game and shows a math fact before the game over screen
      */
     private void endGame() {
         gameActive = false;
@@ -474,18 +476,55 @@ public class GameScene extends Scene {
             System.out.println("Game difficulty: " + GameSettings.getDifficultyName());
             System.out.println("Is new best score: " + isNewBestScore);
             
-            // Only show NEW HIGH SCORE label if it's a truly new best score
+            // Setup game over UI (but don't show it yet)
+            finalScoreLabel.setText("Final Score: " + playerScore);
             highScoreLabel.setVisible(isNewBestScore);
             
             scoreSaved = true;
+            
+            // If it's a new high score, add another button to go directly to high scores
+            if (isNewBestScore) {
+                // Check if the button already exists to avoid duplicates
+                boolean hasViewScoresButton = false;
+                for (com.badlogic.gdx.scenes.scene2d.Actor actor : gameOverTable.getChildren()) {
+                    if (actor instanceof TextButton && ((TextButton)actor).getText().toString().equals("View High Scores")) {
+                        hasViewScoresButton = true;
+                        break;
+                    }
+                }
+                
+                if (!hasViewScoresButton) {
+                    TextButton viewScoresButton = new TextButton("View High Scores", skin);
+                    viewScoresButton.getLabel().setColor(Color.GOLD);
+                    
+                    viewScoresButton.addListener(new ClickListener() {
+                        @Override
+                        public void clicked(InputEvent event, float x, float y) {
+                            // Directly go to high scores without showing a math fact
+                            sceneManager.setScene("highscores");
+                        }
+                    });
+                    
+                    // Add to the game over table after the other buttons
+                    gameOverTable.add(viewScoresButton).size(200, 50).padTop(20).row();
+                }
+            }
         }
-        
-        // Update game over UI
-        finalScoreLabel.setText("Final Score: " + playerScore);
-        gameOverTable.setVisible(true);
         
         // Hide game UI
         pauseButton.setVisible(false);
+        
+        // Create a new MathFactsPopup with a fresh random fact
+        MathFactsPopup popup = new MathFactsPopup(skin, () -> {
+            // This will run after the popup is closed
+            gameOverTable.setVisible(true);
+        });
+        
+        // Explicitly refresh the fact to get a new random one
+        popup.refreshFact();
+        
+        // Show the popup
+        popup.show(stage);
     }
     
     /**

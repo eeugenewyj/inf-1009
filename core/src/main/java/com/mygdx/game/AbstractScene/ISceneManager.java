@@ -11,4 +11,3 @@ public interface ISceneManager {
     void renderScene(float deltaTime);
     void dispose();
 }
-
