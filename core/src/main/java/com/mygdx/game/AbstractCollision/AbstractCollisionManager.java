@@ -20,6 +20,3 @@ public abstract class AbstractCollisionManager implements ICollisionManager {
 
     public abstract void dispose();
 }
-
-
-

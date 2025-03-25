@@ -4,4 +4,3 @@ public interface ICollisionManager {
     void detectCollisions();
     void dispose();
 }
-

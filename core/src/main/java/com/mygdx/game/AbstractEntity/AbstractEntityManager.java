@@ -41,4 +41,3 @@ public abstract class AbstractEntityManager implements IEntityManager {
 
     public abstract void dispose();
 }
-

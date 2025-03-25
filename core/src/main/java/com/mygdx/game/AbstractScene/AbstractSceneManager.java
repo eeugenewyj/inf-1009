@@ -50,4 +50,3 @@ public abstract class AbstractSceneManager implements ISceneManager {
 
     public abstract void dispose();
 }
-

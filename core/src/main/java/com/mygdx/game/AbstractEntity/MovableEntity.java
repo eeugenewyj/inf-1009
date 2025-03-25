@@ -1,3 +1,4 @@
+
 package com.mygdx.game.AbstractEntity;
 
 import com.badlogic.gdx.Gdx;
