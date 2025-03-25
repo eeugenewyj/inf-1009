@@ -39,7 +39,7 @@ public class GameScene extends Scene {
     
     // Added for timer
     private float gameTimer = 0;
-    private static final float GAME_DURATION = 2f; // 20 seconds
+    private static final float GAME_DURATION = 20f; // 20 seconds
     private Label timerLabel;
     private boolean gameActive = true;
     
