@@ -18,13 +18,12 @@ public class GameSceneManager extends AbstractSceneManager {
 
     @Override
     public void initializeScenes() {
-        addScene("home", SceneFactory.createScene("home", this, inputManager, outputManager));
-        addScene("play", SceneFactory.createScene("play", this, inputManager, outputManager));
-        addScene("stop", SceneFactory.createScene("stop", this, inputManager, outputManager));
-        addScene("settings", SceneFactory.createScene("settings", this, inputManager, outputManager));
-        addScene("highscores", SceneFactory.createScene("highscores", this, inputManager, outputManager));
-        addScene("difficulty", SceneFactory.createScene("difficulty", this, inputManager, outputManager));
-        
+        addScene("home", new MainMenuScene(this, inputManager, outputManager));
+        addScene("play", new GameScene(this, inputManager, outputManager));
+        addScene("stop", new StopScene(this, inputManager, outputManager));
+        addScene("settings", new SettingsScene(this, inputManager, outputManager));
+        addScene("highscores", new HighScoresScene(this, inputManager, outputManager));
+        addScene("difficulty", new DifficultySelectionScene(this, inputManager, outputManager));
         setScene("home");
     }
 
