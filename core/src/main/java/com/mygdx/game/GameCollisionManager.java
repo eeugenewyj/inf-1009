@@ -1,6 +1,5 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Circle;
@@ -96,52 +95,13 @@ public class GameCollisionManager extends AbstractCollisionManager {
             }
 
             if (collidedPowerUp != null) {
-                // Get the position where the effect should appear (near where the power-up was collected)
+                // Get the position where the effect should appear
                 float effectX = collidedPowerUp.getX();
                 float effectY = collidedPowerUp.getY();
                 
-                // Process power-up effect
-                switch (collidedPowerUp.getType()) {
-                    case PowerUp.TYPE_DOUBLE_POINTS:
-                        if (gameScene != null) {
-                            gameScene.activateDoublePoints();
-                            // Add visual effect for double points
-                            PowerUpEffect effect = PowerUpEffect.createDoublePointsEffect(effectX, effectY);
-                            ((GameEntityManager) entityManager).addEntity(effect);
-                        }
-                        break;
-                    case PowerUp.TYPE_EXTEND_TIME:
-                        if (gameScene != null) {
-                            gameScene.extendGameTime(5f); // Add 5 seconds
-                            // Add visual effect for time extension
-                            PowerUpEffect effect = PowerUpEffect.createTimeExtensionEffect(effectX, effectY);
-                            ((GameEntityManager) entityManager).addEntity(effect);
-                        }
-                        break;
-                    case PowerUp.TYPE_REDUCE_TIME:
-                        if (gameScene != null) {
-                            gameScene.reduceGameTime(3f); // Subtract 3 seconds
-                            // Add visual effect for time reduction
-                            PowerUpEffect effect = PowerUpEffect.createEffect(effectX, effectY, "-3 SECONDS!", Color.RED, 2.0f);
-                            ((GameEntityManager) entityManager).addEntity(effect);
-                        }
-                        break;
-                    case PowerUp.TYPE_INVERT_CONTROLS:
-                        if (gameScene != null) {
-                            gameScene.activateInvertControls();
-                            // Add visual effect for inverted controls
-                            PowerUpEffect effect = PowerUpEffect.createEffect(effectX, effectY, "CONTROLS INVERTED!", Color.PURPLE, 2.0f);
-                            ((GameEntityManager) entityManager).addEntity(effect);
-                        }
-                        break;
-                    case PowerUp.TYPE_SLOW_PLAYER:
-                        if (gameScene != null) {
-                            gameScene.activateSlowPlayer();
-                            // Add visual effect for slow player
-                            PowerUpEffect effect = PowerUpEffect.createEffect(effectX, effectY, "SPEED REDUCED!", Color.ORANGE, 2.0f);
-                            ((GameEntityManager) entityManager).addEntity(effect);
-                        }
-                        break;
+                // Process power-up effect through the GameScene's PowerUpManager
+                if (gameScene != null) {
+                    gameScene.processPowerUp(collidedPowerUp.getType(), effectX, effectY);
                 }
                 
                 // Mark power-up as collected
@@ -149,7 +109,7 @@ public class GameCollisionManager extends AbstractCollisionManager {
                 
                 // Play power-up sound effect - different sound for debuffs
                 if (collidedPowerUp.isDebuff()) {
-                    audio.playSoundEffect("debuff"); // Create this sound or use an existing one
+                    audio.playSoundEffect("debuff");
                 } else {
                     audio.playSoundEffect("powerup");
                 }

@@ -38,10 +38,8 @@ public class GameScene extends Scene {
     private Label scoreLabel;
     
     // Added for timer
-    private float gameTimer = 0;
-    private static final float GAME_DURATION = 20f; // 20 seconds
-    private Label timerLabel;
     private boolean gameActive = true;
+    private Label timerLabel;
     
     // Game over elements
     private Table gameOverTable; // Container for game over UI elements
@@ -54,35 +52,17 @@ public class GameScene extends Scene {
     // Flag to track if this is a new game or resume
     private boolean isFirstLoad = true;
     
-    // Flag to track if the current game score has been saved
-    private boolean scoreSaved = false;
-    
     // Power-up related fields
-    private boolean doublePointsActive = false;
-    private float doublePointsTimer = 0;
-    private static final float DOUBLE_POINTS_DURATION = 3f; // 3 seconds
     private Label powerUpLabel; // For displaying active power-ups
     
-    // Debuff timers and states
-    private boolean invertControlsActive = false;
-    private float invertControlsTimer = 0;
-    private static final float INVERT_CONTROLS_DURATION = 5f; // 5 seconds
-
-    private boolean slowPlayerActive = false;
-    private float slowPlayerTimer = 0;
-    private static final float SLOW_PLAYER_DURATION = 4f; // 4 seconds
-    private float originalPlayerSpeed = 200f; // Store original speed to restore later
+    // Manager instances
+    private PowerUpManager powerUpManager;
+    private GameStateManager gameStateManager;
 
     public GameScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
 
-        // Initialize game components
-        entityManager = new GameEntityManager(this);
-        collisionManager = new GameCollisionManager(entityManager, this);
-
         // Initialize the stage (used for UI elements)
-        // Stage automatically handles input events, so you don't have to manually check
-        // for clicks
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage); // Set stage to process input
 
@@ -93,14 +73,26 @@ public class GameScene extends Scene {
         audio = Audio.getInstance();
         audio.loadSoundEffect("tree", "Music/tree.mp3");
         audio.loadSoundEffect("player", "Music/collisioneffect.mp3");
-        // Add power-up sound effect (create this file or use an existing one)
         audio.loadSoundEffect("powerup", "Music/powerup.mp3");
-        // Add debuff sound effect 
         audio.loadSoundEffect("debuff", "Music/debuff.mp3"); 
 
-        audio.setSoundEffectVolume("powerup", 0.3f); // Reduce to 30% volume
-        audio.setSoundEffectVolume("debuff", 0.3f); // Reduce to 30% volume
+        audio.setSoundEffectVolume("powerup", 0.3f);
+        audio.setSoundEffectVolume("debuff", 0.3f);
 
+        // Initialize game components
+        entityManager = new GameEntityManager(this);
+        collisionManager = new GameCollisionManager(entityManager, this);
+        
+        // Initialize managers (order matters - GameStateManager first, then PowerUpManager)
+        gameStateManager = new GameStateManager(this, audio);
+        powerUpManager = new PowerUpManager(this, gameStateManager);
+
+        // Initialize UI elements
+        initializeUI();
+        initializeGame();
+    }
+    
+    private void initializeUI() {
         // Load Pause Button
         pauseButton = new ImageButton(new TextureRegionDrawable(new Texture(Gdx.files.internal("pause.png"))));
         pauseButton.setPosition(Gdx.graphics.getWidth() - 60, Gdx.graphics.getHeight() - 60);
@@ -110,7 +102,7 @@ public class GameScene extends Scene {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Pause Button Clicked! Opening StopScene...");
-                audio.pauseMusic();
+                gameStateManager.pauseGame();
                 sceneManager.setScene("stop");
             }
         });
@@ -134,6 +126,17 @@ public class GameScene extends Scene {
         powerUpLabel.setColor(Color.YELLOW); // Yellow for better visibility
         
         // Create game over table for centered layout
+        initializeGameOverUI();
+
+        // Add UI elements to stage
+        stage.addActor(pauseButton);
+        stage.addActor(scoreLabel);
+        stage.addActor(timerLabel);
+        stage.addActor(powerUpLabel);
+        stage.addActor(gameOverTable);
+    }
+    
+    private void initializeGameOverUI() {
         gameOverTable = new Table();
         gameOverTable.setFillParent(true);
         gameOverTable.setVisible(false);
@@ -184,15 +187,6 @@ public class GameScene extends Scene {
         
         // Initially hide the high score label
         highScoreLabel.setVisible(false);
-
-        // Add UI elements to stage
-        stage.addActor(pauseButton);
-        stage.addActor(scoreLabel);
-        stage.addActor(timerLabel);
-        stage.addActor(powerUpLabel);
-        stage.addActor(gameOverTable);
-
-        initializeGame();
     }
 
     @Override
@@ -222,75 +216,21 @@ public class GameScene extends Scene {
         batch.end();
 
         if (gameActive) {
-            // Update game timer
-            gameTimer += delta;
-            float timeRemaining = GAME_DURATION - gameTimer;
+            // Update game state
+            boolean stillActive = gameStateManager.update(delta);
             
-            if (timeRemaining <= 0) {
-                // Game over
-                endGame();
-            } else {
-                // Update timer display
-                timerLabel.setText(String.format("Time: %.1f", timeRemaining));
+            if (stillActive) {
+                // Update power-ups
+                powerUpManager.update(delta);
                 
-                // Handle power-up timers
-                if (doublePointsActive) {
-                    doublePointsTimer += delta;
-                    updatePowerUpLabel();
-                    
-                    if (doublePointsTimer >= DOUBLE_POINTS_DURATION) {
-                        doublePointsActive = false;
-                        updatePowerUpLabel();
-                        System.out.println("Double Points expired!");
-                    }
-                }
-                
-                // Handle invert controls timer
-                if (invertControlsActive) {
-                    invertControlsTimer += delta;
-                    updatePowerUpLabel();
-                    
-                    if (invertControlsTimer >= INVERT_CONTROLS_DURATION) {
-                        invertControlsActive = false;
-                        // Reset invert flag on all players
-                        for (Entity entity : entityManager.getEntities()) {
-                            if (entity instanceof Player) {
-                                Player player = (Player) entity;
-                                player.setInvertControls(false);
-                            }
-                        }
-                        updatePowerUpLabel();
-                        System.out.println("Controls back to normal!");
-                    }
-                }
-
-                // Handle slow player timer
-                if (slowPlayerActive) {
-                    slowPlayerTimer += delta;
-                    updatePowerUpLabel();
-                    
-                    if (slowPlayerTimer >= SLOW_PLAYER_DURATION) {
-                        slowPlayerActive = false;
-                        // Reset speed on all players
-                        for (Entity entity : entityManager.getEntities()) {
-                            if (entity instanceof Player) {
-                                Player player = (Player) entity;
-                                player.setSpeed(originalPlayerSpeed);
-                            }
-                        }
-                        updatePowerUpLabel();
-                        System.out.println("Player speed back to normal!");
-                    }
-                }
-                
-                // Update player movement using the new input system
+                // Update player movement
                 for (Entity entity : entityManager.getEntities()) {
                     if (entity instanceof Player) {
                         ((Player) entity).moveUserControlled(delta);
                     }
                 }
 
-                // Update & Move Entities
+                // Update entities
                 entityManager.updateEntities(delta);
 
                 // Collision Detection
@@ -300,8 +240,12 @@ public class GameScene extends Scene {
 
                 // Handle escape key
                 if (inputManager.isActionPressed(Input.Keys.ESCAPE)) {
+                    gameStateManager.pauseGame();
                     sceneManager.setScene("stop");
                 }
+            } else {
+                // Game is no longer active (probably game over)
+                endGame();
             }
         }
 
@@ -313,15 +257,39 @@ public class GameScene extends Scene {
     private void initializeGame() {
         // Initialize EntityManager with reference to this GameScene for score updates
         entityManager = new GameEntityManager(this);
-        collisionManager = new GameCollisionManager(entityManager, this); // Initialize CollisionManager with reference to GameScene
+        collisionManager = new GameCollisionManager(entityManager, this);
         
-        // Reset score saved flag
-        scoreSaved = false;
+        // Reset game state
+        gameActive = true;
         
         // Spawn different entities
         entityManager.spawnPlayers(1, inputManager);
-        entityManager.spawnTrees(5); // Spawn trees using EntityManager
-        entityManager.spawnBallsRow(); // Spawn balls using EntityManager
+        entityManager.spawnTrees(5);
+        entityManager.spawnBallsRow();
+    }
+    
+    /**
+     * Updates the power-up label
+     * @param text The text to display
+     */
+    public void updatePowerUpLabel(String text) {
+        powerUpLabel.setText(text);
+    }
+    
+    /**
+     * Updates the timer label
+     * @param text The text to display
+     */
+    public void updateTimerLabel(String text) {
+        timerLabel.setText(text);
+    }
+
+    /**
+     * Updates the score label
+     * @param text The text to display
+     */
+    public void updateScoreLabel(String text) {
+        scoreLabel.setText(text);
     }
     
     /**
@@ -329,35 +297,25 @@ public class GameScene extends Scene {
      * @param points The points to add
      */
     public void addScore(int points) {
-        // Double the points if the power-up is active
-        int actualPoints = doublePointsActive ? points * 2 : points;
-        playerScore += actualPoints;
-        scoreLabel.setText("Score: " + playerScore);
-        
-        // Show a visual indicator of the points gained
-        if (doublePointsActive) {
-            System.out.println("Double points bonus! Added " + actualPoints + " points!");
-        }
+        gameStateManager.addScore(points, powerUpManager.isDoublePointsActive());
     }
     
     /**
-     * Activates double points for a fixed duration
+     * Processes a power-up effect
+     * @param powerUpType The type of power-up
+     * @param x X position for effect
+     * @param y Y position for effect
      */
-    public void activateDoublePoints() {
-        doublePointsActive = true;
-        doublePointsTimer = 0;
-        updatePowerUpLabel();
-        System.out.println("Double Points activated!");
+    public void processPowerUp(int powerUpType, float x, float y) {
+        powerUpManager.processPowerUp(powerUpType, x, y);
     }
-
+    
     /**
      * Extends the game time by the specified amount
      * @param seconds The number of seconds to add
      */
     public void extendGameTime(float seconds) {
-        gameTimer = Math.max(0, gameTimer - seconds); // Subtract from timer to extend time
-        updatePowerUpLabel();
-        System.out.println("Game time extended by " + seconds + " seconds!");
+        gameStateManager.extendGameTime(seconds);
     }
     
     /**
@@ -365,156 +323,25 @@ public class GameScene extends Scene {
      * @param seconds The number of seconds to subtract
      */
     public void reduceGameTime(float seconds) {
-        gameTimer = Math.min(GAME_DURATION - 1, gameTimer + seconds); // Add to timer to reduce time, ensure at least 1 second remains
-        updatePowerUpLabel();
-        System.out.println("Game time reduced by " + seconds + " seconds!");
-    }
-
-    /**
-     * Activates inverted controls for a fixed duration
-     */
-    public void activateInvertControls() {
-        invertControlsActive = true;
-        invertControlsTimer = 0;
-        
-        // Set invert flag on all players
-        for (Entity entity : entityManager.getEntities()) {
-            if (entity instanceof Player) {
-                Player player = (Player) entity;
-                player.setInvertControls(true);
-            }
-        }
-        
-        updatePowerUpLabel();
-        System.out.println("Controls inverted!");
-    }
-
-    /**
-     * Activates slow player movement for a fixed duration
-     */
-    public void activateSlowPlayer() {
-        slowPlayerActive = true;
-        slowPlayerTimer = 0;
-        
-        // Slow down all players
-        for (Entity entity : entityManager.getEntities()) {
-            if (entity instanceof Player) {
-                Player player = (Player) entity;
-                originalPlayerSpeed = player.getSpeed(); // Save original speed
-                player.setSpeed(originalPlayerSpeed * 0.5f); // Reduce to 50%
-            }
-        }
-        
-        updatePowerUpLabel();
-        System.out.println("Player slowed!");
-    }
-
-    /**
-     * Updates the power-up label to show active effects
-     */
-    private void updatePowerUpLabel() {
-        StringBuilder labelText = new StringBuilder();
-        
-        if (doublePointsActive) {
-            labelText.append("DOUBLE POINTS! ");
-            float remaining = DOUBLE_POINTS_DURATION - doublePointsTimer;
-            labelText.append(String.format("(%.1fs)", remaining));
-        }
-        
-        if (invertControlsActive) {
-            if (labelText.length() > 0) {
-                labelText.append(" | ");
-            }
-            labelText.append("INVERTED CONTROLS! ");
-            float remaining = INVERT_CONTROLS_DURATION - invertControlsTimer;
-            labelText.append(String.format("(%.1fs)", remaining));
-        }
-        
-        if (slowPlayerActive) {
-            if (labelText.length() > 0) {
-                labelText.append(" | ");
-            }
-            labelText.append("SLOWED! ");
-            float remaining = SLOW_PLAYER_DURATION - slowPlayerTimer;
-            labelText.append(String.format("(%.1fs)", remaining));
-        }
-        
-        powerUpLabel.setText(labelText.toString());
+        gameStateManager.reduceGameTime(seconds);
     }
     
     /**
-     * Ends the game and shows a math fact before the game over screen
+     * Ends the game and shows the game over screen
      */
     private void endGame() {
         gameActive = false;
         
+        // Reset power-ups
+        powerUpManager.resetPowerUps();
+        
         // Clear power-up status
-        doublePointsActive = false;
-        doublePointsTimer = 0;
-        invertControlsActive = false;
-        slowPlayerActive = false;
-        powerUpLabel.setText(""); // Clear the power-up label text
-        
-        // Reset any player modifications
-        for (Entity entity : entityManager.getEntities()) {
-            if (entity instanceof Player) {
-                Player player = (Player) entity;
-                player.setInvertControls(false);
-                player.setSpeed(originalPlayerSpeed);
-            }
-        }
-        
-        // Save the score to high scores if not already done
-        if (!scoreSaved) {
-            HighScoresManager highScoresManager = HighScoresManager.getInstance();
-            
-            // The addScore method in HighScoresManager will automatically use the current difficulty
-            boolean isNewBestScore = highScoresManager.addScore(playerScore);
-            
-            // Debug logs to help troubleshoot
-            System.out.println("Game ended with score: " + playerScore);
-            System.out.println("Game difficulty: " + GameSettings.getDifficultyName());
-            System.out.println("Is new best score: " + isNewBestScore);
-            
-            // Setup game over UI (but don't show it yet)
-            finalScoreLabel.setText("Final Score: " + playerScore);
-            highScoreLabel.setVisible(isNewBestScore);
-            
-            scoreSaved = true;
-            
-            // If it's a new high score, add another button to go directly to high scores
-            if (isNewBestScore) {
-                // Check if the button already exists to avoid duplicates
-                boolean hasViewScoresButton = false;
-                for (com.badlogic.gdx.scenes.scene2d.Actor actor : gameOverTable.getChildren()) {
-                    if (actor instanceof TextButton && ((TextButton)actor).getText().toString().equals("View High Scores")) {
-                        hasViewScoresButton = true;
-                        break;
-                    }
-                }
-                
-                if (!hasViewScoresButton) {
-                    TextButton viewScoresButton = new TextButton("View High Scores", skin);
-                    viewScoresButton.getLabel().setColor(Color.GOLD);
-                    
-                    viewScoresButton.addListener(new ClickListener() {
-                        @Override
-                        public void clicked(InputEvent event, float x, float y) {
-                            // Directly go to high scores without showing a math fact
-                            sceneManager.setScene("highscores");
-                        }
-                    });
-                    
-                    // Add to the game over table after the other buttons
-                    gameOverTable.add(viewScoresButton).size(200, 50).padTop(20).row();
-                }
-            }
-        }
+        powerUpLabel.setText("");
         
         // Hide game UI
         pauseButton.setVisible(false);
         
-        // Create a new MathFactsPopup with a fresh random fact
+        // Create a math facts popup
         MathFactsPopup popup = new MathFactsPopup(skin, () -> {
             // This will run after the popup is closed
             gameOverTable.setVisible(true);
@@ -528,25 +355,54 @@ public class GameScene extends Scene {
     }
     
     /**
+     * Shows the game over screen
+     * @param finalScore The final score
+     * @param isNewBestScore Whether this is a new high score
+     */
+    public void showGameOver(int finalScore, boolean isNewBestScore) {
+        finalScoreLabel.setText("Final Score: " + finalScore);
+        highScoreLabel.setVisible(isNewBestScore);
+        
+        // Add high scores button if it's a new high score
+        if (isNewBestScore) {
+            // Check if the button already exists to avoid duplicates
+            boolean hasViewScoresButton = false;
+            for (com.badlogic.gdx.scenes.scene2d.Actor actor : gameOverTable.getChildren()) {
+                if (actor instanceof TextButton && ((TextButton)actor).getText().toString().equals("View High Scores")) {
+                    hasViewScoresButton = true;
+                    break;
+                }
+            }
+            
+            if (!hasViewScoresButton) {
+                TextButton viewScoresButton = new TextButton("View High Scores", skin);
+                viewScoresButton.getLabel().setColor(Color.GOLD);
+                
+                viewScoresButton.addListener(new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        sceneManager.setScene("highscores");
+                    }
+                });
+                
+                gameOverTable.add(viewScoresButton).size(200, 50).padTop(20).row();
+            }
+        }
+    }
+    
+    /**
      * Restarts the game - public so it can be called from StopScene
      */
     public void restartGame() {
         // Reset game state
         gameActive = true;
-        gameTimer = 0;
-        playerScore = 0;
-        scoreSaved = false;
-        doublePointsActive = false;
-        doublePointsTimer = 0;
-        invertControlsActive = false;
-        invertControlsTimer = 0;
-        slowPlayerActive = false;
-        slowPlayerTimer = 0;
-        updatePowerUpLabel();
+        gameStateManager.restartGame();
+        
+        // Reset power-ups
+        powerUpManager.resetPowerUps();
         
         // Reset UI
-        scoreLabel.setText("Score: 0");
-        timerLabel.setText("Time: " + GAME_DURATION);
+        powerUpLabel.setText("");
         
         // Hide game over UI
         gameOverTable.setVisible(false);
@@ -571,7 +427,7 @@ public class GameScene extends Scene {
         if (stage != null)
             stage.dispose();
         if (skin != null)
-            skin.dispose(); // Fix: Dispose Skin to prevent memory leak
+            skin.dispose();
         if (entityManager != null)
             entityManager.dispose();
         if (collisionManager != null)
@@ -579,10 +435,26 @@ public class GameScene extends Scene {
     }
     
     /**
+     * Gets the entity manager
+     * @return The entity manager
+     */
+    public GameEntityManager getEntityManager() {
+        return entityManager;
+    }
+    
+    /**
      * Get the current player score
      * @return The player's score
      */
     public int getPlayerScore() {
-        return playerScore;
+        return gameStateManager.getPlayerScore();
+    }
+    
+    /**
+     * Get the skin for UI elements
+     * @return The UI skin
+     */
+    public Skin getSkin() {
+        return skin;
     }
 }
