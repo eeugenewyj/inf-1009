@@ -1,9 +1,8 @@
-
+// core/src/main/java/com/mygdx/game/GameMaster.java
 package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-
 import com.mygdx.game.AbstractIO.IInputManager;
 import com.mygdx.game.AbstractIO.IKeyboardInput;
 import com.mygdx.game.AbstractIO.IOutputManager;
@@ -22,7 +21,9 @@ public class GameMaster extends ApplicationAdapter {
         inputManager = new GameInputManager(keyboardInput);
         outputManager = new GameOutputManager();
         sceneManager = new GameSceneManager(inputManager, outputManager);
-        sceneManager.initializeScenes();
+        
+        // Initialize the first scene instead of pre-loading all scenes
+        sceneManager.initialize();
     }
 
     @Override
