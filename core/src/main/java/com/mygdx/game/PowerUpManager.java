@@ -1,9 +1,11 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.graphics.Color;
 import com.mygdx.game.AbstractEntity.Entity;
 
-// Manages power-ups and their effects in the game
+/**
+ * Manages power-ups and their effects in the game.
+ * Decoupled from GameScene through the SceneContext interface.
+ */
 public class PowerUpManager {
     // Power-up states
     private boolean doublePointsActive = false;
@@ -19,18 +21,20 @@ public class PowerUpManager {
     private static final float SLOW_PLAYER_DURATION = 4f;
     private float originalPlayerSpeed = 200f;
 
-    // Reference to power-up listener for UI updates and entity management
-    private PowerUpListener powerUpListener;
+    // Reference to scene context for UI updates and entity management
+    private SceneContext sceneContext;
+    
+    // The game state manager is just used as a service, not creating a circular dependency
     private GameStateManager gameStateManager;
 
     /**
      * Creates a new PowerUpManager
      * 
-     * @param powerUpListener   The listener that will handle power-up events
-     * @param gameStateManager  The game state manager
+     * @param sceneContext The scene context providing necessary callbacks and services
+     * @param gameStateManager The game state manager for time and score manipulation
      */
-    public PowerUpManager(PowerUpListener powerUpListener, GameStateManager gameStateManager) {
-        this.powerUpListener = powerUpListener;
+    public PowerUpManager(SceneContext sceneContext, GameStateManager gameStateManager) {
+        this.sceneContext = sceneContext;
         this.gameStateManager = gameStateManager;
     }
 
@@ -60,7 +64,7 @@ public class PowerUpManager {
             if (invertControlsTimer >= INVERT_CONTROLS_DURATION) {
                 invertControlsActive = false;
                 // Reset invert flag on all players
-                for (Entity entity : powerUpListener.getEntityManager().getEntities()) {
+                for (Entity entity : sceneContext.getEntityManager().getEntities()) {
                     if (entity instanceof Player) {
                         Player player = (Player) entity;
                         player.setInvertControls(false);
@@ -79,7 +83,7 @@ public class PowerUpManager {
             if (slowPlayerTimer >= SLOW_PLAYER_DURATION) {
                 slowPlayerActive = false;
                 // Reset speed on all players
-                for (Entity entity : powerUpListener.getEntityManager().getEntities()) {
+                for (Entity entity : sceneContext.getEntityManager().getEntities()) {
                     if (entity instanceof Player) {
                         Player player = (Player) entity;
                         player.setSpeed(originalPlayerSpeed);
@@ -121,8 +125,8 @@ public class PowerUpManager {
             labelText += String.format("(%.1fs)", remaining);
         }
 
-        // Update the power-up label through listener
-        powerUpListener.updatePowerUpLabel(labelText);
+        // Update the power-up label through the scene context
+        sceneContext.updatePowerUpLabel(labelText);
     }
 
     /**
@@ -150,7 +154,7 @@ public class PowerUpManager {
      * @param seconds The number of seconds to add
      */
     public void extendGameTime(float seconds) {
-        powerUpListener.extendGameTime(seconds);
+        gameStateManager.extendGameTime(seconds);
         updatePowerUpLabel();
         System.out.println("Game time extended by " + seconds + " seconds!");
     }
@@ -161,7 +165,7 @@ public class PowerUpManager {
      * @param seconds The number of seconds to subtract
      */
     public void reduceGameTime(float seconds) {
-        powerUpListener.reduceGameTime(seconds);
+        gameStateManager.reduceGameTime(seconds);
         updatePowerUpLabel();
         System.out.println("Game time reduced by " + seconds + " seconds!");
     }
@@ -174,7 +178,7 @@ public class PowerUpManager {
         invertControlsTimer = 0;
 
         // Set invert flag on all players
-        for (Entity entity : powerUpListener.getEntityManager().getEntities()) {
+        for (Entity entity : sceneContext.getEntityManager().getEntities()) {
             if (entity instanceof Player) {
                 Player player = (Player) entity;
                 player.setInvertControls(true);
@@ -193,7 +197,7 @@ public class PowerUpManager {
         slowPlayerTimer = 0;
 
         // Slow down all players
-        for (Entity entity : powerUpListener.getEntityManager().getEntities()) {
+        for (Entity entity : sceneContext.getEntityManager().getEntities()) {
             if (entity instanceof Player) {
                 Player player = (Player) entity;
                 originalPlayerSpeed = player.getSpeed();
@@ -231,8 +235,8 @@ public class PowerUpManager {
                 break;
         }
 
-        // Create visual effect through listener
-        powerUpListener.createPowerUpEffect(powerUpType, x, y);
+        // Create visual effect through the scene context
+        sceneContext.createPowerUpEffect(powerUpType, x, y);
     }
 
     /**
@@ -247,11 +251,14 @@ public class PowerUpManager {
         slowPlayerTimer = 0;
 
         // Reset any player modifications
-        for (Entity entity : powerUpListener.getEntityManager().getEntities()) {
-            if (entity instanceof Player) {
-                Player player = (Player) entity;
-                player.setInvertControls(false);
-                player.setSpeed(originalPlayerSpeed);
+        GameEntityManager entityManager = sceneContext.getEntityManager();
+        if (entityManager != null) {
+            for (Entity entity : entityManager.getEntities()) {
+                if (entity instanceof Player) {
+                    Player player = (Player) entity;
+                    player.setInvertControls(false);
+                    player.setSpeed(originalPlayerSpeed);
+                }
             }
         }
 

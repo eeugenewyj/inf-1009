@@ -23,7 +23,7 @@ import com.mygdx.game.AbstractIO.IOutputManager;
 import com.mygdx.game.AbstractScene.ISceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
-public class GameScene extends Scene implements PowerUpListener {
+public class GameScene extends Scene implements GameStateListener, SceneContext {
     private Stage stage; // Handles UI elemements
     private Skin skin; // UI skin for button styling
     private Audio audio;
@@ -53,7 +53,7 @@ public class GameScene extends Scene implements PowerUpListener {
     // Power-up related fields
     private Label powerUpLabel; // For displaying active power-ups
 
-    // Manager instances
+    // Manager instances - no circular dependency now
     private PowerUpManager powerUpManager;
     private GameStateManager gameStateManager;
 
@@ -81,10 +81,11 @@ public class GameScene extends Scene implements PowerUpListener {
         entityManager = new GameEntityManager(this);
         collisionManager = new GameCollisionManager(entityManager, this);
 
-        // Initialize managers (order matters - GameStateManager first, then PowerUpManager)
+        // Initialize managers - now with proper dependency structure
+        // GameStateManager uses this as a GameStateListener
         gameStateManager = new GameStateManager(this, audio);
         
-        // Now PowerUpManager uses this instance as a PowerUpListener
+        // PowerUpManager uses this as a SceneContext
         powerUpManager = new PowerUpManager(this, gameStateManager);
 
         // Initialize UI elements
@@ -290,54 +291,39 @@ public class GameScene extends Scene implements PowerUpListener {
         entityManager.spawnBalloonsRow();
     }
 
-    // PowerUpListener interface implementation methods
+    // Implementation of GameStateListener interface
+    
+    @Override
+    public void onScoreChanged(int newScore) {
+        playerScore = newScore;
+        scoreLabel.setText("Score: " + newScore);
+    }
+    
+    @Override
+    public void onTimerUpdated(float remainingTime) {
+        timerLabel.setText(String.format("Time: %.1f", remainingTime));
+    }
+    
+    @Override
+    public void onGameOver(int finalScore, boolean isNewHighScore) {
+        endGame();
+    }
+
+    // Implementation of SceneContext interface
+    
     @Override
     public void updatePowerUpLabel(String text) {
         powerUpLabel.setText(text);
     }
 
-    /**
-     * Updates the timer label
-     * 
-     * @param text The text to display
-     */
-    public void updateTimerLabel(String text) {
-        timerLabel.setText(text);
-    }
-
-    /**
-     * Updates the score label
-     * 
-     * @param text The text to display
-     */
-    public void updateScoreLabel(String text) {
-        scoreLabel.setText(text);
-    }
-
-    /**
-     * Adds points to the player's score
-     * 
-     * @param points The points to add
-     */
-    public void addScore(int points) {
-        gameStateManager.addScore(points, powerUpManager.isDoublePointsActive());
-    }
-
-    /**
-     * Processes a power-up effect
-     * 
-     * @param powerUpType The type of power-up
-     * @param x           X position for effect
-     * @param y           Y position for effect
-     */
-    public void processPowerUp(int powerUpType, float x, float y) {
-        powerUpManager.processPowerUp(powerUpType, x, y);
-    }
-
-    // PowerUpListener interface implementation
     @Override
     public GameEntityManager getEntityManager() {
         return entityManager;
+    }
+
+    @Override
+    public IInputManager getInputManager() {
+        return inputManager;
     }
 
     @Override
@@ -367,14 +353,24 @@ public class GameScene extends Scene implements PowerUpListener {
         }
     }
 
-    @Override
-    public void extendGameTime(float seconds) {
-        gameStateManager.extendGameTime(seconds);
+    /**
+     * Adds points to the player's score
+     * 
+     * @param points The points to add
+     */
+    public void addScore(int points) {
+        gameStateManager.addScore(points, powerUpManager.isDoublePointsActive());
     }
 
-    @Override
-    public void reduceGameTime(float seconds) {
-        gameStateManager.reduceGameTime(seconds);
+    /**
+     * Processes a power-up effect
+     * 
+     * @param powerUpType The type of power-up
+     * @param x           X position for effect
+     * @param y           Y position for effect
+     */
+    public void processPowerUp(int powerUpType, float x, float y) {
+        powerUpManager.processPowerUp(powerUpType, x, y);
     }
 
     /**
@@ -411,8 +407,8 @@ public class GameScene extends Scene implements PowerUpListener {
      * @param finalScore     The final score
      * @param isNewBestScore Whether this is a new high score
      */
+    @Override
     public void showGameOver(int finalScore, boolean isNewBestScore) {
-        finalScoreLabel.setText("Final Score: " + finalScore);
         finalScoreLabel.setText("Final Score: " + finalScore);
         highScoreLabel.setVisible(isNewBestScore);
 
@@ -493,11 +489,6 @@ public class GameScene extends Scene implements PowerUpListener {
         return skin;
     }
 
-    // Add a new getter for input manager
-    public IInputManager getInputManager() {
-        return inputManager;
-    }
-
     @Override
     public void dispose() {
         super.dispose();
@@ -511,4 +502,3 @@ public class GameScene extends Scene implements PowerUpListener {
             collisionManager.dispose();
     }
 }
-        
