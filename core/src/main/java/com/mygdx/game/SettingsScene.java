@@ -29,7 +29,7 @@ public class SettingsScene extends Scene {
     private float prevVolume = -1f; // Stores the last printed volume
 
     public SettingsScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
-        super(sceneManager, inputManager, outputManager,"background2.png");
+        super(sceneManager, inputManager, outputManager, "background2.png");
 
         // Fix: Use ScreenViewport for better UI scaling
         stage = new Stage(new ScreenViewport());
@@ -155,7 +155,9 @@ public class SettingsScene extends Scene {
         super.dispose();
         stage.dispose();
         skin.dispose();
-        if (muteTexture != null) muteTexture.dispose();
-        if (unmuteTexture != null) unmuteTexture.dispose();
+        if (muteTexture != null)
+            muteTexture.dispose();
+        if (unmuteTexture != null)
+            unmuteTexture.dispose();
     }
 }

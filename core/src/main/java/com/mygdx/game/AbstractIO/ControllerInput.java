@@ -6,34 +6,37 @@ import com.badlogic.gdx.controllers.ControllerAdapter;
 
 public class ControllerInput extends ControllerAdapter {
 
-    private Controller activeController;
-    private static final float DEAD_ZONE = 0.2f; // Stick drift fix
+    private Controller activeController; // Currently active controller
+    private static final float DEAD_ZONE = 0.2f; // Dead zone to prevent stick drift
 
     // Default axis mapping
     private int leftStickXAxis = 0;
     private int leftStickYAxis = 1;
 
+    // Flags to track left stick movement directions
     private static boolean leftStickLeftPressed = false;
     private static boolean leftStickRightPressed = false;
     private static boolean leftStickUpPressed = false;
     private static boolean leftStickDownPressed = false;
 
     public ControllerInput() {
-        // Check for available controllers
+        // Check if any controllers are connected
         if (Controllers.getControllers().size > 0) {
+            // Set the first connected controller as the active controller
             activeController = Controllers.getControllers().first();
-            activeController.addListener(this);
+            activeController.addListener(this); // Add this class as a listener for controller events
             System.out.println("Controller connected: " + activeController.getName());
         }
         // Listen for new controllers being connected/disconnected
         Controllers.addListener(this);
     }
 
+    // Method to get the X-axis value of the left stick
     public float getLeftStickX() {
 
         if (activeController == null)
             return 0f;
-        float value = activeController.getAxis(leftStickXAxis);
+        float value = activeController.getAxis(leftStickXAxis); // Get X-axis value
 
         if (Math.abs(value) > DEAD_ZONE) {
             if (value < 0 && !leftStickLeftPressed) {
@@ -49,6 +52,7 @@ public class ControllerInput extends ControllerAdapter {
             leftStickRightPressed = false;
         }
 
+        // Return the value if it exceeds the dead zone, otherwise return 0
         return Math.abs(value) > DEAD_ZONE ? value : 0f;
     }
 
@@ -75,21 +79,23 @@ public class ControllerInput extends ControllerAdapter {
         return Math.abs(value) > DEAD_ZONE ? value : 0f;
     }
 
-    // Check if a button is pressed
+    // Method to check if a specific button is pressed
     public boolean isButtonPressed(int button) {
         if (activeController == null)
-            return false;
-        return activeController.getButton(button);
+            return false; // Return false if no controller is connected
+        return activeController.getButton(button); // Check if the button is pressed
     }
 
+    // Event triggered when a new controller is connected
     @Override
     public void connected(Controller controller) {
         if (activeController == null) {
-            activeController = controller;
+            activeController = controller; // Set new controller as the active controller
             System.out.println("New Controller Connected: " + controller.getName());
         }
     }
 
+    // Event triggered when a controller is disconnected
     @Override
     public void disconnected(Controller controller) {
         if (activeController == controller) {

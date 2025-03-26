@@ -1,4 +1,3 @@
-// core/src/main/java/com/mygdx/game/SceneType.java
 package com.mygdx.game;
 
 /**
@@ -12,13 +11,13 @@ public enum SceneType {
     SETTINGS("settings"),
     HIGHSCORES("highscores"),
     DIFFICULTY("difficulty");
-    
+
     private final String id;
-    
+
     SceneType(String id) {
         this.id = id;
     }
-    
+
     /**
      * Gets the string identifier of the scene type.
      * Used for backward compatibility with existing code.
@@ -26,7 +25,7 @@ public enum SceneType {
     public String getId() {
         return id;
     }
-    
+
     /**
      * Finds a SceneType by its string ID.
      * 

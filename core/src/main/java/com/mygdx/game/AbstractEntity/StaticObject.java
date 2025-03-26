@@ -6,18 +6,20 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Gdx;
 
 public class StaticObject extends Entity {
-    protected Texture texture;
-    protected Rectangle boundingBox;
+    protected Texture texture; // Texture for rendering the static object
+    protected Rectangle boundingBox; // Bounding box for collision detection
 
     public StaticObject(float x, float y, float width, float height, String texturePath) {
-        super(x, y);
-        this.texture = new Texture(Gdx.files.internal(texturePath));
+        super(x, y); // Call parent constructor
+        this.texture = new Texture(Gdx.files.internal(texturePath)); // Load texture from file
         this.boundingBox = new Rectangle(x, y, width, height); // Create bounding box for collisions
     }
 
+    // Method to draw the static object using a SpriteBatch
     @Override
     public void draw(SpriteBatch batch) {
         if (texture != null) {
+            // Draw the texture at the object's position with its bounding box dimensions
             batch.draw(texture, x, y, boundingBox.width, boundingBox.height);
         }
     }
@@ -36,6 +38,7 @@ public class StaticObject extends Entity {
         return boundingBox; // Ensure bounding box can be accessed for collisions
     }
 
+    // Method to handle collisions with other collidable entities
     @Override
     public void handleCollision(iCollidable other) {
     }

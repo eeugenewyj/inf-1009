@@ -14,8 +14,8 @@ import java.util.Random;
 
 public class GameEntityManager extends AbstractEntityManager {
     private static final Random random = new Random();
-    private static final int NUM_BALLS = 8; // Number of balls per row
-    private static final float GAP_RATIO = 0.1f; // 10% gap between balls
+    private static final int NUM_BALLS = 8; // Number of balloons per row
+    private static final float GAP_RATIO = 0.1f; // 10% gap between balloons
 
     private int rowsSpawned = 0; // Tracks the number of spawned rows
     private GameScene gameScene; // Reference to GameScene
@@ -23,7 +23,7 @@ public class GameEntityManager extends AbstractEntityManager {
     private float treeSpawnTimer = 0; // Timer to track tree spawn intervals
     private static final float TREE_LIFETIME = 5f; // Trees disappear after 5 seconds
     private static final float TREE_SPAWN_INTERVAL = 5f; // Every 5 seconds
-    
+
     // Power-up related fields
     private float powerUpSpawnTimer = 0;
     private static final float POWERUP_SPAWN_INTERVAL = 3.5f; // Every 8 seconds
@@ -32,7 +32,7 @@ public class GameEntityManager extends AbstractEntityManager {
     public GameEntityManager() {
         // Default constructor
     }
-    
+
     // Constructor with GameScene reference
     public GameEntityManager(GameScene gameScene) {
         this.gameScene = gameScene;
@@ -44,9 +44,10 @@ public class GameEntityManager extends AbstractEntityManager {
     }
 
     public void spawnBallsRow() {
-        float startX = 0;
+        float startX = 0; // Starting X position
         float topYPosition = Gdx.graphics.getHeight() + (Ball.getBallWidth() / 2); // Place it just outside the screen
 
+        // Spawn balloons in a row
         for (int i = 0; i < NUM_BALLS; i++) {
             float xPosition = startX + i * (Ball.getBallWidth() * (1 + GAP_RATIO));
             addEntity(new Ball(xPosition, topYPosition));
@@ -58,7 +59,7 @@ public class GameEntityManager extends AbstractEntityManager {
         makeBallsFall();
     }
 
-    /* Makes all active balls fall down. */
+    // Makes all active balloons fall down
     private void makeBallsFall() {
         for (Entity entity : getEntities()) {
             if (entity instanceof Ball) {
@@ -67,26 +68,28 @@ public class GameEntityManager extends AbstractEntityManager {
         }
     }
 
+    // Remove all balloons in the same row as the collided balloon
     public void removeBallsRow(Ball collidedBall) {
         float rowY = collidedBall.getY(); // Get Y position of the collided ball
-        
-        // Just remove all balls in the same row
+
+        // Just remove all balloons in the same row
         List<Ball> ballsToRemove = new ArrayList<>();
-        
-        // Identify all balls to remove
+
+        // Identify all balloons to remove
         for (Entity entity : getEntities()) {
             if (entity instanceof Ball && entity.getY() == rowY) {
                 Ball ball = (Ball) entity;
                 ballsToRemove.add(ball);
             }
         }
-        
-        // Remove the balls
+
+        // Remove the balloons
         for (Ball ball : ballsToRemove) {
             ball.setActive(false);
         }
     }
 
+    // Remove rows that reached the bottom and spawns new row
     private void removeRowIfAtBottomAndSpawn() {
         float bottomThreshold = 0; // bottom of the screen
 
@@ -122,15 +125,15 @@ public class GameEntityManager extends AbstractEntityManager {
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
         int playerSize = 50; // Adjust based on actual player size
-        
+
         // Calculate the bottom quarter position
         float bottomQuarterYMin = 0;
         float bottomQuarterYMax = screenHeight / 4;
-        
+
         // Player starts in the middle-bottom of the screen
         float playerX = screenWidth / 2 - playerSize / 2; // Center horizontally
         float playerY = bottomQuarterYMax / 2; // Middle of bottom quarter
-        
+
         spawnPlayer(playerX, playerY, 200, inputManager);
         System.out.println("Spawned Player at: " + playerX + ", " + playerY);
     }
@@ -144,10 +147,10 @@ public class GameEntityManager extends AbstractEntityManager {
         // Get screen dimensions
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
-        
+
         // Calculate the top quarter boundary - spikes won't spawn above this line
         float topQuarterBoundary = screenHeight * 0.75f;
-        
+
         // Find player position to avoid spawning trees on top of them
         Player player = null;
         for (Entity entity : getEntities()) {
@@ -156,33 +159,33 @@ public class GameEntityManager extends AbstractEntityManager {
                 break;
             }
         }
-        
+
         // Buffer distance to keep between trees and player
-        float safeDistance = 100; // Increased for better gameplay experience
-        
+        float safeDistance = 100;
+
         // Keep track of placed trees to avoid overlapping trees
         List<Rectangle> placedTreeBounds = new ArrayList<>();
-        
+
         // Try to place each tree
         int treesPlaced = 0;
         int maxAttempts = 100; // Prevent infinite loops
-        
+
         for (int i = 0; i < count; i++) {
             boolean validPosition = false;
             int attempts = 0;
             float x = 0, y = 0;
-            
+
             while (!validPosition && attempts < maxAttempts) {
                 // Generate random position but restrict Y to be below the top quarter
                 x = MathUtils.random(50, screenWidth - 50);
                 y = MathUtils.random(50, topQuarterBoundary - 50); // Keep below top quarter boundary
-                
+
                 // Create a rectangle for this potential tree position
                 Rectangle potentialTreeBounds = new Rectangle(x, y, 50, 50);
-                
+
                 // Assume position is valid until proven otherwise
                 validPosition = true;
-                
+
                 // Check if too close to player
                 if (player != null) {
                     float playerDistance = Vector2.dst(x, y, player.getX(), player.getY());
@@ -192,7 +195,7 @@ public class GameEntityManager extends AbstractEntityManager {
                         continue;
                     }
                 }
-                
+
                 // Check if too close to ball rows
                 for (Entity entity : getEntities()) {
                     if (entity instanceof Ball && potentialTreeBounds.overlaps(entity.getBoundingBox())) {
@@ -200,7 +203,7 @@ public class GameEntityManager extends AbstractEntityManager {
                         break;
                     }
                 }
-                
+
                 // Check if overlapping with existing trees
                 for (Rectangle existingTree : placedTreeBounds) {
                     if (existingTree.overlaps(potentialTreeBounds)) {
@@ -208,10 +211,10 @@ public class GameEntityManager extends AbstractEntityManager {
                         break;
                     }
                 }
-                
+
                 attempts++;
             }
-            
+
             // If we found a valid position, place the tree
             if (validPosition) {
                 Tree tree = new Tree(x, y);
@@ -221,23 +224,23 @@ public class GameEntityManager extends AbstractEntityManager {
                 treesPlaced++;
             }
         }
-        
+
         System.out.println("Spawned " + treesPlaced + " spikes below the top quarter of the screen");
     }
-    
+
     // Method to spawn a power-up
     public void spawnPowerUp() {
         float screenWidth = Gdx.graphics.getWidth();
         float topYPosition = Gdx.graphics.getHeight() + 20; // Just above screen
-        
+
         // Randomly position the power-up horizontally
         float xPosition = MathUtils.random(50, screenWidth - 50);
-        
+
         PowerUp powerUp = PowerUp.createRandomPowerUp(xPosition, topYPosition);
         addEntity(powerUp);
-        
-        System.out.println("Spawned PowerUp of type: " + 
-                          (powerUp.getType() == PowerUp.TYPE_DOUBLE_POINTS ? "Double Points" : "Extend Time"));
+
+        System.out.println("Spawned PowerUp of type: " +
+                (powerUp.getType() == PowerUp.TYPE_DOUBLE_POINTS ? "Double Points" : "Extend Time"));
     }
 
     @Override
@@ -262,7 +265,7 @@ public class GameEntityManager extends AbstractEntityManager {
             spawnTrees(4); // Spawn 4 trees
             treeSpawnTimer = 0; // Reset timer
         }
-        
+
         // Handle power-up spawning timer
         powerUpSpawnTimer += deltaTime;
         if (powerUpSpawnTimer >= POWERUP_SPAWN_INTERVAL) {
@@ -296,7 +299,7 @@ public class GameEntityManager extends AbstractEntityManager {
             entity.dispose();
         }
     }
-    
+
     // Set GameScene reference after initialization if needed
     public void setGameScene(GameScene gameScene) {
         this.gameScene = gameScene;

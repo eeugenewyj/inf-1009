@@ -9,7 +9,10 @@ import com.mygdx.game.AbstractIO.IOutputManager;
 import com.mygdx.game.AbstractIO.Keyboard;
 import com.mygdx.game.AbstractScene.ISceneManager;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
+/**
+ * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
+ * platforms.
+ */
 public class GameMaster extends ApplicationAdapter {
     private IInputManager inputManager;
     private IOutputManager outputManager;
@@ -17,11 +20,12 @@ public class GameMaster extends ApplicationAdapter {
 
     @Override
     public void create() {
-        IKeyboardInput keyboardInput = Keyboard.getInstance();  // Inject Keyboard
+        IKeyboardInput keyboardInput = Keyboard.getInstance(); // Inject Keyboard
+        // Initialise managers
         inputManager = new GameInputManager(keyboardInput);
         outputManager = new GameOutputManager();
         sceneManager = new GameSceneManager(inputManager, outputManager);
-        
+
         // Initialize the first scene instead of pre-loading all scenes
         sceneManager.initialize();
     }
@@ -35,11 +39,14 @@ public class GameMaster extends ApplicationAdapter {
 
     @Override
     public void dispose() {
-        if (inputManager != null) inputManager.dispose();
-        if (outputManager != null) outputManager.dispose();
-        if (sceneManager != null) sceneManager.dispose();
+        if (inputManager != null)
+            inputManager.dispose();
+        if (outputManager != null)
+            outputManager.dispose();
+        if (sceneManager != null)
+            sceneManager.dispose();
     }
-    
+
     // Add getter for SceneManager to allow access from other classes
     public ISceneManager getSceneManager() {
         return sceneManager;

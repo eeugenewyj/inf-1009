@@ -24,10 +24,13 @@ public abstract class MovableEntity extends Entity implements iMovable {
 
     // Protected method to move the entity based on deltaTime and direction
     protected void move(float deltaTime, float directionX, float directionY) {
+<<<<<<< HEAD
         // Save current position as previous before moving
         this.previousX = this.x;
         this.previousY = this.y;
         
+=======
+>>>>>>> c151fe7d90bc21246194284b9e824f65c3fac2de
         // Update position using speed, deltaTime, and direction.
         this.x += speed * deltaTime * directionX;
         this.y += speed * deltaTime * directionY;
@@ -37,7 +40,11 @@ public abstract class MovableEntity extends Entity implements iMovable {
         this.y = Math.max(0, Math.min(this.y, Gdx.graphics.getHeight() - height));
     }
 
+<<<<<<< HEAD
     // Implementation of moveAIControlled method
+=======
+    // Implementatioin of moveAIControlled method
+>>>>>>> c151fe7d90bc21246194284b9e824f65c3fac2de
     @Override
     public void moveAIControlled() {
         System.out.println("AI moving entity...");

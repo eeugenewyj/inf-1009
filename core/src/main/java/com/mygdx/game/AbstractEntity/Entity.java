@@ -5,40 +5,47 @@ import com.badlogic.gdx.math.Rectangle;
 
 public abstract class Entity implements iCollidable {
     protected float x, y; // Position in the game world
-    protected float width = 50, height = 50;
-    protected boolean hasCollided = false;
-    protected boolean isActive; // Determines if the entity is currently active
+    protected float width = 50, height = 50; // Dimensions of the entity
+    protected boolean hasCollided = false; // Flag to determine if the entity has collided with another entity
+    protected boolean isActive; // Flag to determine if the entity is active
 
+    // Constructor to initialise the entity's position and set it as active
     public Entity(float x, float y) {
         this.x = x;
         this.y = y;
         this.isActive = true; // Default to active when created
     }
 
+    // Abstract method to draw the entity
     public abstract void draw();
 
+    // Abstract method to draw the entity using a SpriteBatch
     public abstract void draw(SpriteBatch batch);
 
-    // Forces subclasses to implement their own behavior
+    // Abstract method to update the entity
     public abstract void update(float deltaTime);
 
+    // Getter for collision status
     public boolean hasCollided() {
         return hasCollided;
     }
 
+    // Setter for collision status
     public void setCollided(boolean collided) {
         this.hasCollided = collided;
     }
 
+    // Getter for active status
     public boolean isActive() {
         return isActive;
     }
 
+    // Setter for active status
     public void setActive(boolean active) {
         this.isActive = active;
     }
 
-    // For collision detection
+    // Method to get the bounding box of the entity for collision detection
     public Rectangle getBoundingBox() {
         return new Rectangle(x, y, width, height);
     }
@@ -72,9 +79,9 @@ public abstract class Entity implements iCollidable {
         this.y = y;
     }
 
+    // Abstract method to handle collisions with other collidable entities
     @Override
     public abstract void handleCollision(iCollidable other);
 
-    // New abstract dispose method
     public abstract void dispose();
 }

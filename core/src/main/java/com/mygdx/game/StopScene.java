@@ -21,12 +21,12 @@ public class StopScene extends Scene {
     private TextButton restartButton;
     private TextButton homeButton;
     private Audio audio;
-    
+
     // Flag to indicate if game should restart on next show
     private static boolean shouldRestart = false;
 
     public StopScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
-        super(sceneManager, inputManager, outputManager,"background2.png");
+        super(sceneManager, inputManager, outputManager, "background2.png");
 
         // Initialize stage
         stage = new Stage(new ScreenViewport());
@@ -116,7 +116,7 @@ public class StopScene extends Scene {
         stage.dispose();
         skin.dispose();
     }
-    
+
     // Static method to check if game should restart
     public static boolean shouldRestartGame() {
         if (shouldRestart) {
@@ -125,7 +125,7 @@ public class StopScene extends Scene {
         }
         return false;
     }
-    
+
     // Method to set the restart flag externally
     public static void setRestartFlag(boolean value) {
         shouldRestart = value;

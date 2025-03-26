@@ -1,10 +1,9 @@
-// core/src/main/java/com/mygdx/game/AbstractScene/AbstractSceneManager.java
 package com.mygdx.game.AbstractScene;
 
 import com.mygdx.game.SceneType;
 
 public abstract class AbstractSceneManager implements ISceneManager {
-    protected Scene currentScene;
+    protected Scene currentScene; // Currently active scene
 
     /**
      * Sets the active scene by name, disposing the previous scene.
@@ -16,7 +15,7 @@ public abstract class AbstractSceneManager implements ISceneManager {
     public final void setScene(String sceneName) {
         // For backward compatibility, convert string to enum if possible
         SceneType sceneType = SceneType.fromId(sceneName);
-        
+
         if (sceneType != null) {
             setScene(sceneType);
         } else {
@@ -27,10 +26,10 @@ public abstract class AbstractSceneManager implements ISceneManager {
                 currentScene.dispose();
                 currentScene = null;
             }
-            
+
             // Create the new scene using the factory method
             Scene newScene = createScene(sceneName);
-            
+
             if (newScene != null) {
                 currentScene = newScene;
                 currentScene.show();
@@ -40,7 +39,7 @@ public abstract class AbstractSceneManager implements ISceneManager {
             }
         }
     }
-    
+
     /**
      * Sets the active scene by type, disposing the previous scene.
      * This is the preferred method for setting scenes as it provides type safety.
@@ -54,10 +53,10 @@ public abstract class AbstractSceneManager implements ISceneManager {
             currentScene.dispose();
             currentScene = null;
         }
-        
+
         // Create the new scene using the factory method
         Scene newScene = createScene(sceneType.getId());
-        
+
         if (newScene != null) {
             currentScene = newScene;
             currentScene.show();
@@ -86,7 +85,7 @@ public abstract class AbstractSceneManager implements ISceneManager {
      * @return A new Scene instance, or null if the name is not recognized
      */
     protected abstract Scene createScene(String sceneName);
-    
+
     /**
      * Factory method to create a scene by type.
      * By default, delegates to string-based factory method.

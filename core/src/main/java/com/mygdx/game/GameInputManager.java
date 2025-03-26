@@ -11,13 +11,13 @@ public class GameInputManager extends AbstractInputManager {
 
     @Override
     public float getMoveX() {
-        detectInputType();  // Ensure input type is checked
+        detectInputType(); // Ensure input type is checked
         return useGamepad ? controllerInput.getLeftStickX() : keyboardInput.getHorizontal();
     }
 
     @Override
     public float getMoveY() {
-        detectInputType();  // Ensure input type is checked
+        detectInputType(); // Ensure input type is checked
         return useGamepad ? controllerInput.getLeftStickY() : keyboardInput.getVertical();
     }
 
