@@ -196,8 +196,9 @@ public class GameStatePreserver {
         
         switch (state.className) {
             case "Player":
-                Player player = new Player(state.x, state.y, playerSpeed, 
-                                           gameScene.getInputManager(), entityManager);
+                // Create Player without EntityManager, then set callbacks
+                Player player = new Player(state.x, state.y, playerSpeed, gameScene.getInputManager());
+                player.setCollisionCallback(entityManager);
                 if (state.invertControls != null && state.invertControls) {
                     player.setInvertControls(true);
                 }

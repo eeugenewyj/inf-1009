@@ -279,11 +279,11 @@ public class GameScene extends Scene {
         // Initialize EntityManager with reference to this GameScene for score updates
         entityManager = new GameEntityManager(this);
         collisionManager = new GameCollisionManager(entityManager, this);
-
+    
         // Reset game state
         gameActive = true;
-
-        // Spawn different entities
+    
+        // Spawn entities - using the modified methods
         entityManager.spawnPlayers(1, inputManager);
         entityManager.spawnSpikes(4);
         entityManager.spawnBalloonsRow();

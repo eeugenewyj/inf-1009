@@ -78,13 +78,17 @@ public class GameCollisionManager extends AbstractCollisionManager {
 
                 // Call removeBalloonRow() from GameEntityManager to remove all balloons in the same
                 // row
-                ((GameEntityManager) entityManager).removeBalloonRow(collidedBalloon);
+                if (entityManager instanceof GameEntityManager) {
+                    ((GameEntityManager) entityManager).removeBalloonRow(collidedBalloon);
+                }
 
                 // Play collision sound
                 audio.playSoundEffect("player");
 
                 // Spawn the next row of balloons
-                ((GameEntityManager) entityManager).spawnBalloonsRow();
+                if (entityManager instanceof GameEntityManager) {
+                    ((GameEntityManager) entityManager).spawnBalloonsRow();
+                }
             }
 
             // Check for power-up collisions
@@ -204,7 +208,7 @@ public class GameCollisionManager extends AbstractCollisionManager {
                 lineLine(x1, y1, x2, y2, rect.x + rect.width, rect.y + rect.height, rect.x, rect.y + rect.height) ||
                 lineLine(x1, y1, x2, y2, rect.x, rect.y + rect.height, rect.x, rect.y);
     }
-
+    
     /**
      * Determines if two line segments intersect
      */

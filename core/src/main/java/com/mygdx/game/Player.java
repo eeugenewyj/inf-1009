@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.game.AbstractEntity.Entity;
-import com.mygdx.game.AbstractEntity.IEntityManager;
 import com.mygdx.game.AbstractEntity.MovableEntity;
 import com.mygdx.game.AbstractEntity.iCollidable;
 import com.mygdx.game.AbstractIO.IInputManager;
@@ -13,7 +12,7 @@ import com.mygdx.game.AbstractIO.IInputManager;
 public class Player extends MovableEntity {
     private Texture texture;
     private IInputManager inputManager; // Injected Input Manager
-    private IEntityManager entityManager; // Using interface instead of concrete class
+    private CollisionCallback collisionCallback; // Using callback instead of direct EntityManager reference
 
     // Define the movement boundary - player cannot go above this line
     private final float MAX_Y_POSITION;
@@ -21,11 +20,10 @@ public class Player extends MovableEntity {
     // Add this field for inverted controls
     private boolean invertControls = false;
 
-    public Player(float x, float y, float speed, IInputManager inputManager, IEntityManager entityManager) {
+    public Player(float x, float y, float speed, IInputManager inputManager) {
         super(x, y, speed);
         this.texture = new Texture(Gdx.files.internal("player.png"));
         this.inputManager = inputManager;
-        this.entityManager = entityManager;
         
         // Explicitly set previous position to match current position
         this.previousX = x;
@@ -36,6 +34,14 @@ public class Player extends MovableEntity {
 
         // Set the movement boundary at 3/4 of the screen height
         this.MAX_Y_POSITION = Gdx.graphics.getHeight() * 0.75f - this.height;
+    }
+
+    /**
+     * Sets the collision callback for this player
+     * @param callback The collision callback
+     */
+    public void setCollisionCallback(CollisionCallback callback) {
+        this.collisionCallback = callback;
     }
 
     @Override
@@ -73,9 +79,9 @@ public class Player extends MovableEntity {
             // Ensure entity stays within screen bounds
             newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - width));
 
-            // Using the IEntityManager interface method instead of local method
-            if (!entityManager.wouldCollideWithSpikes(newX, this.y, width, height)) {
-                this.x = newX; // Only move if no collision would occur
+            // Check collision using the callback
+            if (collisionCallback == null || !collisionCallback.wouldCollideWithSpikes(newX, this.y, width, height)) {
+                this.x = newX; // Only move if no collision would occur or no callback is set
             }
         }
 
@@ -85,9 +91,9 @@ public class Player extends MovableEntity {
             // Ensure player stays within vertical bounds
             newY = Math.max(0, Math.min(newY, MAX_Y_POSITION));
 
-            // Using the IEntityManager interface method
-            if (!entityManager.wouldCollideWithSpikes(this.x, newY, width, height)) {
-                this.y = newY; // Only move if no collision would occur
+            // Check collision using the callback
+            if (collisionCallback == null || !collisionCallback.wouldCollideWithSpikes(this.x, newY, width, height)) {
+                this.y = newY; // Only move if no collision would occur or no callback is set
             }
         }
     }
@@ -118,11 +124,6 @@ public class Player extends MovableEntity {
         this.x = x;
         // Apply the vertical movement restriction when setting position
         this.y = Math.min(y, MAX_Y_POSITION);
-    }
-
-    // Set entity manager after creation if needed - using interface now
-    public void setEntityManager(IEntityManager entityManager) {
-        this.entityManager = entityManager;
     }
 
     @Override

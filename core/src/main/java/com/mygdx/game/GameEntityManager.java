@@ -12,7 +12,8 @@ import com.badlogic.gdx.math.MathUtils;
 
 import java.util.Random;
 
-public class GameEntityManager extends AbstractEntityManager {
+public class GameEntityManager extends AbstractEntityManager implements CollisionCallback {
+    // This class now implements CollisionCallback to provide collision detection for the Player
     private static final Random random = new Random();
     private static final int NUM_BALLOONS = 8; // Number of balloons per row
     private static final float GAP_RATIO = 0.1f; // 10% gap between balloons
@@ -39,7 +40,13 @@ public class GameEntityManager extends AbstractEntityManager {
     }
 
     public void spawnPlayer(float x, float y, float speed, IInputManager inputManager) {
-        Player player = new Player(x, y, speed, inputManager, this); // Pass this entity manager
+        // Create Player with the new constructor (without EntityManager)
+        Player player = new Player(x, y, speed, inputManager);
+        
+        // Set this manager as the collision callback
+        player.setCollisionCallback(this);
+        
+        // Add player to entities
         addEntity(player);
     }
 
@@ -227,7 +234,7 @@ public class GameEntityManager extends AbstractEntityManager {
 
         System.out.println("Spawned " + spikesPlaced + " spikes below the top quarter of the screen");
     }
-
+    
     // Method to spawn a power-up
     public void spawnPowerUp() {
         float screenWidth = Gdx.graphics.getWidth();
@@ -303,5 +310,21 @@ public class GameEntityManager extends AbstractEntityManager {
     // Set GameScene reference after initialization if needed
     public void setGameScene(GameScene gameScene) {
         this.gameScene = gameScene;
+    }
+    
+    // Implementation of CollisionCallback interface
+    @Override
+    public boolean wouldCollideWithSpikes(float x, float y, float width, float height) {
+        // Create a temporary rectangle at the potential new position
+        Rectangle potentialPosition = new Rectangle(x, y, width, height);
+
+        // Check for spikes collisions
+        for (Entity entity : entities) {
+            if (entity instanceof Spikes && potentialPosition.overlaps(entity.getBoundingBox())) {
+                return true; // Would collide with a spike
+            }
+        }
+        
+        return false; // No collision would occur
     }
 }
