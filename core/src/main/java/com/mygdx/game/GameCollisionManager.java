@@ -1,8 +1,8 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Circle;
 import com.mygdx.game.AbstractCollision.AbstractCollisionManager;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractEntity.IEntityManager;
@@ -10,17 +10,17 @@ import com.mygdx.game.AbstractIO.Audio;
 
 public class GameCollisionManager extends AbstractCollisionManager {
     private final Audio audio = Audio.getInstance(); // Singleton instance of Audio class
-    private GameScene gameScene; // Reference to GameScene for score updates
+    private EntityScoreHandler scoreHandler; // Reference to score handler instead of GameScene
     private Circle tempCircle = new Circle(); // Reusable circle for collision detection
 
     public GameCollisionManager(IEntityManager entityManager) {
         super(entityManager);
     }
 
-    // Additional constructor that takes a reference to the GameScene
-    public GameCollisionManager(IEntityManager entityManager, GameScene gameScene) {
+    // Additional constructor that takes a reference to the EntityScoreHandler
+    public GameCollisionManager(IEntityManager entityManager, EntityScoreHandler scoreHandler) {
         super(entityManager);
-        this.gameScene = gameScene;
+        this.scoreHandler = scoreHandler;
     }
 
     @Override
@@ -70,14 +70,12 @@ public class GameCollisionManager extends AbstractCollisionManager {
                 // Add Balloon's value to the Player's score
                 player.handleCollision(collidedBalloon);
 
-                // Update score in GameScene if available - add only this individual balloon's
-                // value
-                if (gameScene != null) {
-                    gameScene.addScore(balloonValue);
+                // Update score in scoreHandler if available - add only this individual balloon's value
+                if (scoreHandler != null) {
+                    scoreHandler.addScore(balloonValue);
                 }
 
-                // Call removeBalloonRow() from GameEntityManager to remove all balloons in the same
-                // row
+                // Call removeBalloonRow() from GameEntityManager to remove all balloons in the same row
                 if (entityManager instanceof GameEntityManager) {
                     ((GameEntityManager) entityManager).removeBalloonRow(collidedBalloon);
                 }
@@ -105,9 +103,9 @@ public class GameCollisionManager extends AbstractCollisionManager {
                 float effectX = collidedPowerUp.getX();
                 float effectY = collidedPowerUp.getY();
 
-                // Process power-up effect through the GameScene's PowerUpManager
-                if (gameScene != null) {
-                    gameScene.processPowerUp(collidedPowerUp.getType(), effectX, effectY);
+                // Process power-up effect through the scoreHandler if available
+                if (scoreHandler != null) {
+                    scoreHandler.processPowerUp(collidedPowerUp.getType(), effectX, effectY);
                 }
 
                 // Mark power-up as collected
@@ -226,6 +224,11 @@ public class GameCollisionManager extends AbstractCollisionManager {
 
         // If uA and uB are between 0-1, lines are colliding
         return (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1);
+    }
+
+    // Set the score handler (useful for changing scenes)
+    public void setScoreHandler(EntityScoreHandler scoreHandler) {
+        this.scoreHandler = scoreHandler;
     }
 
     @Override

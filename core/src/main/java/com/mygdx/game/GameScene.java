@@ -23,7 +23,7 @@ import com.mygdx.game.AbstractIO.IOutputManager;
 import com.mygdx.game.AbstractScene.ISceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
-public class GameScene extends Scene implements GameStateListener, SceneContext {
+public class GameScene extends Scene implements GameStateListener, SceneContext, EntityScoreHandler {
     private Stage stage; // Handles UI elemements
     private Skin skin; // UI skin for button styling
     private Audio audio;
@@ -77,9 +77,9 @@ public class GameScene extends Scene implements GameStateListener, SceneContext 
         audio.setSoundEffectVolume("powerup", 0.3f);
         audio.setSoundEffectVolume("debuff", 0.3f);
 
-        // Initialize game components
-        entityManager = new GameEntityManager(this);
-        collisionManager = new GameCollisionManager(entityManager, this);
+        // Initialize game components - now using EntityScoreHandler (this) instead of passing GameScene
+        entityManager = new GameEntityManager(this);  // Pass 'this' as EntityScoreHandler
+        collisionManager = new GameCollisionManager(entityManager, this);  // Pass 'this' as EntityScoreHandler
 
         // Initialize managers - now with proper dependency structure
         // GameStateManager uses this as a GameStateListener
@@ -353,22 +353,14 @@ public class GameScene extends Scene implements GameStateListener, SceneContext 
         }
     }
 
-    /**
-     * Adds points to the player's score
-     * 
-     * @param points The points to add
-     */
+    // Implementation of EntityScoreHandler interface
+    
+    @Override
     public void addScore(int points) {
         gameStateManager.addScore(points, powerUpManager.isDoublePointsActive());
     }
-
-    /**
-     * Processes a power-up effect
-     * 
-     * @param powerUpType The type of power-up
-     * @param x           X position for effect
-     * @param y           Y position for effect
-     */
+    
+    @Override
     public void processPowerUp(int powerUpType, float x, float y) {
         powerUpManager.processPowerUp(powerUpType, x, y);
     }
@@ -500,5 +492,17 @@ public class GameScene extends Scene implements GameStateListener, SceneContext 
             entityManager.dispose();
         if (collisionManager != null)
             collisionManager.dispose();
+    }
+
+    // Method needed to support SceneContext interface
+    
+    public void extendGameTime(float seconds) {
+        gameStateManager.extendGameTime(seconds);
+    }
+
+    // Method needed to support SceneContext interface
+    
+    public void reduceGameTime(float seconds) {
+        gameStateManager.reduceGameTime(seconds);
     }
 }

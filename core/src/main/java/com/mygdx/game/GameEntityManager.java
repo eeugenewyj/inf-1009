@@ -1,16 +1,16 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.AbstractEntity.AbstractEntityManager;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractIO.IInputManager;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.MathUtils;
-
-import java.util.Random;
 
 public class GameEntityManager extends AbstractEntityManager implements CollisionCallback {
     // This class now implements CollisionCallback to provide collision detection for the Player
@@ -19,7 +19,7 @@ public class GameEntityManager extends AbstractEntityManager implements Collisio
     private static final float GAP_RATIO = 0.1f; // 10% gap between balloons
 
     private int rowsSpawned = 0; // Tracks the number of spawned rows
-    private GameScene gameScene; // Reference to GameScene
+    private EntityScoreHandler scoreHandler; // Reference to score handler instead of GameScene
 
     private float spikesSpawnTimer = 0; // Timer to track spikes spawn intervals
     private static final float SPIKES_LIFETIME = 5f; // Spikes disappear after 5 seconds
@@ -34,9 +34,9 @@ public class GameEntityManager extends AbstractEntityManager implements Collisio
         // Default constructor
     }
 
-    // Constructor with GameScene reference
-    public GameEntityManager(GameScene gameScene) {
-        this.gameScene = gameScene;
+    // Constructor with EntityScoreHandler reference
+    public GameEntityManager(EntityScoreHandler scoreHandler) {
+        this.scoreHandler = scoreHandler;
     }
 
     public void spawnPlayer(float x, float y, float speed, IInputManager inputManager) {
@@ -307,9 +307,9 @@ public class GameEntityManager extends AbstractEntityManager implements Collisio
         }
     }
 
-    // Set GameScene reference after initialization if needed
-    public void setGameScene(GameScene gameScene) {
-        this.gameScene = gameScene;
+    // Set EntityScoreHandler reference after initialization if needed
+    public void setScoreHandler(EntityScoreHandler scoreHandler) {
+        this.scoreHandler = scoreHandler;
     }
     
     // Implementation of CollisionCallback interface
