@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -17,7 +16,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractIO.Audio;
 import com.mygdx.game.AbstractIO.IInputManager;
@@ -102,6 +100,11 @@ public class GameScene extends Scene {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Pause Button Clicked! Opening StopScene...");
+                
+                // Preserve the current game state before pausing
+                GameStatePreserver.getInstance().preserveGameState(
+                    GameScene.this, gameStateManager, powerUpManager);
+                    
                 gameStateManager.pauseGame();
                 sceneManager.setScene("stop");
             }
@@ -193,10 +196,17 @@ public class GameScene extends Scene {
     public void show() {
         super.show();
         
-        // Check if we should restart the game (flag set from StopScene)
+        // First check if we should restart the game (flag set from StopScene)
         if (StopScene.shouldRestartGame()) {
             System.out.println("Restart flag detected - restarting game");
+            GameStatePreserver.getInstance().clearPreservedState();
             restartGame();
+        }
+        // If there's a preserved state and we're not restarting, restore it
+        else if (GameStatePreserver.getInstance().hasPreservedState()) {
+            System.out.println("Resuming previous game state");
+            // Don't initialize a new game, restore the previous state
+            GameStatePreserver.getInstance().restoreGameState(this, gameStateManager, powerUpManager);
         }
         
         Gdx.input.setInputProcessor(stage);

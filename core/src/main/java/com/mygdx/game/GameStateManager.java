@@ -178,4 +178,22 @@ public class GameStateManager {
     public void setGameActive(boolean active) {
         this.gameActive = active;
     }
+    /**
+ * Sets the player's score directly (for state restoration)
+ */
+    public void setPlayerScore(int score) {
+        this.playerScore = score;
+        // Update UI
+        gameScene.updateScoreLabel("Score: " + playerScore);
+    }
+
+    /**
+     * Sets the game timer directly (for state restoration)
+     */
+    public void setGameTimer(float timer) {
+        this.gameTimer = timer;
+        // Update UI
+        float timeRemaining = GAME_DURATION - timer;
+        gameScene.updateTimerLabel(String.format("Time: %.1f", timeRemaining));
+    }
 }

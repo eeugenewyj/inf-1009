@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
 import com.mygdx.game.AbstractIO.Audio;
 import com.mygdx.game.AbstractIO.IInputManager;
 import com.mygdx.game.AbstractIO.IOutputManager;
@@ -60,6 +59,7 @@ public class StopScene extends Scene {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Resume Button Clicked! Returning to game...");
+                shouldRestart = false; // Explicitly ensure we're not restarting
                 audio.resumeMusic(); // Resume the music
                 sceneManager.setScene("play"); // Switch back to the game scene
             }
