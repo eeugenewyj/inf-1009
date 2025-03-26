@@ -23,7 +23,7 @@ import com.mygdx.game.AbstractIO.IOutputManager;
 import com.mygdx.game.AbstractScene.ISceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
-public class GameScene extends Scene {
+public class GameScene extends Scene implements PowerUpListener {
     private Stage stage; // Handles UI elemements
     private Skin skin; // UI skin for button styling
     private Audio audio;
@@ -69,7 +69,7 @@ public class GameScene extends Scene {
 
         // Initialize Audio
         audio = Audio.getInstance();
-        audio.loadSoundEffect("tree", "Music/tree.mp3");
+        audio.loadSoundEffect("spikes", "Music/spikes.mp3");
         audio.loadSoundEffect("player", "Music/collisioneffect.mp3");
         audio.loadSoundEffect("powerup", "Music/powerup.mp3");
         audio.loadSoundEffect("debuff", "Music/debuff.mp3");
@@ -81,9 +81,10 @@ public class GameScene extends Scene {
         entityManager = new GameEntityManager(this);
         collisionManager = new GameCollisionManager(entityManager, this);
 
-        // Initialize managers (order matters - GameStateManager first, then
-        // PowerUpManager)
+        // Initialize managers (order matters - GameStateManager first, then PowerUpManager)
         gameStateManager = new GameStateManager(this, audio);
+        
+        // Now PowerUpManager uses this instance as a PowerUpListener
         powerUpManager = new PowerUpManager(this, gameStateManager);
 
         // Initialize UI elements
@@ -289,11 +290,8 @@ public class GameScene extends Scene {
         entityManager.spawnBalloonsRow();
     }
 
-    /**
-     * Updates the power-up label
-     * 
-     * @param text The text to display
-     */
+    // PowerUpListener interface implementation methods
+    @Override
     public void updatePowerUpLabel(String text) {
         powerUpLabel.setText(text);
     }
@@ -336,20 +334,45 @@ public class GameScene extends Scene {
         powerUpManager.processPowerUp(powerUpType, x, y);
     }
 
-    /**
-     * Extends the game time by the specified amount
-     * 
-     * @param seconds The number of seconds to add
-     */
+    // PowerUpListener interface implementation
+    @Override
+    public GameEntityManager getEntityManager() {
+        return entityManager;
+    }
+
+    @Override
+    public void createPowerUpEffect(int powerUpType, float x, float y) {
+        PowerUpEffect effect = null;
+
+        switch (powerUpType) {
+            case PowerUp.TYPE_DOUBLE_POINTS:
+                effect = PowerUpEffect.createDoublePointsEffect(x, y);
+                break;
+            case PowerUp.TYPE_EXTEND_TIME:
+                effect = PowerUpEffect.createTimeExtensionEffect(x, y);
+                break;
+            case PowerUp.TYPE_REDUCE_TIME:
+                effect = PowerUpEffect.createEffect(x, y, "-3 SECONDS!", Color.RED, 2.0f);
+                break;
+            case PowerUp.TYPE_INVERT_CONTROLS:
+                effect = PowerUpEffect.createEffect(x, y, "CONTROLS INVERTED!", Color.PURPLE, 2.0f);
+                break;
+            case PowerUp.TYPE_SLOW_PLAYER:
+                effect = PowerUpEffect.createEffect(x, y, "SPEED REDUCED!", Color.ORANGE, 2.0f);
+                break;
+        }
+
+        if (effect != null) {
+            entityManager.addEntity(effect);
+        }
+    }
+
+    @Override
     public void extendGameTime(float seconds) {
         gameStateManager.extendGameTime(seconds);
     }
 
-    /**
-     * Reduces the game time by the specified amount
-     * 
-     * @param seconds The number of seconds to subtract
-     */
+    @Override
     public void reduceGameTime(float seconds) {
         gameStateManager.reduceGameTime(seconds);
     }
@@ -389,6 +412,7 @@ public class GameScene extends Scene {
      * @param isNewBestScore Whether this is a new high score
      */
     public void showGameOver(int finalScore, boolean isNewBestScore) {
+        finalScoreLabel.setText("Final Score: " + finalScore);
         finalScoreLabel.setText("Final Score: " + finalScore);
         highScoreLabel.setVisible(isNewBestScore);
 
@@ -452,15 +476,6 @@ public class GameScene extends Scene {
     }
 
     /**
-     * Gets the entity manager
-     * 
-     * @return The entity manager
-     */
-    public GameEntityManager getEntityManager() {
-        return entityManager;
-    }
-
-    /**
      * Get the current player score
      * 
      * @return The player's score
@@ -496,3 +511,4 @@ public class GameScene extends Scene {
             collisionManager.dispose();
     }
 }
+        

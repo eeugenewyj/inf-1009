@@ -13,7 +13,7 @@ public class GameAudioManager {
     // Initialises audio resources
     private void initializeAudio() {
         // Load sound effects with their respective keys and file paths
-        audio.loadSoundEffect("spikes", "Music/tree.mp3");
+        audio.loadSoundEffect("spikes", "Music/spikes.mp3");
         audio.loadSoundEffect("player", "Music/collisioneffect.mp3");
         audio.loadSoundEffect("powerup", "Music/powerup.mp3");
         audio.loadSoundEffect("debuff", "Music/debuff.mp3");

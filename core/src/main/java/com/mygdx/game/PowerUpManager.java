@@ -19,18 +19,18 @@ public class PowerUpManager {
     private static final float SLOW_PLAYER_DURATION = 4f;
     private float originalPlayerSpeed = 200f;
 
-    // Reference to game scene for UI updates and entity management
-    private GameScene gameScene;
+    // Reference to power-up listener for UI updates and entity management
+    private PowerUpListener powerUpListener;
     private GameStateManager gameStateManager;
 
     /**
      * Creates a new PowerUpManager
      * 
-     * @param gameScene        The game scene this manager will work with
-     * @param gameStateManager The game state manager
+     * @param powerUpListener   The listener that will handle power-up events
+     * @param gameStateManager  The game state manager
      */
-    public PowerUpManager(GameScene gameScene, GameStateManager gameStateManager) {
-        this.gameScene = gameScene;
+    public PowerUpManager(PowerUpListener powerUpListener, GameStateManager gameStateManager) {
+        this.powerUpListener = powerUpListener;
         this.gameStateManager = gameStateManager;
     }
 
@@ -60,7 +60,7 @@ public class PowerUpManager {
             if (invertControlsTimer >= INVERT_CONTROLS_DURATION) {
                 invertControlsActive = false;
                 // Reset invert flag on all players
-                for (Entity entity : gameScene.getEntityManager().getEntities()) {
+                for (Entity entity : powerUpListener.getEntityManager().getEntities()) {
                     if (entity instanceof Player) {
                         Player player = (Player) entity;
                         player.setInvertControls(false);
@@ -79,7 +79,7 @@ public class PowerUpManager {
             if (slowPlayerTimer >= SLOW_PLAYER_DURATION) {
                 slowPlayerActive = false;
                 // Reset speed on all players
-                for (Entity entity : gameScene.getEntityManager().getEntities()) {
+                for (Entity entity : powerUpListener.getEntityManager().getEntities()) {
                     if (entity instanceof Player) {
                         Player player = (Player) entity;
                         player.setSpeed(originalPlayerSpeed);
@@ -121,8 +121,8 @@ public class PowerUpManager {
             labelText += String.format("(%.1fs)", remaining);
         }
 
-        // Update the power-up label in GameScene
-        gameScene.updatePowerUpLabel(labelText);
+        // Update the power-up label through listener
+        powerUpListener.updatePowerUpLabel(labelText);
     }
 
     /**
@@ -150,7 +150,7 @@ public class PowerUpManager {
      * @param seconds The number of seconds to add
      */
     public void extendGameTime(float seconds) {
-        gameStateManager.extendGameTime(seconds);
+        powerUpListener.extendGameTime(seconds);
         updatePowerUpLabel();
         System.out.println("Game time extended by " + seconds + " seconds!");
     }
@@ -161,7 +161,7 @@ public class PowerUpManager {
      * @param seconds The number of seconds to subtract
      */
     public void reduceGameTime(float seconds) {
-        gameStateManager.reduceGameTime(seconds);
+        powerUpListener.reduceGameTime(seconds);
         updatePowerUpLabel();
         System.out.println("Game time reduced by " + seconds + " seconds!");
     }
@@ -174,7 +174,7 @@ public class PowerUpManager {
         invertControlsTimer = 0;
 
         // Set invert flag on all players
-        for (Entity entity : gameScene.getEntityManager().getEntities()) {
+        for (Entity entity : powerUpListener.getEntityManager().getEntities()) {
             if (entity instanceof Player) {
                 Player player = (Player) entity;
                 player.setInvertControls(true);
@@ -193,7 +193,7 @@ public class PowerUpManager {
         slowPlayerTimer = 0;
 
         // Slow down all players
-        for (Entity entity : gameScene.getEntityManager().getEntities()) {
+        for (Entity entity : powerUpListener.getEntityManager().getEntities()) {
             if (entity instanceof Player) {
                 Player player = (Player) entity;
                 originalPlayerSpeed = player.getSpeed();
@@ -203,39 +203,6 @@ public class PowerUpManager {
 
         updatePowerUpLabel();
         System.out.println("Player slowed!");
-    }
-
-    /**
-     * Creates a visual power-up effect
-     * 
-     * @param powerUpType The type of power-up
-     * @param x           The x position for the effect
-     * @param y           The y position for the effect
-     */
-    public void createPowerUpEffect(int powerUpType, float x, float y) {
-        PowerUpEffect effect = null;
-
-        switch (powerUpType) {
-            case PowerUp.TYPE_DOUBLE_POINTS:
-                effect = PowerUpEffect.createDoublePointsEffect(x, y);
-                break;
-            case PowerUp.TYPE_EXTEND_TIME:
-                effect = PowerUpEffect.createTimeExtensionEffect(x, y);
-                break;
-            case PowerUp.TYPE_REDUCE_TIME:
-                effect = PowerUpEffect.createEffect(x, y, "-3 SECONDS!", Color.RED, 2.0f);
-                break;
-            case PowerUp.TYPE_INVERT_CONTROLS:
-                effect = PowerUpEffect.createEffect(x, y, "CONTROLS INVERTED!", Color.PURPLE, 2.0f);
-                break;
-            case PowerUp.TYPE_SLOW_PLAYER:
-                effect = PowerUpEffect.createEffect(x, y, "SPEED REDUCED!", Color.ORANGE, 2.0f);
-                break;
-        }
-
-        if (effect != null) {
-            gameScene.getEntityManager().addEntity(effect);
-        }
     }
 
     /**
@@ -264,8 +231,8 @@ public class PowerUpManager {
                 break;
         }
 
-        // Create visual effect
-        createPowerUpEffect(powerUpType, x, y);
+        // Create visual effect through listener
+        powerUpListener.createPowerUpEffect(powerUpType, x, y);
     }
 
     /**
@@ -280,7 +247,7 @@ public class PowerUpManager {
         slowPlayerTimer = 0;
 
         // Reset any player modifications
-        for (Entity entity : gameScene.getEntityManager().getEntities()) {
+        for (Entity entity : powerUpListener.getEntityManager().getEntities()) {
             if (entity instanceof Player) {
                 Player player = (Player) entity;
                 player.setInvertControls(false);
