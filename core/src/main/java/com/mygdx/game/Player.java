@@ -147,10 +147,7 @@ public class Player extends MovableEntity {
         // Also update previous position when manually setting position
         this.previousX = this.x;
         this.previousY = this.y;
-<<<<<<< HEAD
         
-=======
->>>>>>> c151fe7d90bc21246194284b9e824f65c3fac2de
         this.x = x;
 
         // Apply the vertical movement restriction when setting position

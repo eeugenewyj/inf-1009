@@ -55,7 +55,6 @@ public class Ball extends MovableEntity {
         // Choose a random color for this balloon
         balloonColor = BALLOON_COLORS[random.nextInt(BALLOON_COLORS.length)];
 
-<<<<<<< HEAD
         // Load balloon texture
         balloonTexture = new Texture(Gdx.files.internal("balloon.png"));
 
@@ -89,12 +88,6 @@ public class Ball extends MovableEntity {
         balloonTexture = new Texture(Gdx.files.internal("balloon.png"));
         
         // Initialize the font for displaying text
-=======
-        // Load balloon texture
-        balloonTexture = new Texture(Gdx.files.internal("balloon.png"));
-
-        // Initialise the font for displaying text
->>>>>>> c151fe7d90bc21246194284b9e824f65c3fac2de
         font = new BitmapFont();
         font.setColor(Color.BLACK);
         font.getData().setScale(1.1f); // Slightly larger font for better visibility

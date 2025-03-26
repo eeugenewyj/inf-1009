@@ -24,7 +24,6 @@ public class GameStatePreserver {
     private float invertControlsTimer = 0; // Timer for the invert controls power-up
     private boolean slowPlayerActive = false; // Whether the slow player power-up is active
     private float slowPlayerTimer = 0; // Timer for the slow player power-up
-<<<<<<< HEAD
     
     // New fields to store entity states
     private Map<Integer, EntityState> entityStates = new HashMap<>();
@@ -92,11 +91,6 @@ public class GameStatePreserver {
     }
 
     // Private constructor for singleton
-=======
-
-    // Additional states could be added as needed
-
->>>>>>> c151fe7d90bc21246194284b9e824f65c3fac2de
     private GameStatePreserver() {
         // Private constructor for singleton
     }
@@ -113,7 +107,6 @@ public class GameStatePreserver {
         this.playerScore = stateManager.getPlayerScore();
         this.gameTimer = stateManager.getGameTimer();
         this.doublePointsActive = powerUpManager.isDoublePointsActive();
-<<<<<<< HEAD
         this.invertControlsActive = false; // Reset inverted controls on pause
         this.slowPlayerActive = false; // Reset slow player on pause
         
@@ -142,15 +135,6 @@ public class GameStatePreserver {
     }
 
     // Determines if there's a preserved state to restore
-=======
-        // Store other state variables as needed
-
-        System.out.println("Game state preserved: Score=" + playerScore + ", Timer=" + gameTimer);
-        this.hasPreservedState = true;
-    }
-
-    // Determines if there's a preserved statae to restore
->>>>>>> c151fe7d90bc21246194284b9e824f65c3fac2de
     public boolean hasPreservedState() {
         return hasPreservedState;
     }
@@ -166,10 +150,7 @@ public class GameStatePreserver {
         invertControlsTimer = 0;
         slowPlayerActive = false;
         slowPlayerTimer = 0;
-<<<<<<< HEAD
         entityStates.clear();
-=======
->>>>>>> c151fe7d90bc21246194284b9e824f65c3fac2de
 
         System.out.println("Game state cleared");
     }
@@ -187,7 +168,6 @@ public class GameStatePreserver {
         if (doublePointsActive) {
             powerUpManager.activateDoublePoints();
         }
-<<<<<<< HEAD
         
         // First, clear all existing entities
         GameEntityManager entityManager = gameScene.getEntityManager();
@@ -276,13 +256,6 @@ public class GameStatePreserver {
         return entity;
     }
 
-=======
-        // Restore other state variables
-
-        System.out.println("Game state restored: Score=" + playerScore + ", Timer=" + gameTimer);
-    }
-
->>>>>>> c151fe7d90bc21246194284b9e824f65c3fac2de
     // Getters for state variables
     public int getPlayerScore() {
         return playerScore;
