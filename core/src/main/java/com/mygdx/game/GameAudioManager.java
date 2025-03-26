@@ -13,7 +13,7 @@ public class GameAudioManager {
     // Initialises audio resources
     private void initializeAudio() {
         // Load sound effects with their respective keys and file paths
-        audio.loadSoundEffect("tree", "Music/tree.mp3");
+        audio.loadSoundEffect("spikes", "Music/tree.mp3");
         audio.loadSoundEffect("player", "Music/collisioneffect.mp3");
         audio.loadSoundEffect("powerup", "Music/powerup.mp3");
         audio.loadSoundEffect("debuff", "Music/debuff.mp3");
@@ -22,8 +22,8 @@ public class GameAudioManager {
         audio.setSoundEffectVolume("debuff", 0.3f); // Reduce to 30% volume
     }
 
-    public void playTreeCollisionSound() {
-        audio.playSoundEffect("tree");
+    public void playSpikesCollisionSound() {
+        audio.playSoundEffect("spikes");
     }
 
     public void playPlayerCollectionSound() {

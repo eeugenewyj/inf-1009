@@ -13,22 +13,21 @@ import com.badlogic.gdx.math.MathUtils;
 import java.util.Random;
 
 public class GameEntityManager extends AbstractEntityManager {
-    private static final int NUM_BALLS = 8; // Number of balloons per row
+    private static final Random random = new Random();
+    private static final int NUM_BALLOONS = 8; // Number of balloons per row
     private static final float GAP_RATIO = 0.1f; // 10% gap between balloons
 
     private int rowsSpawned = 0; // Tracks the number of spawned rows
     private GameScene gameScene; // Reference to GameScene
 
-    private float treeSpawnTimer = 0; // Timer to track tree spawn intervals
-    private static final float TREE_LIFETIME = 5f; // Trees disappear after 5 seconds
-    private static final float TREE_SPAWN_INTERVAL = 5f; // Every 5 seconds
+    private float spikesSpawnTimer = 0; // Timer to track spikes spawn intervals
+    private static final float SPIKES_LIFETIME = 5f; // Spikes disappear after 5 seconds
+    private static final float SPIKES_SPAWN_INTERVAL = 5f; // Every 5 seconds
 
     // Power-up related fields
     private float powerUpSpawnTimer = 0;
-    private static final float POWERUP_SPAWN_INTERVAL = 3.5f; // Every 8 seconds
-    private static final float POWERUP_SPAWN_CHANCE = 0.9f; // 70% chance to spawn
-
-    private static final Random random = new Random();
+    private static final float POWERUP_SPAWN_INTERVAL = 3.5f; // Every 3.5 seconds
+    private static final float POWERUP_SPAWN_CHANCE = 0.9f; // 90% chance to spawn
 
     public GameEntityManager() {
         // Default constructor
@@ -39,92 +38,54 @@ public class GameEntityManager extends AbstractEntityManager {
         this.gameScene = gameScene;
     }
 
-    @Override
-    public void updateEntities(float deltaTime) {
-        // Removes inactive entities from list
-        entities.removeIf(entity -> {
-            if (!entity.isActive()) {
-                entity.dispose();
-                return true;
-            }
-            return false;
-        });
-
-        // Updates the behavior of each entity
-        for (Entity entity : entities) {
-            entity.update(deltaTime);
-        }
-
-        // Handle tree spawning timer
-        treeSpawnTimer += deltaTime;
-        if (treeSpawnTimer >= TREE_SPAWN_INTERVAL) {
-            spawnTrees(4); // Spawn 4 trees
-            treeSpawnTimer = 0; // Reset timer
-        }
-
-        // Handle power-up spawning timer
-        powerUpSpawnTimer += deltaTime;
-        if (powerUpSpawnTimer >= POWERUP_SPAWN_INTERVAL) {
-            // Chance-based spawning
-            if (MathUtils.random() < POWERUP_SPAWN_CHANCE) {
-                spawnPowerUp();
-            }
-            powerUpSpawnTimer = 0; // Reset timer
-        }
-
-        // Remove trees that have existed longer than TREE_LIFETIME
-        removeExpiredTrees(deltaTime);
-        removeRowIfAtBottomAndSpawn();
-    }
-
     public void spawnPlayer(float x, float y, float speed, IInputManager inputManager) {
         Player player = new Player(x, y, speed, inputManager, this); // Pass this entity manager
         addEntity(player);
     }
 
-    public void spawnBallsRow() {
+    public void spawnBalloonsRow() {
         float startX = 0; // Starting X position
-        float topYPosition = Gdx.graphics.getHeight() + (Ball.getBallWidth() / 2); // Place it just outside the screen
+        float topYPosition = Gdx.graphics.getHeight() + (Balloon.getBalloonWidth() / 2); // Place it just outside the screen
 
         // Spawn balloons in a row
-        for (int i = 0; i < NUM_BALLS; i++) {
-            float xPosition = startX + i * (Ball.getBallWidth() * (1 + GAP_RATIO));
-            addEntity(new Ball(xPosition, topYPosition));
+        for (int i = 0; i < NUM_BALLOONS; i++) {
+            float xPosition = startX + i * (Balloon.getBalloonWidth() * (1 + GAP_RATIO));
+            addEntity(new Balloon(xPosition, topYPosition));
         }
 
         rowsSpawned++;
 
         // Start falling animation for previous row
-        makeBallsFall();
+        makeBalloonsFall();
     }
 
     // Makes all active balloons fall down
-    private void makeBallsFall() {
+    private void makeBalloonsFall() {
         for (Entity entity : getEntities()) {
-            if (entity instanceof Ball) {
-                ((Ball) entity).moveAIControlled();
+            if (entity instanceof Balloon) {
+                ((Balloon) entity).moveAIControlled();
             }
         }
     }
 
     // Remove all balloons in the same row as the collided balloon
-    public void removeBallsRow(Ball collidedBall) {
-        float rowY = collidedBall.getY(); // Get Y position of the collided ball
+    public void removeBalloonRow(Balloon collidedBalloon) {
+        float rowY = collidedBalloon.getY(); // Get Y position of the collided balloon
 
         // Just remove all balloons in the same row
-        List<Ball> ballsToRemove = new ArrayList<>();
+        List<Balloon> balloonsToRemove = new ArrayList<>();
 
         // Identify all balloons to remove
         for (Entity entity : getEntities()) {
-            if (entity instanceof Ball && entity.getY() == rowY) {
-                Ball ball = (Ball) entity;
-                ballsToRemove.add(ball);
+            if (entity instanceof Balloon && entity.getY() == rowY) {
+                Balloon balloon = (Balloon) entity;
+                balloonsToRemove.add(balloon);
             }
         }
 
         // Remove the balloons
-        for (Ball ball : ballsToRemove) {
-            ball.setActive(false);
+        for (Balloon balloon : balloonsToRemove) {
+            balloon.setActive(false);
         }
     }
 
@@ -134,7 +95,7 @@ public class GameEntityManager extends AbstractEntityManager {
 
         List<Float> rowYs = new ArrayList<>();
         for (Entity e : getEntities()) {
-            if (e instanceof Ball) {
+            if (e instanceof Balloon) {
                 float y = e.getY();
                 if (!rowYs.contains(y))
                     rowYs.add(y);
@@ -142,19 +103,19 @@ public class GameEntityManager extends AbstractEntityManager {
         }
 
         for (float rowY : rowYs) {
-            List<Ball> rowBalls = new ArrayList<>();
+            List<Balloon> rowBalloons = new ArrayList<>();
             for (Entity e : getEntities()) {
-                if (e instanceof Ball && e.getY() == rowY) {
-                    rowBalls.add((Ball) e);
+                if (e instanceof Balloon && e.getY() == rowY) {
+                    rowBalloons.add((Balloon) e);
                 }
             }
 
-            if (!rowBalls.isEmpty() && rowBalls.get(0).getY() <= bottomThreshold) {
+            if (!rowBalloons.isEmpty() && rowBalloons.get(0).getY() <= bottomThreshold) {
                 // Remove and spawn
-                for (Ball ball : rowBalls) {
-                    ball.setActive(false);
+                for (Balloon balloon : rowBalloons) {
+                    balloon.setActive(false);
                 }
-                spawnBallsRow();
+                spawnBalloonsRow();
             }
         }
     }
@@ -177,12 +138,12 @@ public class GameEntityManager extends AbstractEntityManager {
         System.out.println("Spawned Player at: " + playerX + ", " + playerY);
     }
 
-    public void spawnTree(float x, float y) {
-        addEntity(new Tree(x, y));
+    public void spawnSpikes(float x, float y) {
+        addEntity(new Spikes(x, y));
     }
 
-    // Updated method to spawn trees anywhere on screen except near the player
-    public void spawnTrees(int count) {
+    // Updated method to spawn spikes anywhere on screen except near the player
+    public void spawnSpikes(int count) {
         // Get screen dimensions
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
@@ -190,7 +151,7 @@ public class GameEntityManager extends AbstractEntityManager {
         // Calculate the top quarter boundary - spikes won't spawn above this line
         float topQuarterBoundary = screenHeight * 0.75f;
 
-        // Find player position to avoid spawning trees on top of them
+        // Find player position to avoid spawning spikes on top of them
         Player player = null;
         for (Entity entity : getEntities()) {
             if (entity instanceof Player) {
@@ -199,14 +160,14 @@ public class GameEntityManager extends AbstractEntityManager {
             }
         }
 
-        // Buffer distance to keep between trees and player
+        // Buffer distance to keep between spikes and player
         float safeDistance = 100;
 
-        // Keep track of placed trees to avoid overlapping trees
-        List<Rectangle> placedTreeBounds = new ArrayList<>();
+        // Keep track of placed spikes to avoid overlapping spikes
+        List<Rectangle> placedSpikesBounds = new ArrayList<>();
 
-        // Try to place each tree
-        int treesPlaced = 0;
+        // Try to place each spike
+        int spikesPlaced = 0;
         int maxAttempts = 100; // Prevent infinite loops
 
         for (int i = 0; i < count; i++) {
@@ -219,8 +180,8 @@ public class GameEntityManager extends AbstractEntityManager {
                 x = MathUtils.random(50, screenWidth - 50);
                 y = MathUtils.random(50, topQuarterBoundary - 50); // Keep below top quarter boundary
 
-                // Create a rectangle for this potential tree position
-                Rectangle potentialTreeBounds = new Rectangle(x, y, 50, 50);
+                // Create a rectangle for this potential spike position
+                Rectangle potentialSpikesBounds = new Rectangle(x, y, 50, 50);
 
                 // Assume position is valid until proven otherwise
                 validPosition = true;
@@ -235,17 +196,17 @@ public class GameEntityManager extends AbstractEntityManager {
                     }
                 }
 
-                // Check if too close to ball rows
+                // Check if too close to balloon rows
                 for (Entity entity : getEntities()) {
-                    if (entity instanceof Ball && potentialTreeBounds.overlaps(entity.getBoundingBox())) {
+                    if (entity instanceof Balloon && potentialSpikesBounds.overlaps(entity.getBoundingBox())) {
                         validPosition = false;
                         break;
                     }
                 }
 
-                // Check if overlapping with existing trees
-                for (Rectangle existingTree : placedTreeBounds) {
-                    if (existingTree.overlaps(potentialTreeBounds)) {
+                // Check if overlapping with existing spikes
+                for (Rectangle existingSpikes : placedSpikesBounds) {
+                    if (existingSpikes.overlaps(potentialSpikesBounds)) {
                         validPosition = false;
                         break;
                     }
@@ -254,17 +215,17 @@ public class GameEntityManager extends AbstractEntityManager {
                 attempts++;
             }
 
-            // If we found a valid position, place the tree
+            // If we found a valid position, place the spikes
             if (validPosition) {
-                Tree tree = new Tree(x, y);
-                tree.setLifetime(TREE_LIFETIME);
-                addEntity(tree);
-                placedTreeBounds.add(new Rectangle(x, y, 50, 50));
-                treesPlaced++;
+                Spikes spikes = new Spikes(x, y);
+                spikes.setLifetime(SPIKES_LIFETIME);
+                addEntity(spikes);
+                placedSpikesBounds.add(new Rectangle(x, y, 50, 50));
+                spikesPlaced++;
             }
         }
 
-        System.out.println("Spawned " + treesPlaced + " spikes below the top quarter of the screen");
+        System.out.println("Spawned " + spikesPlaced + " spikes below the top quarter of the screen");
     }
 
     // Method to spawn a power-up
@@ -282,21 +243,54 @@ public class GameEntityManager extends AbstractEntityManager {
                 (powerUp.getType() == PowerUp.TYPE_DOUBLE_POINTS ? "Double Points" : "Extend Time"));
     }
 
-    private void removeExpiredTrees(float deltaTime) {
+    @Override
+    public void updateEntities(float deltaTime) {
+        // Removes inactive entities from list
+        entities.removeIf(entity -> {
+            if (!entity.isActive()) {
+                entity.dispose();
+                return true;
+            }
+            return false;
+        });
+
+        // Updates the behavior of each entity
+        for (Entity entity : entities) {
+            entity.update(deltaTime);
+        }
+
+        // Handle spikes spawning timer
+        spikesSpawnTimer += deltaTime;
+        if (spikesSpawnTimer >= SPIKES_SPAWN_INTERVAL) {
+            spawnSpikes(4); // Spawn 4 spikes
+            spikesSpawnTimer = 0; // Reset timer
+        }
+
+        // Handle power-up spawning timer
+        powerUpSpawnTimer += deltaTime;
+        if (powerUpSpawnTimer >= POWERUP_SPAWN_INTERVAL) {
+            // Chance-based spawning
+            if (MathUtils.random() < POWERUP_SPAWN_CHANCE) {
+                spawnPowerUp();
+            }
+            powerUpSpawnTimer = 0; // Reset timer
+        }
+
+        // Remove spikes that have existed longer than SPIKES_LIFETIME
+        removeExpiredSpikes(deltaTime);
+        removeRowIfAtBottomAndSpawn();
+    }
+
+    private void removeExpiredSpikes(float deltaTime) {
         for (Entity entity : getEntities()) {
-            if (entity instanceof Tree) {
-                Tree tree = (Tree) entity;
-                tree.updateLifeTime(deltaTime);
-                if (tree.isExpired()) {
+            if (entity instanceof Spikes) {
+                Spikes spikes = (Spikes) entity;
+                spikes.updateLifeTime(deltaTime);
+                if (spikes.isExpired()) {
                     entity.setActive(false);
                 }
             }
         }
-    }
-
-    // Set GameScene reference after initialization if needed
-    public void setGameScene(GameScene gameScene) {
-        this.gameScene = gameScene;
     }
 
     @Override
@@ -304,5 +298,10 @@ public class GameEntityManager extends AbstractEntityManager {
         for (Entity entity : getEntities()) {
             entity.dispose();
         }
+    }
+
+    // Set GameScene reference after initialization if needed
+    public void setGameScene(GameScene gameScene) {
+        this.gameScene = gameScene;
     }
 }

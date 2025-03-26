@@ -285,8 +285,8 @@ public class GameScene extends Scene {
 
         // Spawn different entities
         entityManager.spawnPlayers(1, inputManager);
-        entityManager.spawnTrees(5);
-        entityManager.spawnBallsRow();
+        entityManager.spawnSpikes(4);
+        entityManager.spawnBalloonsRow();
     }
 
     /**

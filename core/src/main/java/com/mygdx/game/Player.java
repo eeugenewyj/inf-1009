@@ -27,11 +27,11 @@ public class Player extends MovableEntity {
         this.texture = new Texture(Gdx.files.internal("player.png"));
         this.inputManager = inputManager; // Inject dependency
         this.entityManager = entityManager;
-
+        
         // Explicitly set previous position to match current position
         this.previousX = x;
         this.previousY = y;
-
+        
         this.width = 50; // Make sure width and height are explicitly set
         this.height = 50;
 
@@ -55,14 +55,8 @@ public class Player extends MovableEntity {
     }
 
     @Override
-    public void moveAIControlled() {
-        // Not used for Player
-    }
-
-    @Override
     public void moveUserControlled(float deltaTime) {
-        // Always store current position as previous before moving - critical for
-        // pause/resume
+        // Always store current position as previous before moving - critical for pause/resume
         this.previousX = this.x;
         this.previousY = this.y;
 
@@ -81,8 +75,8 @@ public class Player extends MovableEntity {
             // Ensure entity stays within screen bounds
             newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - width));
 
-            // Check if new position would cause a tree collision
-            if (!wouldCollideWithTree(newX, this.y)) {
+            // Check if new position would cause a spike collision
+            if (!wouldCollideWithSpikes(newX, this.y)) {
                 this.x = newX; // Only move if no collision would occur
             }
         }
@@ -95,38 +89,10 @@ public class Player extends MovableEntity {
             // MAX_Y_POSITION)
             newY = Math.max(0, Math.min(newY, MAX_Y_POSITION));
 
-            // Check if new position would cause a tree collision
-            if (!wouldCollideWithTree(this.x, newY)) {
+            // Check if new position would cause a spike collision
+            if (!wouldCollideWithSpikes(this.x, newY)) {
                 this.y = newY; // Only move if no collision would occur
             }
-        }
-    }
-
-    // Check if moving to a position would cause a collision with any tree
-    private boolean wouldCollideWithTree(float newX, float newY) {
-        // Create a temporary rectangle at the potential new position
-        Rectangle potentialPosition = new Rectangle(newX, newY, width, height);
-
-        // Get all entities and check for tree collisions
-        if (entityManager != null) {
-            List<Entity> entities = entityManager.getEntities();
-            for (Entity entity : entities) {
-                if (entity instanceof Tree && potentialPosition.overlaps(entity.getBoundingBox())) {
-                    // System.out.println("Would collide with tree - movement prevented");
-                    return true; // Would collide with a tree
-                }
-            }
-        }
-
-        return false; // No collision would occur
-    }
-
-    @Override
-    public void handleCollision(iCollidable other) {
-        if (other instanceof Tree) {
-            System.out.println("Player collided with a tree!");
-        } else if (other instanceof Ball) {
-            System.out.println("Player collected a ball: " + ((Ball) other).getValue());
         }
     }
 
@@ -148,6 +114,30 @@ public class Player extends MovableEntity {
         return invertControls;
     }
 
+    // Check if moving to a position would cause a collision with any spikes
+    private boolean wouldCollideWithSpikes(float newX, float newY) {
+        // Create a temporary rectangle at the potential new position
+        Rectangle potentialPosition = new Rectangle(newX, newY, width, height);
+
+        // Get all entities and check for spikes collisions
+        if (entityManager != null) {
+            List<Entity> entities = entityManager.getEntities();
+            for (Entity entity : entities) {
+                if (entity instanceof Spikes && potentialPosition.overlaps(entity.getBoundingBox())) {
+                    // System.out.println("Would collide with spikes - movement prevented");
+                    return true; // Would collide with a spike
+                }
+            }
+        }
+
+        return false; // No collision would occur
+    }
+
+    @Override
+    public void moveAIControlled() {
+        // Not used for Player
+    }
+
     public Rectangle getBoundingBox() {
         return new Rectangle(x, y, width, height);
     }
@@ -157,7 +147,7 @@ public class Player extends MovableEntity {
         // Also update previous position when manually setting position
         this.previousX = this.x;
         this.previousY = this.y;
-
+        
         this.x = x;
 
         // Apply the vertical movement restriction when setting position
@@ -167,6 +157,15 @@ public class Player extends MovableEntity {
     // Set entity manager after creation if needed
     public void setEntityManager(GameEntityManager entityManager) {
         this.entityManager = entityManager;
+    }
+
+    @Override
+    public void handleCollision(iCollidable other) {
+        if (other instanceof Spikes) {
+            System.out.println("Player collided with spikes!");
+        } else if (other instanceof Balloon) {
+            System.out.println("Player collected a balloon: " + ((Balloon) other).getValue());
+        }
     }
 
     @Override

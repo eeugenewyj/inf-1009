@@ -25,20 +25,20 @@ public class GameCollisionManager extends AbstractCollisionManager {
 
     @Override
     protected void handleCollision(Entity entity) {
-        // Improved tree collision handling for players
+        // Improved spikes collision handling for players
         if (entity instanceof Player) {
             Player player = (Player) entity;
 
-            // First check for tree collisions
-            boolean hasTreeCollision = false;
+            // First check for spikes collisions
+            boolean hasSpikesCollision = false;
             for (Entity other : entityManager.getEntities()) {
-                if (other instanceof Tree && player.getBoundingBox().overlaps(other.getBoundingBox())) {
-                    hasTreeCollision = true;
+                if (other instanceof Spikes && player.getBoundingBox().overlaps(other.getBoundingBox())) {
+                    hasSpikesCollision = true;
 
                     // Play sound if this is a new collision
                     if (!player.hasCollided()) {
-                        player.handleCollision((Tree) other);
-                        audio.playSoundEffect("tree");
+                        player.handleCollision((Spikes) other);
+                        audio.playSoundEffect("spikes");
                         player.setCollided(true);
                     }
 
@@ -49,42 +49,42 @@ public class GameCollisionManager extends AbstractCollisionManager {
                 }
             }
 
-            // Reset collision state when no longer colliding with any tree
-            if (!hasTreeCollision && player.hasCollided()) {
+            // Reset collision state when no longer colliding with any spikes
+            if (!hasSpikesCollision && player.hasCollided()) {
                 player.setCollided(false);
             }
 
-            // After handling tree collisions, check for balloon collisions
-            Ball collidedBall = null;
+            // After handling spikes collisions, check for balloon collisions
+            Balloon collidedBalloon = null;
             for (Entity other : entityManager.getEntities()) {
-                if (other instanceof Ball && player.getBoundingBox().overlaps(other.getBoundingBox())) {
-                    collidedBall = (Ball) other;
+                if (other instanceof Balloon && player.getBoundingBox().overlaps(other.getBoundingBox())) {
+                    collidedBalloon = (Balloon) other;
                     break; // Only detect first collision
                 }
             }
 
-            if (collidedBall != null) {
+            if (collidedBalloon != null) {
                 // Get the balloon's value before processing collision
-                int ballValue = collidedBall.getValue();
+                int balloonValue = collidedBalloon.getValue();
 
-                // Add Ball's value to the Player's score
-                player.handleCollision(collidedBall);
+                // Add Balloon's value to the Player's score
+                player.handleCollision(collidedBalloon);
 
-                // Update score in GameScene if available - add only this individual ball's
+                // Update score in GameScene if available - add only this individual balloon's
                 // value
                 if (gameScene != null) {
-                    gameScene.addScore(ballValue);
+                    gameScene.addScore(balloonValue);
                 }
 
-                // Call removeBallRow() from GameEntityManager to remove all balls in the same
+                // Call removeBalloonRow() from GameEntityManager to remove all balloons in the same
                 // row
-                ((GameEntityManager) entityManager).removeBallsRow(collidedBall);
+                ((GameEntityManager) entityManager).removeBalloonRow(collidedBalloon);
 
                 // Play collision sound
                 audio.playSoundEffect("player");
 
-                // Spawn the next row of balls
-                ((GameEntityManager) entityManager).spawnBallsRow();
+                // Spawn the next row of balloons
+                ((GameEntityManager) entityManager).spawnBalloonsRow();
             }
 
             // Check for power-up collisions
@@ -118,72 +118,72 @@ public class GameCollisionManager extends AbstractCollisionManager {
             }
         }
 
-        // Enhanced Ball and Tree collision with multi-layered approach
-        if (entity instanceof Ball) {
-            Ball ball = (Ball) entity;
+        // Enhanced Balloon and Spikes collision with multi-layered approach
+        if (entity instanceof Balloon) {
+            Balloon balloon = (Balloon) entity;
 
             for (Entity other : entityManager.getEntities()) {
-                if (other instanceof Tree) {
-                    Tree tree = (Tree) other;
+                if (other instanceof Spikes) {
+                    Spikes spikes = (Spikes) other;
 
                     // 1. Standard bounding box check
-                    if (ball.getBoundingBox().overlaps(tree.getBoundingBox())) {
-                        ball.setActive(false);
-                        System.out.println("Ball collided with spike (direct hit)");
-                        audio.playSoundEffect("tree");
+                    if (balloon.getBoundingBox().overlaps(spikes.getBoundingBox())) {
+                        balloon.setActive(false);
+                        System.out.println("Balloon collided with spike (direct hit)");
+                        audio.playSoundEffect("spikes");
                         return; // Exit early if collision detected
                     }
 
                     // 2. Circle-Rectangle intersection check
-                    // This is more accurate for round balls
-                    float ballCenterX = ball.getX() + Ball.getBallRadius();
-                    float ballCenterY = ball.getY() + Ball.getBallRadius();
-                    tempCircle.set(ballCenterX, ballCenterY, Ball.getBallRadius());
+                    // This is more accurate for round balloons
+                    float balloonCenterX = balloon.getX() + Balloon.getBalloonRadius();
+                    float balloonCenterY = balloon.getY() + Balloon.getBalloonRadius();
+                    tempCircle.set(balloonCenterX, balloonCenterY, Balloon.getBalloonRadius());
 
-                    if (Intersector.overlaps(tempCircle, tree.getBoundingBox())) {
-                        ball.setActive(false);
-                        System.out.println("Ball collided with spike (circle-rect)");
-                        audio.playSoundEffect("tree");
+                    if (Intersector.overlaps(tempCircle, spikes.getBoundingBox())) {
+                        balloon.setActive(false);
+                        System.out.println("Balloon collided with spike (circle-rect)");
+                        audio.playSoundEffect("spikes");
                         return; // Exit early if collision detected
                     }
 
                     // 3. Path-based collision detection
                     // Get previous position
-                    float prevX = ball.getPreviousX();
-                    float prevY = ball.getPreviousY();
+                    float prevX = balloon.getPreviousX();
+                    float prevY = balloon.getPreviousY();
 
                     // If previous position is valid (not 0,0)
                     if (prevX != 0 || prevY != 0) {
-                        float currentX = ball.getX();
-                        float currentY = ball.getY();
+                        float currentX = balloon.getX();
+                        float currentY = balloon.getY();
 
                         // Check if path intersects with spike
                         if (lineIntersectsRectangle(
-                                prevX + Ball.getBallRadius(), prevY + Ball.getBallRadius(),
-                                currentX + Ball.getBallRadius(), currentY + Ball.getBallRadius(),
-                                tree.getBoundingBox())) {
-                            ball.setActive(false);
-                            System.out.println("Ball collided with spike (path intersection)");
-                            audio.playSoundEffect("tree");
+                                prevX + Balloon.getBalloonRadius(), prevY + Balloon.getBalloonRadius(),
+                                currentX + Balloon.getBalloonRadius(), currentY + Balloon.getBalloonRadius(),
+                                spikes.getBoundingBox())) {
+                            balloon.setActive(false);
+                            System.out.println("Balloon collided with spike (path intersection)");
+                            audio.playSoundEffect("spikes");
                             return; // Exit early if collision detected
                         }
 
                         // 4. Distance-based check (extra safety)
-                        // Check if ball is close enough to spike to warrant extra checks
-                        float treeLeft = tree.getX();
-                        float treeRight = tree.getX() + tree.getWidth();
+                        // Check if balloon is close enough to spike to warrant extra checks
+                        float spikesLeft = spikes.getX();
+                        float spikesRight = spikes.getX() + spikes.getWidth();
 
-                        // If ball is moving downward and crosses the spike's horizontal bounds
+                        // If balloon is moving downward and crosses the spike's horizontal bounds
                         if (prevY > currentY && // Moving downward
-                                ((prevX + Ball.getBallWidth() < treeLeft && currentX + Ball.getBallWidth() >= treeLeft)
+                                ((prevX + Balloon.getBalloonWidth() < spikesLeft && currentX + Balloon.getBalloonWidth() >= spikesLeft)
                                         || // Moving right into spike
-                                        (prevX > treeRight && currentX <= treeRight))) { // Moving left into spike
+                                        (prevX > spikesRight && currentX <= spikesRight))) { // Moving left into spike
 
-                            // If ball is just above the spike, it's likely to collide next frame
-                            if (Math.abs(currentY - (tree.getY() + tree.getHeight())) < Ball.getBallWidth()) {
-                                ball.setActive(false);
-                                System.out.println("Ball collided with spike (predictive)");
-                                audio.playSoundEffect("tree");
+                            // If balloon is just above the spike, it's likely to collide next frame
+                            if (Math.abs(currentY - (spikes.getY() + spikes.getHeight())) < Balloon.getBalloonWidth()) {
+                                balloon.setActive(false);
+                                System.out.println("Balloon collided with spike (predictive)");
+                                audio.playSoundEffect("spikes");
                                 return;
                             }
                         }
@@ -193,8 +193,10 @@ public class GameCollisionManager extends AbstractCollisionManager {
         }
     }
 
-    // Determines if a line intersects with a rectangle
-    // This helps detect if a fast-moving ball passes through a spike
+    /**
+     * Determines if a line intersects with a rectangle
+     * This helps detect if a fast-moving balloon passes through a spike
+     */
     private boolean lineIntersectsRectangle(float x1, float y1, float x2, float y2, Rectangle rect) {
         // Check if the line intersects any of the rectangle's edges
         return lineLine(x1, y1, x2, y2, rect.x, rect.y, rect.x + rect.width, rect.y) ||
@@ -203,7 +205,9 @@ public class GameCollisionManager extends AbstractCollisionManager {
                 lineLine(x1, y1, x2, y2, rect.x, rect.y + rect.height, rect.x, rect.y);
     }
 
-    // Determines if two line segments intersect
+    /**
+     * Determines if two line segments intersect
+     */
     private boolean lineLine(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
         // Calculate the direction of the lines
         float denominator = ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
