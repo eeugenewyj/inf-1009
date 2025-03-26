@@ -4,7 +4,9 @@ import com.badlogic.gdx.math.Rectangle;
 
 public interface iCollidable {
 
-    void handleCollision(iCollidable other); // Handles collision with another CollidableEntity
+    // Abstract method to handle collision with another collidable entity
+    void handleCollision(iCollidable other);
 
-    Rectangle getBoundingBox(); // Returns the bounding box for collision detection
+    // Abstract method to get the bounding box of the entity for collision detection
+    Rectangle getBoundingBox();
 }

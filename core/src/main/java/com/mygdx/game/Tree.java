@@ -31,7 +31,7 @@ public class Tree extends StaticObject {
     public float getLifeTime() {
         return lifetime;
     }
-    
+
     @Override
     public Rectangle getBoundingBox() {
         // Return a slightly smaller bounding box for better collision feel

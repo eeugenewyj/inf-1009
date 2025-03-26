@@ -11,24 +11,30 @@ import com.mygdx.game.AbstractIO.IInputManager;
 import com.mygdx.game.AbstractIO.IOutputManager;
 
 public abstract class Scene implements Screen {
+    // References
     protected final ISceneManager sceneManager;
     protected final IInputManager inputManager;
     protected final IOutputManager outputManager;
+    // SpriteBatch for rendering 2D graphics
     protected final SpriteBatch batch;
+    // Background texture for the scene
     protected final Texture backgroundTexture;
+    // Stage for managing UI elements and actors
     protected Stage stage;
-    
+
     // Fixed dimensions for the game - this should match your window size
     protected static final float WORLD_WIDTH = 800;
     protected static final float WORLD_HEIGHT = 600;
 
-    public Scene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager, String texturePath) {
+    // Constructor to initialise the scene with manages and a background texture
+    public Scene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager,
+            String texturePath) {
         this.sceneManager = sceneManager;
         this.inputManager = inputManager;
         this.outputManager = outputManager;
         this.batch = new SpriteBatch();
         this.backgroundTexture = new Texture(Gdx.files.internal(texturePath));
-        
+
         // Create a stage with a FitViewport that maintains the aspect ratio
         this.stage = new Stage(new FitViewport(WORLD_WIDTH, WORLD_HEIGHT));
     }
@@ -41,18 +47,18 @@ public abstract class Scene implements Screen {
             batch.draw(backgroundTexture, 0, 0, WORLD_WIDTH, WORLD_HEIGHT);
             batch.end();
         }
-        
+
         // Update and draw the stage
         if (stage != null) {
-            stage.act(delta);
-            stage.draw();
+            stage.act(delta); // Update the stage with the delta time
+            stage.draw(); // Render the stage
         }
     }
 
+    // Method to handle window resizing
     @Override
     public void resize(int width, int height) {
-        // Even with fixed window size, it's good practice to handle resize events
-        // This ensures proper rendering if the window size ever changes
+        // Update the viewport to handle resizing
         if (stage != null) {
             stage.getViewport().update(width, height, true);
         }
@@ -74,16 +80,19 @@ public abstract class Scene implements Screen {
     @Override
     public void show() {
         if (stage != null) {
-            Gdx.input.setInputProcessor(stage);
+            Gdx.input.setInputProcessor(stage); // Set the stage as the input processor
         }
     }
-    
+
     @Override
-    public void pause() {}
-    
+    public void pause() {
+    }
+
     @Override
-    public void resume() {}
-    
+    public void resume() {
+    }
+
     @Override
-    public void hide() {}
+    public void hide() {
+    }
 }

@@ -7,20 +7,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Audio extends AudioHandler {
-    private static Audio instance; // Singleton instance
-    private Music gameMusic;
-    private String musicName;
-    private final Map<String, Sound> soundEffects = new HashMap<>();
-    private final Map<String, Float> soundEffectVolumes = new HashMap<>();
-    private float volume = 0.5f;
-    private boolean loop = true;
+    private static Audio instance; // Singleton instance of the Audio class
+    private Music gameMusic; // Music object for background music
+    private String musicName; // Name of the music file
+    private final Map<String, Sound> soundEffects = new HashMap<>(); // Map to store sound effects with their keys
+    private final Map<String, Float> soundEffectVolumes = new HashMap<>(); // Map to store the volume levels of sound
+                                                                           // effects
+    private float volume = 0.5f; // Default volume level
+    private boolean loop = true; // Flag to indicate whether the music should loop
 
     // Private constructor to enforce singleton pattern
     private Audio() {
-        //this("Music/MainScreenMusic.mp3", 0.1f, true);
+        // Default constructor with a placeholder music file
         this("defaultMusicFileName", 0.1f, true);
     }
 
+    // Private constructor to initialise music with specific parameters
     private Audio(String musicName, float volume, boolean loop) {
         this.musicName = musicName;
         this.volume = volume;
@@ -30,7 +32,7 @@ public class Audio extends AudioHandler {
         this.gameMusic.setLooping(this.loop);
     }
 
-    // Singleton Access Method
+    // Singleton access method to get the instance of the Audio class
     public static Audio getInstance() {
         if (instance == null) {
             instance = new Audio();
@@ -38,6 +40,7 @@ public class Audio extends AudioHandler {
         return instance;
     }
 
+    // Overloaded singleton access method to initialise with specific parameters
     public static Audio getInstance(String musicName, float volume, boolean loop) {
         if (instance == null) {
             instance = new Audio(musicName, volume, loop);
@@ -50,6 +53,8 @@ public class Audio extends AudioHandler {
     }
 
     // Music Controls (from AudioHandler)
+
+    // Method to play the background music
     @Override
     public void playMusic() {
         if (!gameMusic.isPlaying()) {
@@ -57,11 +62,13 @@ public class Audio extends AudioHandler {
         }
     }
 
+    // Method to stop the background music
     @Override
     public void stopMusic() {
         gameMusic.stop();
     }
 
+    // Method to pause the background music
     public void pauseMusic() {
         if (gameMusic.isPlaying()) { // Only pause if the music is actually playing
             gameMusic.pause();
@@ -71,6 +78,7 @@ public class Audio extends AudioHandler {
         }
     }
 
+    // Method to resume the background music
     public void resumeMusic() {
         if (!gameMusic.isPlaying()) { // Only resume if the music is not playing
             gameMusic.play();
@@ -80,11 +88,13 @@ public class Audio extends AudioHandler {
         }
     }
 
+    // Method to check if the music is playing
     @Override
     public boolean isPlayingMusic() {
         return gameMusic.isPlaying();
     }
 
+    // Method to set the name of the music file and reload it
     @Override
     public void setMusicName(String musicName) {
         if (this.gameMusic != null) {
@@ -119,6 +129,8 @@ public class Audio extends AudioHandler {
     }
 
     // Sound Effects (from AudioHandler)
+
+    // Method to load a sound effect with a specific key and file path
     @Override
     public void loadSoundEffect(String key, String filePath) {
         if (!soundEffects.containsKey(key)) {
@@ -128,6 +140,7 @@ public class Audio extends AudioHandler {
         }
     }
 
+    // Method to play a sound effect by its key
     @Override
     public void playSoundEffect(String key) {
         Sound sound = soundEffects.get(key);
@@ -139,6 +152,7 @@ public class Audio extends AudioHandler {
         }
     }
 
+    // Method to set the volume of a sound effect by its key
     @Override
     public void setSoundEffectVolume(String key, float volume) {
         if (soundEffects.containsKey(key)) {
@@ -159,4 +173,3 @@ public class Audio extends AudioHandler {
         soundEffects.clear();
     }
 }
-

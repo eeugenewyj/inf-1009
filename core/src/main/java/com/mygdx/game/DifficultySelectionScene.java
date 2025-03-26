@@ -19,75 +19,78 @@ import com.mygdx.game.AbstractScene.ISceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
 public class DifficultySelectionScene extends Scene {
-    private Stage stage;
-    private Skin skin;
-    private Label titleLabel;
-    private TextButton easyButton;
-    private TextButton hardButton;
-    private TextButton backButton;
-    private Table table;
+    private Stage stage; // Stage for managing UI elements
+    private Skin skin; // Skin for styling UI components
+    private Label titleLabel; // Label for the scene title
+    private TextButton easyButton; // Button for selecting easy difficulty
+    private TextButton hardButton; // Button for selecting hard difficulty
+    private TextButton backButton; // Button for returning to the previous scene
+    private Table table; // Table for organising UI components
 
-    public DifficultySelectionScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
+    public DifficultySelectionScene(ISceneManager sceneManager, IInputManager inputManager,
+            IOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
 
         // Set up stage
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage);
-        
+        Gdx.input.setInputProcessor(stage); // Set the stage as the input processor
+
         // Load skin
         skin = new Skin(Gdx.files.internal("uiskin.json"));
-        
+
         // Create table for layout
         table = new Table();
-        table.setFillParent(true);
-        
+        table.setFillParent(true); // Table fills the entire stage
+
         // Create title label
         titleLabel = new Label("SELECT DIFFICULTY", skin);
-        titleLabel.setFontScale(2.0f);
-        titleLabel.setAlignment(Align.center);
-        titleLabel.setColor(Color.GOLD);
-        
+        titleLabel.setFontScale(2.0f); // Scale the font size
+        titleLabel.setAlignment(Align.center); // Center-align the text
+        titleLabel.setColor(Color.GOLD); // Set the text color to gold
+
         // Create buttons for difficulty selection
         easyButton = new TextButton("EASY", skin);
-        easyButton.getLabel().setFontScale(1.5f);
-        
+        easyButton.getLabel().setFontScale(1.5f); // Scale the font size for the button label
+
         hardButton = new TextButton("HARD", skin);
-        hardButton.getLabel().setFontScale(1.5f);
-        
-        backButton = new TextButton("Back", skin);
-        
+        hardButton.getLabel().setFontScale(1.5f); // Scale the font size for the button label
+
+        backButton = new TextButton("Back", skin); // Button for going back
+
         // Add click listeners
         easyButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                // Set the difficulty to easy and switch to the play scene
                 GameSettings.setDifficulty(GameSettings.DIFFICULTY_EASY);
                 StopScene.setRestartFlag(true);
                 sceneManager.setScene("play");
             }
         });
-        
+
         hardButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                // Set the difficulty to hard and switch to the play scene
                 GameSettings.setDifficulty(GameSettings.DIFFICULTY_HARD);
                 StopScene.setRestartFlag(true);
                 sceneManager.setScene("play");
             }
         });
-        
+
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 sceneManager.setScene("home");
             }
         });
-        
+
         // Add elements to table with spacing
-        table.add(titleLabel).padBottom(50).row();
-        table.add(easyButton).size(200, 60).padBottom(20).row();
-        table.add(hardButton).size(200, 60).padBottom(40).row();
-        table.add(backButton).size(150, 50).row();
-        
+        table.add(titleLabel).padBottom(50).row(); // Add the title label with padding
+        table.add(easyButton).size(200, 60).padBottom(20).row(); // Add the easy button with size and padding
+        table.add(hardButton).size(200, 60).padBottom(40).row(); // Add the hard button with size and padding
+        table.add(backButton).size(150, 50).row(); // Add the back button with size
+
         // Add table to stage
         stage.addActor(table);
     }
@@ -100,11 +103,13 @@ public class DifficultySelectionScene extends Scene {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
-        
+
+        // Draw the background texture
         batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
-        
+
+        // Update and draw the stage
         stage.act(delta);
         stage.draw();
     }
