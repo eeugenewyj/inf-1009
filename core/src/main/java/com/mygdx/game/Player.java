@@ -1,12 +1,11 @@
 package com.mygdx.game;
 
-import java.util.List;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.game.AbstractEntity.Entity;
+import com.mygdx.game.AbstractEntity.IEntityManager;
 import com.mygdx.game.AbstractEntity.MovableEntity;
 import com.mygdx.game.AbstractEntity.iCollidable;
 import com.mygdx.game.AbstractIO.IInputManager;
@@ -14,7 +13,7 @@ import com.mygdx.game.AbstractIO.IInputManager;
 public class Player extends MovableEntity {
     private Texture texture;
     private IInputManager inputManager; // Injected Input Manager
-    private GameEntityManager entityManager; // Reference to entity manager
+    private IEntityManager entityManager; // Using interface instead of concrete class
 
     // Define the movement boundary - player cannot go above this line
     private final float MAX_Y_POSITION;
@@ -22,10 +21,10 @@ public class Player extends MovableEntity {
     // Add this field for inverted controls
     private boolean invertControls = false;
 
-    public Player(float x, float y, float speed, IInputManager inputManager, GameEntityManager entityManager) {
+    public Player(float x, float y, float speed, IInputManager inputManager, IEntityManager entityManager) {
         super(x, y, speed);
         this.texture = new Texture(Gdx.files.internal("player.png"));
-        this.inputManager = inputManager; // Inject dependency
+        this.inputManager = inputManager;
         this.entityManager = entityManager;
         
         // Explicitly set previous position to match current position
@@ -36,7 +35,6 @@ public class Player extends MovableEntity {
         this.height = 50;
 
         // Set the movement boundary at 3/4 of the screen height
-        // This prevents the player from entering the top quarter of the screen
         this.MAX_Y_POSITION = Gdx.graphics.getHeight() * 0.75f - this.height;
     }
 
@@ -56,11 +54,11 @@ public class Player extends MovableEntity {
 
     @Override
     public void moveUserControlled(float deltaTime) {
-        // Always store current position as previous before moving - critical for pause/resume
+        // Always store current position as previous before moving
         this.previousX = this.x;
         this.previousY = this.y;
 
-        float horizontal = inputManager.getMoveX(); // Uses IOManager for movement input
+        float horizontal = inputManager.getMoveX();
         float vertical = inputManager.getMoveY();
 
         // Invert controls if the debuff is active
@@ -75,8 +73,8 @@ public class Player extends MovableEntity {
             // Ensure entity stays within screen bounds
             newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - width));
 
-            // Check if new position would cause a spike collision
-            if (!wouldCollideWithSpikes(newX, this.y)) {
+            // Using the IEntityManager interface method instead of local method
+            if (!entityManager.wouldCollideWithSpikes(newX, this.y, width, height)) {
                 this.x = newX; // Only move if no collision would occur
             }
         }
@@ -84,53 +82,22 @@ public class Player extends MovableEntity {
         // Try moving vertically
         if (vertical != 0) {
             float newY = this.y + speed * deltaTime * vertical;
-
-            // Ensure player stays within vertical bounds (bottom of screen to
-            // MAX_Y_POSITION)
+            // Ensure player stays within vertical bounds
             newY = Math.max(0, Math.min(newY, MAX_Y_POSITION));
 
-            // Check if new position would cause a spike collision
-            if (!wouldCollideWithSpikes(this.x, newY)) {
+            // Using the IEntityManager interface method
+            if (!entityManager.wouldCollideWithSpikes(this.x, newY, width, height)) {
                 this.y = newY; // Only move if no collision would occur
             }
         }
     }
 
-    /**
-     * Sets whether controls should be inverted
-     * 
-     * @param invert true to invert controls, false for normal controls
-     */
     public void setInvertControls(boolean invert) {
         this.invertControls = invert;
     }
 
-    /**
-     * Checks if controls are currently inverted
-     * 
-     * @return true if controls are inverted
-     */
     public boolean areControlsInverted() {
         return invertControls;
-    }
-
-    // Check if moving to a position would cause a collision with any spikes
-    private boolean wouldCollideWithSpikes(float newX, float newY) {
-        // Create a temporary rectangle at the potential new position
-        Rectangle potentialPosition = new Rectangle(newX, newY, width, height);
-
-        // Get all entities and check for spikes collisions
-        if (entityManager != null) {
-            List<Entity> entities = entityManager.getEntities();
-            for (Entity entity : entities) {
-                if (entity instanceof Spikes && potentialPosition.overlaps(entity.getBoundingBox())) {
-                    // System.out.println("Would collide with spikes - movement prevented");
-                    return true; // Would collide with a spike
-                }
-            }
-        }
-
-        return false; // No collision would occur
     }
 
     @Override
@@ -149,13 +116,12 @@ public class Player extends MovableEntity {
         this.previousY = this.y;
         
         this.x = x;
-
         // Apply the vertical movement restriction when setting position
         this.y = Math.min(y, MAX_Y_POSITION);
     }
 
-    // Set entity manager after creation if needed
-    public void setEntityManager(GameEntityManager entityManager) {
+    // Set entity manager after creation if needed - using interface now
+    public void setEntityManager(IEntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
