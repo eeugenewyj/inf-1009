@@ -101,7 +101,7 @@ public class GameScene extends Scene {
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Pause Button Clicked! Opening StopScene...");
                 
-                // Preserve the current game state before pausing
+                // Save the current state of ALL game objects
                 GameStatePreserver.getInstance().preserveGameState(
                     GameScene.this, gameStateManager, powerUpManager);
                     
@@ -206,7 +206,17 @@ public class GameScene extends Scene {
         else if (GameStatePreserver.getInstance().hasPreservedState()) {
             System.out.println("Resuming previous game state");
             // Don't initialize a new game, restore the previous state
+            
+            // First, clear any leftover timers or effects
+            if (powerUpManager != null) {
+                powerUpManager.resetPowerUps();
+            }
+            
+            // Then restore the preserved state
             GameStatePreserver.getInstance().restoreGameState(this, gameStateManager, powerUpManager);
+            
+            // Resume audio
+            audio.resumeMusic();
         }
         
         Gdx.input.setInputProcessor(stage);
@@ -466,5 +476,9 @@ public class GameScene extends Scene {
      */
     public Skin getSkin() {
         return skin;
+    }
+    // Add a new getter for input manager
+    public IInputManager getInputManager() {
+        return inputManager;
     }
 }

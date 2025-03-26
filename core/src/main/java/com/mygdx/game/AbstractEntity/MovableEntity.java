@@ -1,4 +1,3 @@
-
 package com.mygdx.game.AbstractEntity;
 
 import com.badlogic.gdx.Gdx;
@@ -6,11 +5,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class MovableEntity extends Entity implements iMovable {
     protected float speed;
-    protected float previousX, previousY;
-    protected float directionX, directionY;
+    protected float previousX, previousY; // Previous position of entity
+    protected float directionX, directionY; // Direction of movement
 
     public MovableEntity(float x, float y, float speed) {
-        super(x, y);
+        super(x, y); // Call parent constructor
         this.speed = speed;
         // Initialize previous position
         this.previousX = x;
@@ -20,12 +19,16 @@ public abstract class MovableEntity extends Entity implements iMovable {
         directionY = 1;
     }
 
+    // Abstract method to draw the entity using a SpriteBatch
     public abstract void draw(SpriteBatch batch);
 
-    // Modified movement logic - doesn't automatically store previous position
-    // as that should happen in the child classes before calling this
+    // Protected method to move the entity based on deltaTime and direction
     protected void move(float deltaTime, float directionX, float directionY) {
-        // deltaTime ensures that the movement is consistent regardless of frame rate
+        // Save current position as previous before moving
+        this.previousX = this.x;
+        this.previousY = this.y;
+        
+        // Update position using speed, deltaTime, and direction.
         this.x += speed * deltaTime * directionX;
         this.y += speed * deltaTime * directionY;
 
@@ -34,11 +37,13 @@ public abstract class MovableEntity extends Entity implements iMovable {
         this.y = Math.max(0, Math.min(this.y, Gdx.graphics.getHeight() - height));
     }
 
+    // Implementation of moveAIControlled method
     @Override
     public void moveAIControlled() {
         System.out.println("AI moving entity...");
     }
 
+    // Implementation of moveUserControlled method
     @Override
     public void moveUserControlled(float deltaTime) {
         System.out.println("User controlling movement...");
@@ -60,11 +65,19 @@ public abstract class MovableEntity extends Entity implements iMovable {
         this.speed = speed;
     }
 
+    // Method to change direction when entity collides with something horizontally
     public void reverseXDirection() {
         directionX *= -1;
     }
 
+    // Method to change direction when entity collides with something vertically
     public void reverseYDirection() {
         directionY *= -1;
+    }
+    
+    // Method to set previous position explicitly (useful for state restoration)
+    public void setPreviousPosition(float prevX, float prevY) {
+        this.previousX = prevX;
+        this.previousY = prevY;
     }
 }
