@@ -110,13 +110,6 @@ public class StopScene extends Scene {
         stage.draw();
     }
 
-    @Override
-    public void dispose() {
-        super.dispose();
-        stage.dispose();
-        skin.dispose();
-    }
-
     // Static method to check if game should restart
     public static boolean shouldRestartGame() {
         if (shouldRestart) {
@@ -129,5 +122,12 @@ public class StopScene extends Scene {
     // Method to set the restart flag externally
     public static void setRestartFlag(boolean value) {
         shouldRestart = value;
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        stage.dispose();
+        skin.dispose();
     }
 }

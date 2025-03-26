@@ -1,4 +1,3 @@
-// core/src/main/java/com/mygdx/game/SceneFactory.java
 package com.mygdx.game;
 
 import com.mygdx.game.AbstractIO.IInputManager;
@@ -6,11 +5,8 @@ import com.mygdx.game.AbstractIO.IOutputManager;
 import com.mygdx.game.AbstractScene.ISceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
-/**
- * A factory class responsible for creating Scene instances.
- * This class centralizes scene creation logic and separates it from the
- * SceneManager.
- */
+// A factory class responsible for creating Scene instances
+// This class centralizes scene creation logic and separates it from the SceneManager
 public class SceneFactory {
     private final ISceneManager sceneManager;
     private final IInputManager inputManager;

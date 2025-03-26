@@ -5,12 +5,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class HighScoresManager {
+    private static final int MAX_SCORES = 5; // Keep only top 5 scores
+
     private static HighScoresManager instance; // Singleton instance
+
     // Lists to store high scores for easy and hard modes
     private List<Integer> easyHighScores;
     private List<Integer> hardHighScores;
-
-    private static final int MAX_SCORES = 5; // Keep only top 5 scores
 
     // Private constructor to enforce the singleton pattern
     private HighScoresManager() {
@@ -102,62 +103,7 @@ public class HighScoresManager {
         return isNewBestScore;
     }
 
-    /**
-     * Returns the list of high scores for the current difficulty
-     */
-    public List<Integer> getHighScores() {
-        return GameSettings.isEasyMode() ? new ArrayList<>(easyHighScores) : new ArrayList<>(hardHighScores);
-    }
-
-    /**
-     * Returns the list of easy mode high scores
-     */
-    public List<Integer> getEasyHighScores() {
-        return new ArrayList<>(easyHighScores);
-    }
-
-    /**
-     * Returns the list of hard mode high scores
-     */
-    public List<Integer> getHardHighScores() {
-        return new ArrayList<>(hardHighScores);
-    }
-
-    /**
-     * Gets the current best score for the selected difficulty, or 0 if no scores
-     * exist
-     */
-    public int getBestScore() {
-        List<Integer> scores = GameSettings.isEasyMode() ? easyHighScores : hardHighScores;
-        if (scores.isEmpty()) {
-            return 0;
-        }
-        return scores.get(0);
-    }
-
-    /**
-     * Gets the best easy mode score
-     */
-    public int getBestEasyScore() {
-        if (easyHighScores.isEmpty()) {
-            return 0;
-        }
-        return easyHighScores.get(0);
-    }
-
-    /**
-     * Gets the best hard mode score
-     */
-    public int getBestHardScore() {
-        if (hardHighScores.isEmpty()) {
-            return 0;
-        }
-        return hardHighScores.get(0);
-    }
-
-    /**
-     * Clears all high scores for both difficulties
-     */
+    // Clears all high scores
     public void clearAllHighScores() {
         easyHighScores.clear();
         hardHighScores.clear();
@@ -176,4 +122,46 @@ public class HighScoresManager {
             hardHighScores.clear();
         }
     }
+
+    // Returns the list of high scores for the current difficulty
+    public List<Integer> getHighScores() {
+        return GameSettings.isEasyMode() ? new ArrayList<>(easyHighScores) : new ArrayList<>(hardHighScores);
+    }
+
+    // Returns the list of easy mode high scores
+    public List<Integer> getEasyHighScores() {
+        return new ArrayList<>(easyHighScores);
+    }
+
+    // Returns the list of hard mode high scores
+    public List<Integer> getHardHighScores() {
+        return new ArrayList<>(hardHighScores);
+    }
+
+    // Gets the current best score for the selected difficulty, or 0 if no scores
+    // exist
+    public int getBestScore() {
+        List<Integer> scores = GameSettings.isEasyMode() ? easyHighScores : hardHighScores;
+        if (scores.isEmpty()) {
+            return 0;
+        }
+        return scores.get(0);
+    }
+
+    // Gets the best easy mode score
+    public int getBestEasyScore() {
+        if (easyHighScores.isEmpty()) {
+            return 0;
+        }
+        return easyHighScores.get(0);
+    }
+
+    // Gets the best hard mode score
+    public int getBestHardScore() {
+        if (hardHighScores.isEmpty()) {
+            return 0;
+        }
+        return hardHighScores.get(0);
+    }
+
 }

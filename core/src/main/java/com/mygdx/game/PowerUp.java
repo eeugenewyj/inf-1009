@@ -80,18 +80,17 @@ public class PowerUp extends MovableEntity {
         glyphLayout = new GlyphLayout(); // Initialize the GlyphLayout
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public boolean isDebuff() {
-        return isDebuff;
-    }
-
     @Override
     public void moveAIControlled() {
         float delta = Gdx.graphics.getDeltaTime();
         y -= speed * delta;
+    }
+
+    @Override
+    public void handleCollision(iCollidable other) {
+        if (other instanceof Player) {
+            setActive(false);
+        }
     }
 
     @Override
@@ -180,23 +179,6 @@ public class PowerUp extends MovableEntity {
         shapeRenderer.triangle(x, y, lastInnerX, lastInnerY, firstOuterX, firstOuterY);
     }
 
-    @Override
-    public void handleCollision(iCollidable other) {
-        if (other instanceof Player) {
-            setActive(false);
-        }
-    }
-
-    @Override
-    public void dispose() {
-        if (shapeRenderer != null) {
-            shapeRenderer.dispose();
-        }
-        if (font != null) {
-            font.dispose();
-        }
-    }
-
     // Static method to spawn a random power-up (including debuffs)
     public static PowerUp createRandomPowerUp(float x, float y) {
         // 50% chance for a debuff (with 5 total power-up types)
@@ -213,4 +195,23 @@ public class PowerUp extends MovableEntity {
 
         return new PowerUp(x, y, type);
     }
+
+    public int getType() {
+        return type;
+    }
+
+    public boolean isDebuff() {
+        return isDebuff;
+    }
+
+    @Override
+    public void dispose() {
+        if (shapeRenderer != null) {
+            shapeRenderer.dispose();
+        }
+        if (font != null) {
+            font.dispose();
+        }
+    }
+
 }

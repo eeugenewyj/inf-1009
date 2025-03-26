@@ -17,6 +17,8 @@ import com.mygdx.game.AbstractScene.ISceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
 public class SettingsScene extends Scene {
+    private float lastVolume = 0.5f; // Stores the last volume before muting
+
     private Stage stage;
     private Skin skin;
     private Slider volumeSlider;
@@ -24,7 +26,6 @@ public class SettingsScene extends Scene {
     private TextButton muteButton;
     private Texture muteTexture, unmuteTexture;
     private boolean isMuted;
-    private float lastVolume = 0.5f; // Stores the last volume before muting
     private Table table;
     private float prevVolume = -1f; // Stores the last printed volume
 

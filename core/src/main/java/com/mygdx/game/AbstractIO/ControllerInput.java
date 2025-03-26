@@ -31,6 +31,24 @@ public class ControllerInput extends ControllerAdapter {
         Controllers.addListener(this);
     }
 
+    // Event triggered when a new controller is connected
+    @Override
+    public void connected(Controller controller) {
+        if (activeController == null) {
+            activeController = controller; // Set new controller as the active controller
+            System.out.println("New Controller Connected: " + controller.getName());
+        }
+    }
+
+    // Event triggered when a controller is disconnected
+    @Override
+    public void disconnected(Controller controller) {
+        if (activeController == controller) {
+            System.out.println("Controller Disconnected: " + controller.getName());
+            activeController = null; // Reset active controller
+        }
+    }
+
     // Method to get the X-axis value of the left stick
     public float getLeftStickX() {
 
@@ -84,24 +102,6 @@ public class ControllerInput extends ControllerAdapter {
         if (activeController == null)
             return false; // Return false if no controller is connected
         return activeController.getButton(button); // Check if the button is pressed
-    }
-
-    // Event triggered when a new controller is connected
-    @Override
-    public void connected(Controller controller) {
-        if (activeController == null) {
-            activeController = controller; // Set new controller as the active controller
-            System.out.println("New Controller Connected: " + controller.getName());
-        }
-    }
-
-    // Event triggered when a controller is disconnected
-    @Override
-    public void disconnected(Controller controller) {
-        if (activeController == controller) {
-            System.out.println("Controller Disconnected: " + controller.getName());
-            activeController = null; // Reset active controller
-        }
     }
 
     public Controller getActiveController() {

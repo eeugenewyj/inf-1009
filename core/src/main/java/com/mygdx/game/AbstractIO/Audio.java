@@ -7,14 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Audio extends AudioHandler {
+    private float volume = 0.5f; // Default volume level
+    private boolean loop = true; // Flag to indicate whether the music should loop
+
     private static Audio instance; // Singleton instance of the Audio class
     private Music gameMusic; // Music object for background music
     private String musicName; // Name of the music file
     private final Map<String, Sound> soundEffects = new HashMap<>(); // Map to store sound effects with their keys
     private final Map<String, Float> soundEffectVolumes = new HashMap<>(); // Map to store the volume levels of sound
                                                                            // effects
-    private float volume = 0.5f; // Default volume level
-    private boolean loop = true; // Flag to indicate whether the music should loop
 
     // Private constructor to enforce singleton pattern
     private Audio() {

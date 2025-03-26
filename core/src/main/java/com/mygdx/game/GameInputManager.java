@@ -9,6 +9,14 @@ public class GameInputManager extends AbstractInputManager {
         super(keyboardInput);
     }
 
+    public void detectInputType() {
+        if (controllerInput.isControllerConnected()) {
+            useGamepad = true; // Use controller if detected
+        } else {
+            useGamepad = false; // Default to keyboard if no controller
+        }
+    }
+
     @Override
     public float getMoveX() {
         detectInputType(); // Ensure input type is checked
@@ -19,14 +27,6 @@ public class GameInputManager extends AbstractInputManager {
     public float getMoveY() {
         detectInputType(); // Ensure input type is checked
         return useGamepad ? controllerInput.getLeftStickY() : keyboardInput.getVertical();
-    }
-
-    public void detectInputType() {
-        if (controllerInput.isControllerConnected()) {
-            useGamepad = true; // Use controller if detected
-        } else {
-            useGamepad = false; // Default to keyboard if no controller
-        }
     }
 
     @Override

@@ -193,10 +193,8 @@ public class GameCollisionManager extends AbstractCollisionManager {
         }
     }
 
-    /**
-     * Determines if a line intersects with a rectangle
-     * This helps detect if a fast-moving ball passes through a spike
-     */
+    // Determines if a line intersects with a rectangle
+    // This helps detect if a fast-moving ball passes through a spike
     private boolean lineIntersectsRectangle(float x1, float y1, float x2, float y2, Rectangle rect) {
         // Check if the line intersects any of the rectangle's edges
         return lineLine(x1, y1, x2, y2, rect.x, rect.y, rect.x + rect.width, rect.y) ||
@@ -205,9 +203,7 @@ public class GameCollisionManager extends AbstractCollisionManager {
                 lineLine(x1, y1, x2, y2, rect.x, rect.y + rect.height, rect.x, rect.y);
     }
 
-    /**
-     * Determines if two line segments intersect
-     */
+    // Determines if two line segments intersect
     private boolean lineLine(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
         // Calculate the direction of the lines
         float denominator = ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));

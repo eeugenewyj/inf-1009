@@ -15,6 +15,11 @@ public class StaticObject extends Entity {
         this.boundingBox = new Rectangle(x, y, width, height); // Create bounding box for collisions
     }
 
+    @Override
+    public void draw() {
+        // Optional: If static objects should have behavior (e.g., doors opening)
+    }
+
     // Method to draw the static object using a SpriteBatch
     @Override
     public void draw(SpriteBatch batch) {
@@ -25,22 +30,17 @@ public class StaticObject extends Entity {
     }
 
     @Override
-    public void draw() {
-        // Optional: If static objects should have behavior (e.g., doors opening)
-    }
-
-    @Override
     public void update(float deltaTime) {
         // Static objects don’t move, so no update logic needed
-    }
-
-    public Rectangle getBoundingBox() {
-        return boundingBox; // Ensure bounding box can be accessed for collisions
     }
 
     // Method to handle collisions with other collidable entities
     @Override
     public void handleCollision(iCollidable other) {
+    }
+
+    public Rectangle getBoundingBox() {
+        return boundingBox; // Ensure bounding box can be accessed for collisions
     }
 
     @Override

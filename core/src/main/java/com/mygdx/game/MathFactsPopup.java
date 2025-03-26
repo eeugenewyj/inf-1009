@@ -15,9 +15,6 @@ import com.badlogic.gdx.Gdx;
 
 import java.util.Random;
 
-/**
- * A popup window that displays random math facts
- */
 public class MathFactsPopup extends Window {
     private static final Random random = new Random(); // Random generator for selecting math facts
     private Label factLabel; // Label to display the math fact
@@ -139,9 +136,7 @@ public class MathFactsPopup extends Window {
         setBackground(skin.newDrawable("window", 1, 1, 1, 1)); // White color
     }
 
-    /**
-     * Gets a random math fact from the collection, avoiding repeats when possible
-     */
+    // Gets a random math fact from the collection, avoiding repeats when possible
     private String getRandomFact() {
         // If we only have one fact, just return it
         if (MATH_FACTS.length <= 1) {
@@ -159,9 +154,7 @@ public class MathFactsPopup extends Window {
         return MATH_FACTS[newIndex];
     }
 
-    /**
-     * Refreshes the displayed fact with a new random one
-     */
+    // Refresh the displayed fact with a new random one
     public void refreshFact() {
         factLabel.setText(getRandomFact());
     }
@@ -181,9 +174,7 @@ public class MathFactsPopup extends Window {
         stage.setKeyboardFocus(this);
     }
 
-    /**
-     * Closes the popup and executes the onClose action if provided
-     */
+    // Closes the popup and executes the onClose action if provided
     public void close() {
         remove();
         if (onCloseAction != null) {

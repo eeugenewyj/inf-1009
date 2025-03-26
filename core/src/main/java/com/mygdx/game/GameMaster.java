@@ -37,6 +37,11 @@ public class GameMaster extends ApplicationAdapter {
         }
     }
 
+    // Add getter for SceneManager to allow access from other classes
+    public ISceneManager getSceneManager() {
+        return sceneManager;
+    }
+
     @Override
     public void dispose() {
         if (inputManager != null)
@@ -45,10 +50,5 @@ public class GameMaster extends ApplicationAdapter {
             outputManager.dispose();
         if (sceneManager != null)
             sceneManager.dispose();
-    }
-
-    // Add getter for SceneManager to allow access from other classes
-    public ISceneManager getSceneManager() {
-        return sceneManager;
     }
 }

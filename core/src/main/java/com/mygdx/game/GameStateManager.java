@@ -2,9 +2,7 @@ package com.mygdx.game;
 
 import com.mygdx.game.AbstractIO.Audio;
 
-/**
- * Manages the game state, including score, timer, and game lifecycle
- */
+// Manages the game state, including score, timer, and game lifecycle
 public class GameStateManager {
     // Game state constants
     private static final float GAME_DURATION = 20f; // Default game duration in seconds
@@ -97,16 +95,10 @@ public class GameStateManager {
         System.out.println("Game time reduced by " + seconds + " seconds!");
     }
 
-    /**
-     * Pauses the game
-     */
     public void pauseGame() {
         audio.pauseMusic();
     }
 
-    /**
-     * Ends the game
-     */
     public void endGame() {
         gameActive = false;
 
@@ -127,9 +119,6 @@ public class GameStateManager {
         }
     }
 
-    /**
-     * Restarts the game
-     */
     public void restartGame() {
         // Reset state
         gameActive = true;
@@ -189,18 +178,14 @@ public class GameStateManager {
         this.gameActive = active;
     }
 
-    /**
-     * Sets the player's score directly (for state restoration)
-     */
+    // Sets the player's score directly (for state restoration)
     public void setPlayerScore(int score) {
         this.playerScore = score;
         // Update UI
         gameScene.updateScoreLabel("Score: " + playerScore);
     }
 
-    /**
-     * Sets the game timer directly (for state restoration)
-     */
+    // Sets the game timer directly (for state restoration)
     public void setGameTimer(float timer) {
         this.gameTimer = timer;
         // Update UI

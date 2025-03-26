@@ -11,6 +11,13 @@ import com.mygdx.game.AbstractEntity.MovableEntity;
 import com.mygdx.game.AbstractEntity.iCollidable;
 
 public class Ball extends MovableEntity {
+    // Constants for ball dimensions and spacing
+    private static final int NUM_BALLS = 8;
+    private static final float GAP_RATIO = 0.1f;
+    private static final float SCREEN_WIDTH = Gdx.graphics.getWidth();
+    private static final float BALL_WIDTH = SCREEN_WIDTH / (NUM_BALLS + (NUM_BALLS - 1) * GAP_RATIO);
+    private static final float BALL_RADIUS = BALL_WIDTH / 2;
+
     private int value; // Numeric value of the balloon
     private String displayText; // Text displayed on the balloon
     private boolean usesMathOperation; // Whether this ball displays a math operation
@@ -20,13 +27,6 @@ public class Ball extends MovableEntity {
     private boolean collected = false; // Whether the balloon has been collected
     private boolean isFalling = false; // Whether the balloon is currently falling
     private Texture balloonTexture; // Texture for the balloon
-
-    // Constants for ball dimensions and spacing
-    private static final int NUM_BALLS = 8;
-    private static final float GAP_RATIO = 0.1f;
-    private static final float SCREEN_WIDTH = Gdx.graphics.getWidth();
-    private static final float BALL_WIDTH = SCREEN_WIDTH / (NUM_BALLS + (NUM_BALLS - 1) * GAP_RATIO);
-    private static final float BALL_RADIUS = BALL_WIDTH / 2;
 
     private BitmapFont font; // Font for displaying text on the balloon
     private static final Random random = new Random(); // Random number generator for balloon
@@ -63,73 +63,34 @@ public class Ball extends MovableEntity {
         font.setColor(Color.BLACK);
         font.getData().setScale(1.1f); // Slightly larger font for better visibility
     }
-    
+
     /**
      * Special constructor for state restoration that lets us specify exact values
      * 
-     * @param x The x position
-     * @param y The y position
-     * @param value The numeric value of the ball
-     * @param displayText The display text on the ball
-     * @param usesMathOperation Whether this ball uses a math operation 
+     * @param x                 The x position
+     * @param y                 The y position
+     * @param value             The numeric value of the ball
+     * @param displayText       The display text on the ball
+     * @param usesMathOperation Whether this ball uses a math operation
      */
     public Ball(float x, float y, int value, String displayText, boolean usesMathOperation) {
         super(x, y, 100); // Falling speed
-        
+
         this.value = value;
         this.displayText = displayText;
         this.usesMathOperation = usesMathOperation;
-        
+
         // Choose a consistent color based on the value to ensure same visual appearance
         int colorIndex = value % BALLOON_COLORS.length;
         this.balloonColor = BALLOON_COLORS[colorIndex];
-        
+
         // Load balloon texture
         balloonTexture = new Texture(Gdx.files.internal("balloon.png"));
-        
+
         // Initialize the font for displaying text
         font = new BitmapFont();
         font.setColor(Color.BLACK);
         font.getData().setScale(1.1f); // Slightly larger font for better visibility
-    }
-
-    /**
-     * Generates a random math operation
-     */
-    private void generateMathOperation() {
-        // Generate random numbers for the operation
-        operand1 = random.nextInt(9) + 1; // 1-9
-        operand2 = random.nextInt(9) + 1; // 1-9
-
-        // Choose a random operation
-        String[] operations = { "+", "-", "*" };
-        operation = operations[random.nextInt(operations.length)];
-
-        // Calculate the result
-        switch (operation) {
-            case "+":
-                value = operand1 + operand2;
-                break;
-            case "-":
-                // Ensure result is positive
-                if (operand1 < operand2) {
-                    int temp = operand1;
-                    operand1 = operand2;
-                    operand2 = temp;
-                }
-                value = operand1 - operand2;
-                break;
-            case "*":
-                value = operand1 * operand2;
-                break;
-        }
-
-        // Set the display text
-        displayText = operand1 + operation + operand2;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     @Override
@@ -215,14 +176,41 @@ public class Ball extends MovableEntity {
         }
     }
 
-    @Override
-    public void dispose() {
-        if (balloonTexture != null) {
-            balloonTexture.dispose();
+    // Generates a random math operation
+    private void generateMathOperation() {
+        // Generate random numbers for the operation
+        operand1 = random.nextInt(9) + 1; // 1-9
+        operand2 = random.nextInt(9) + 1; // 1-9
+
+        // Choose a random operation
+        String[] operations = { "+", "-", "*" };
+        operation = operations[random.nextInt(operations.length)];
+
+        // Calculate the result
+        switch (operation) {
+            case "+":
+                value = operand1 + operand2;
+                break;
+            case "-":
+                // Ensure result is positive
+                if (operand1 < operand2) {
+                    int temp = operand1;
+                    operand1 = operand2;
+                    operand2 = temp;
+                }
+                value = operand1 - operand2;
+                break;
+            case "*":
+                value = operand1 * operand2;
+                break;
         }
-        if (font != null) {
-            font.dispose();
-        }
+
+        // Set the display text
+        displayText = operand1 + operation + operand2;
+    }
+
+    public int getValue() {
+        return value;
     }
 
     public static float getBallRadius() {
@@ -240,9 +228,10 @@ public class Ball extends MovableEntity {
     public boolean usesMathOperation() {
         return usesMathOperation;
     }
-    
+
     /**
      * Sets the balloon color (for state restoration)
+     * 
      * @param colorIndex Index into the BALLOON_COLORS array
      */
     public void setBalloonColor(int colorIndex) {
@@ -250,9 +239,10 @@ public class Ball extends MovableEntity {
             this.balloonColor = BALLOON_COLORS[colorIndex];
         }
     }
-    
+
     /**
      * Gets the color index of this balloon
+     * 
      * @return The index in the BALLOON_COLORS array
      */
     public int getBalloonColorIndex() {
@@ -262,5 +252,15 @@ public class Ball extends MovableEntity {
             }
         }
         return 0; // Default to first color if not found
+    }
+
+    @Override
+    public void dispose() {
+        if (balloonTexture != null) {
+            balloonTexture.dispose();
+        }
+        if (font != null) {
+            font.dispose();
+        }
     }
 }

@@ -11,6 +11,10 @@ import com.mygdx.game.AbstractIO.IInputManager;
 import com.mygdx.game.AbstractIO.IOutputManager;
 
 public abstract class Scene implements Screen {
+    // Fixed dimensions for the game - this should match your window size
+    protected static final float WORLD_WIDTH = 800;
+    protected static final float WORLD_HEIGHT = 600;
+
     // References
     protected final ISceneManager sceneManager;
     protected final IInputManager inputManager;
@@ -21,10 +25,6 @@ public abstract class Scene implements Screen {
     protected final Texture backgroundTexture;
     // Stage for managing UI elements and actors
     protected Stage stage;
-
-    // Fixed dimensions for the game - this should match your window size
-    protected static final float WORLD_WIDTH = 800;
-    protected static final float WORLD_HEIGHT = 600;
 
     // Constructor to initialise the scene with manages and a background texture
     public Scene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager,
@@ -65,19 +65,6 @@ public abstract class Scene implements Screen {
     }
 
     @Override
-    public void dispose() {
-        if (batch != null) {
-            batch.dispose();
-        }
-        if (backgroundTexture != null) {
-            backgroundTexture.dispose();
-        }
-        if (stage != null) {
-            stage.dispose();
-        }
-    }
-
-    @Override
     public void show() {
         if (stage != null) {
             Gdx.input.setInputProcessor(stage); // Set the stage as the input processor
@@ -94,5 +81,18 @@ public abstract class Scene implements Screen {
 
     @Override
     public void hide() {
+    }
+
+    @Override
+    public void dispose() {
+        if (batch != null) {
+            batch.dispose();
+        }
+        if (backgroundTexture != null) {
+            backgroundTexture.dispose();
+        }
+        if (stage != null) {
+            stage.dispose();
+        }
     }
 }

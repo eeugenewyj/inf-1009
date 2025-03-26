@@ -1,4 +1,3 @@
-// core/src/main/java/com/mygdx/game/GameSceneManager.java
 package com.mygdx.game;
 
 import com.mygdx.game.AbstractIO.Audio;
@@ -28,7 +27,7 @@ public class GameSceneManager extends AbstractSceneManager {
     protected Scene createScene(String sceneName) {
         return sceneFactory.createScene(sceneName);
     }
-    
+
     /**
      * Factory method that creates scenes by type by delegating to SceneFactory.
      * This provides type safety and is the preferred method.

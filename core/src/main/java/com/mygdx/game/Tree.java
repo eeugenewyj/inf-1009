@@ -13,15 +13,20 @@ public class Tree extends StaticObject {
         this.lifetime = -1; // Default: tree does not expire unless set
     }
 
-    public void setLifetime(float time) {
-        this.lifetime = time;
-        this.isTemporary = true;
+    @Override
+    public void handleCollision(iCollidable other) {
+        // Don't need to print anything since other entities handle the printing
     }
 
     public void updateLifeTime(float deltaTime) {
         if (isTemporary && lifetime > 0) {
             lifetime -= deltaTime;
         }
+    }
+
+    public void setLifetime(float time) {
+        this.lifetime = time;
+        this.isTemporary = true;
     }
 
     public boolean isExpired() {
@@ -39,9 +44,4 @@ public class Tree extends StaticObject {
         return new Rectangle(x + 5, y + 5, width - 10, height - 10);
     }
 
-    @Override
-    public void handleCollision(iCollidable other) {
-        // Trees don't need to print anything since other entities handle the printing
-        // This matches the original behavior where trees didn't print messages
-    }
 }

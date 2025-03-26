@@ -3,9 +3,7 @@ package com.mygdx.game;
 import com.badlogic.gdx.graphics.Color;
 import com.mygdx.game.AbstractEntity.Entity;
 
-/**
- * Manages power-ups and their effects in the game
- */
+// Manages power-ups and their effects in the game
 public class PowerUpManager {
     // Power-up states
     private boolean doublePointsActive = false;

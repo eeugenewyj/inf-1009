@@ -6,6 +6,7 @@ import com.mygdx.game.AbstractEntity.IEntityManager;
 public abstract class AbstractCollisionManager implements ICollisionManager {
     protected final IEntityManager entityManager;
 
+    // Constructor to initialise the collision manager with an entity manager
     public AbstractCollisionManager(IEntityManager entityManager) {
         this.entityManager = entityManager;
     }
@@ -20,6 +21,5 @@ public abstract class AbstractCollisionManager implements ICollisionManager {
     // Abstract method to handle collision for a single entity
     protected abstract void handleCollision(Entity entity);
 
-    // Abstract method to dispose of resources
     public abstract void dispose();
 }

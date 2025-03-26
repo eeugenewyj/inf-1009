@@ -1,24 +1,22 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractEntity.iCollidable;
 
-/**
- * Visual effect that appears when a power-up is collected
- */
+// Visual effect that appears when a power-up is collected
 public class PowerUpEffect extends Entity {
+    private float alpha = 1.0f; // Alpha value for fading effect
+
     private String text; // Text to display effect
     private float lifeTime; // Current elapsed time
     private float maxLifeTime; // Maximum duration of effect
+
     // Color and font for text
     private Color color;
     private BitmapFont font;
-
-    private float alpha = 1.0f; // Alpha value for fading effect
 
     public PowerUpEffect(float x, float y, String text, Color color, float duration) {
         super(x, y);
@@ -66,31 +64,25 @@ public class PowerUpEffect extends Entity {
         // No collision for effects
     }
 
+    // Creates a double point effect
+    public static PowerUpEffect createDoublePointsEffect(float x, float y) {
+        return new PowerUpEffect(x, y, "DOUBLE POINTS!", Color.GOLD, 2.0f);
+    }
+
+    // Creates a time extension effect
+    public static PowerUpEffect createTimeExtensionEffect(float x, float y) {
+        return new PowerUpEffect(x, y, "+5 SECONDS!", Color.CYAN, 2.0f);
+    }
+
+    // Creates a general power-up effect with custom text and color
+    public static PowerUpEffect createEffect(float x, float y, String text, Color color, float duration) {
+        return new PowerUpEffect(x, y, text, color, duration);
+    }
+
     @Override
     public void dispose() {
         if (font != null) {
             font.dispose();
         }
-    }
-
-    /**
-     * Creates a double points effect
-     */
-    public static PowerUpEffect createDoublePointsEffect(float x, float y) {
-        return new PowerUpEffect(x, y, "DOUBLE POINTS!", Color.GOLD, 2.0f);
-    }
-
-    /**
-     * Creates a time extension effect
-     */
-    public static PowerUpEffect createTimeExtensionEffect(float x, float y) {
-        return new PowerUpEffect(x, y, "+5 SECONDS!", Color.CYAN, 2.0f);
-    }
-
-    /**
-     * Creates a general power-up effect with custom text and color
-     */
-    public static PowerUpEffect createEffect(float x, float y, String text, Color color, float duration) {
-        return new PowerUpEffect(x, y, text, color, duration);
     }
 }

@@ -4,10 +4,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 
 public abstract class Entity implements iCollidable {
-    protected float x, y; // Position in the game world
     protected float width = 50, height = 50; // Dimensions of the entity
     protected boolean hasCollided = false; // Flag to determine if the entity has collided with another entity
     protected boolean isActive; // Flag to determine if the entity is active
+
+    protected float x, y; // Position in the game world
 
     // Constructor to initialise the entity's position and set it as active
     public Entity(float x, float y) {
@@ -15,6 +16,10 @@ public abstract class Entity implements iCollidable {
         this.y = y;
         this.isActive = true; // Default to active when created
     }
+
+    // Abstract method to handle collisions with other collidable entities
+    @Override
+    public abstract void handleCollision(iCollidable other);
 
     // Abstract method to draw the entity
     public abstract void draw();
@@ -45,7 +50,7 @@ public abstract class Entity implements iCollidable {
         this.isActive = active;
     }
 
-    // Method to get the bounding box of the entity for collision detection
+    // Getter for the bounding box of the entity
     public Rectangle getBoundingBox() {
         return new Rectangle(x, y, width, height);
     }
@@ -78,10 +83,6 @@ public abstract class Entity implements iCollidable {
         this.x = x;
         this.y = y;
     }
-
-    // Abstract method to handle collisions with other collidable entities
-    @Override
-    public abstract void handleCollision(iCollidable other);
 
     public abstract void dispose();
 }

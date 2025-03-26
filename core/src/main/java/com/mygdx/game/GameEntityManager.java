@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.MathUtils;
 import java.util.Random;
 
 public class GameEntityManager extends AbstractEntityManager {
-    private static final Random random = new Random();
     private static final int NUM_BALLS = 8; // Number of balloons per row
     private static final float GAP_RATIO = 0.1f; // 10% gap between balloons
 
@@ -29,6 +28,8 @@ public class GameEntityManager extends AbstractEntityManager {
     private static final float POWERUP_SPAWN_INTERVAL = 3.5f; // Every 8 seconds
     private static final float POWERUP_SPAWN_CHANCE = 0.9f; // 70% chance to spawn
 
+    private static final Random random = new Random();
+
     public GameEntityManager() {
         // Default constructor
     }
@@ -36,6 +37,44 @@ public class GameEntityManager extends AbstractEntityManager {
     // Constructor with GameScene reference
     public GameEntityManager(GameScene gameScene) {
         this.gameScene = gameScene;
+    }
+
+    @Override
+    public void updateEntities(float deltaTime) {
+        // Removes inactive entities from list
+        entities.removeIf(entity -> {
+            if (!entity.isActive()) {
+                entity.dispose();
+                return true;
+            }
+            return false;
+        });
+
+        // Updates the behavior of each entity
+        for (Entity entity : entities) {
+            entity.update(deltaTime);
+        }
+
+        // Handle tree spawning timer
+        treeSpawnTimer += deltaTime;
+        if (treeSpawnTimer >= TREE_SPAWN_INTERVAL) {
+            spawnTrees(4); // Spawn 4 trees
+            treeSpawnTimer = 0; // Reset timer
+        }
+
+        // Handle power-up spawning timer
+        powerUpSpawnTimer += deltaTime;
+        if (powerUpSpawnTimer >= POWERUP_SPAWN_INTERVAL) {
+            // Chance-based spawning
+            if (MathUtils.random() < POWERUP_SPAWN_CHANCE) {
+                spawnPowerUp();
+            }
+            powerUpSpawnTimer = 0; // Reset timer
+        }
+
+        // Remove trees that have existed longer than TREE_LIFETIME
+        removeExpiredTrees(deltaTime);
+        removeRowIfAtBottomAndSpawn();
     }
 
     public void spawnPlayer(float x, float y, float speed, IInputManager inputManager) {
@@ -243,44 +282,6 @@ public class GameEntityManager extends AbstractEntityManager {
                 (powerUp.getType() == PowerUp.TYPE_DOUBLE_POINTS ? "Double Points" : "Extend Time"));
     }
 
-    @Override
-    public void updateEntities(float deltaTime) {
-        // Removes inactive entities from list
-        entities.removeIf(entity -> {
-            if (!entity.isActive()) {
-                entity.dispose();
-                return true;
-            }
-            return false;
-        });
-
-        // Updates the behavior of each entity
-        for (Entity entity : entities) {
-            entity.update(deltaTime);
-        }
-
-        // Handle tree spawning timer
-        treeSpawnTimer += deltaTime;
-        if (treeSpawnTimer >= TREE_SPAWN_INTERVAL) {
-            spawnTrees(4); // Spawn 4 trees
-            treeSpawnTimer = 0; // Reset timer
-        }
-
-        // Handle power-up spawning timer
-        powerUpSpawnTimer += deltaTime;
-        if (powerUpSpawnTimer >= POWERUP_SPAWN_INTERVAL) {
-            // Chance-based spawning
-            if (MathUtils.random() < POWERUP_SPAWN_CHANCE) {
-                spawnPowerUp();
-            }
-            powerUpSpawnTimer = 0; // Reset timer
-        }
-
-        // Remove trees that have existed longer than TREE_LIFETIME
-        removeExpiredTrees(deltaTime);
-        removeRowIfAtBottomAndSpawn();
-    }
-
     private void removeExpiredTrees(float deltaTime) {
         for (Entity entity : getEntities()) {
             if (entity instanceof Tree) {
@@ -293,15 +294,15 @@ public class GameEntityManager extends AbstractEntityManager {
         }
     }
 
+    // Set GameScene reference after initialization if needed
+    public void setGameScene(GameScene gameScene) {
+        this.gameScene = gameScene;
+    }
+
     @Override
     public void dispose() {
         for (Entity entity : getEntities()) {
             entity.dispose();
         }
-    }
-
-    // Set GameScene reference after initialization if needed
-    public void setGameScene(GameScene gameScene) {
-        this.gameScene = gameScene;
     }
 }
