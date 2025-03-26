@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
 import com.mygdx.game.AbstractIO.IInputManager;
 import com.mygdx.game.AbstractIO.IOutputManager;
 import com.mygdx.game.AbstractScene.ISceneManager;
@@ -145,7 +144,8 @@ public class SettingsScene extends Scene {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Returning to Main Menu...");
-                sceneManager.setScene("home");
+                // Fix: Use the SceneType enum for type safety
+                sceneManager.setScene(SceneType.HOME);
             }
         });
     }
@@ -155,7 +155,7 @@ public class SettingsScene extends Scene {
         super.dispose();
         stage.dispose();
         skin.dispose();
-        muteTexture.dispose();
-        unmuteTexture.dispose();
+        if (muteTexture != null) muteTexture.dispose();
+        if (unmuteTexture != null) unmuteTexture.dispose();
     }
 }
