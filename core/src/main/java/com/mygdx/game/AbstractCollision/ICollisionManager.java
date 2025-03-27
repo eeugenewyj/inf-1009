@@ -1,6 +1,6 @@
 package com.mygdx.game.AbstractCollision;
 
-public interface ICollisionManager {
+public interface iCollisionManager {
     // Abstract method to detect collisions between entities
     void detectCollisions();
 

@@ -1,13 +1,13 @@
 package com.mygdx.game.AbstractCollision;
 
 import com.mygdx.game.AbstractEntity.Entity;
-import com.mygdx.game.AbstractEntity.IEntityManager;
+import com.mygdx.game.AbstractEntity.iEntityManager;
 
-public abstract class AbstractCollisionManager implements ICollisionManager {
-    protected final IEntityManager entityManager;
+public abstract class AbstractCollisionManager implements iCollisionManager {
+    protected final iEntityManager entityManager;
 
     // Constructor to initialise the collision manager with an entity manager
-    public AbstractCollisionManager(IEntityManager entityManager) {
+    public AbstractCollisionManager(iEntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

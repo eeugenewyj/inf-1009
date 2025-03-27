@@ -1,16 +1,16 @@
 package com.mygdx.game;
 
-import com.mygdx.game.AbstractIO.IInputManager;
-import com.mygdx.game.AbstractIO.IOutputManager;
-import com.mygdx.game.AbstractScene.ISceneManager;
+import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.AbstractIO.iOutputManager;
+import com.mygdx.game.AbstractScene.iSceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
 // A factory class responsible for creating Scene instances
 // This class centralizes scene creation logic and separates it from the SceneManager
 public class SceneFactory {
-    private final ISceneManager sceneManager;
-    private final IInputManager inputManager;
-    private final IOutputManager outputManager;
+    private final iSceneManager sceneManager;
+    private final iInputManager inputManager;
+    private final iOutputManager outputManager;
 
     /**
      * Creates a new SceneFactory
@@ -19,7 +19,7 @@ public class SceneFactory {
      * @param inputManager  Input manager to pass to created scenes
      * @param outputManager Output manager to pass to created scenes
      */
-    public SceneFactory(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
+    public SceneFactory(iSceneManager sceneManager, iInputManager inputManager, iOutputManager outputManager) {
         this.sceneManager = sceneManager;
         this.inputManager = inputManager;
         this.outputManager = outputManager;

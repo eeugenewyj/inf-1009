@@ -1,6 +1,6 @@
 package com.mygdx.game.AbstractIO;
 
-public abstract class AbstractOutputManager implements IOutputManager {
+public abstract class AbstractOutputManager implements iOutputManager {
     protected float volume = 1.0f; // Volume level for output
     protected boolean isMuted = false; // Flag to indicate whether the output is muted
 

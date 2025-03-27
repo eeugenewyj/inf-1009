@@ -1,6 +1,6 @@
 package com.mygdx.game.AbstractIO;
 
-public interface IOutputManager {
+public interface iOutputManager {
     void setVolume(float volume);
     float getVolume();
     void setMuted(boolean muted);

@@ -13,9 +13,9 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.graphics.Color;
 
-import com.mygdx.game.AbstractIO.IInputManager;
-import com.mygdx.game.AbstractIO.IOutputManager;
-import com.mygdx.game.AbstractScene.ISceneManager;
+import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.AbstractIO.iOutputManager;
+import com.mygdx.game.AbstractScene.iSceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
 public class MainMenuScene extends Scene {
@@ -31,7 +31,7 @@ public class MainMenuScene extends Scene {
     private Label subtitleLabel;
     private Table titleTable; // For layout
 
-    public MainMenuScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
+    public MainMenuScene(iSceneManager sceneManager, iInputManager inputManager, iOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
 
         // Fix: Use ScreenViewport for better UI scaling

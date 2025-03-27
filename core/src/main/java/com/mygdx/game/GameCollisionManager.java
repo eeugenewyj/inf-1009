@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.game.AbstractCollision.AbstractCollisionManager;
 import com.mygdx.game.AbstractEntity.Entity;
-import com.mygdx.game.AbstractEntity.IEntityManager;
+import com.mygdx.game.AbstractEntity.iEntityManager;
 import com.mygdx.game.AbstractIO.Audio;
 
 public class GameCollisionManager extends AbstractCollisionManager {
@@ -13,12 +13,12 @@ public class GameCollisionManager extends AbstractCollisionManager {
     private EntityScoreHandler scoreHandler; // Reference to score handler instead of GameScene
     private Circle tempCircle = new Circle(); // Reusable circle for collision detection
 
-    public GameCollisionManager(IEntityManager entityManager) {
+    public GameCollisionManager(iEntityManager entityManager) {
         super(entityManager);
     }
 
     // Additional constructor that takes a reference to the EntityScoreHandler
-    public GameCollisionManager(IEntityManager entityManager, EntityScoreHandler scoreHandler) {
+    public GameCollisionManager(iEntityManager entityManager, EntityScoreHandler scoreHandler) {
         super(entityManager);
         this.scoreHandler = scoreHandler;
     }

@@ -7,8 +7,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import com.mygdx.game.AbstractIO.IInputManager;
-import com.mygdx.game.AbstractIO.IOutputManager;
+import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.AbstractIO.iOutputManager;
 
 public abstract class Scene implements Screen {
     // Fixed dimensions for the game - this should match your window size
@@ -16,9 +16,9 @@ public abstract class Scene implements Screen {
     protected static final float WORLD_HEIGHT = 600;
 
     // References
-    protected final ISceneManager sceneManager;
-    protected final IInputManager inputManager;
-    protected final IOutputManager outputManager;
+    protected final iSceneManager sceneManager;
+    protected final iInputManager inputManager;
+    protected final iOutputManager outputManager;
     // SpriteBatch for rendering 2D graphics
     protected final SpriteBatch batch;
     // Background texture for the scene
@@ -27,7 +27,7 @@ public abstract class Scene implements Screen {
     protected Stage stage;
 
     // Constructor to initialise the scene with manages and a background texture
-    public Scene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager,
+    public Scene(iSceneManager sceneManager, iInputManager inputManager, iOutputManager outputManager,
             String texturePath) {
         this.sceneManager = sceneManager;
         this.inputManager = inputManager;

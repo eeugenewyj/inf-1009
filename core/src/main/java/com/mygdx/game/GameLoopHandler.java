@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.AbstractEntity.Entity;
-import com.mygdx.game.AbstractIO.IInputManager;
+import com.mygdx.game.AbstractIO.iInputManager;
 
 /**
  * Handles the main game loop logic including entity updates and collision detection
@@ -15,7 +15,7 @@ public class GameLoopHandler {
     private GameCollisionManager collisionManager;
     private GameStateManager gameStateManager;
     private PowerUpManager powerUpManager;
-    private IInputManager inputManager;
+    private iInputManager inputManager;
     
     private boolean gameActive = true;
 
@@ -33,7 +33,7 @@ public class GameLoopHandler {
             GameCollisionManager collisionManager, 
             GameStateManager gameStateManager,
             PowerUpManager powerUpManager,
-            IInputManager inputManager) {
+            iInputManager inputManager) {
         this.entityManager = entityManager;
         this.collisionManager = collisionManager;
         this.gameStateManager = gameStateManager;

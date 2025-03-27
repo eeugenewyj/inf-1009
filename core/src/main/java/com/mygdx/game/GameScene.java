@@ -7,9 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.AbstractIO.Audio;
-import com.mygdx.game.AbstractIO.IInputManager;
-import com.mygdx.game.AbstractIO.IOutputManager;
-import com.mygdx.game.AbstractScene.ISceneManager;
+import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.AbstractIO.iOutputManager;
+import com.mygdx.game.AbstractScene.iSceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
 /**
@@ -39,7 +39,7 @@ public class GameScene extends Scene {
      * @param inputManager The input manager
      * @param outputManager The output manager
      */
-    public GameScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
+    public GameScene(iSceneManager sceneManager, iInputManager inputManager, iOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
         
         // Initialize the stage
@@ -281,7 +281,7 @@ public class GameScene extends Scene {
         return skin;
     }
 
-    public IInputManager getInputManager() {
+    public iInputManager getInputManager() {
         return inputManager;
     }
     

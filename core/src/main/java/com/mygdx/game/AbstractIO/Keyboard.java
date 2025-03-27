@@ -3,7 +3,7 @@ package com.mygdx.game.AbstractIO;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 
-public class Keyboard implements IKeyboardInput {
+public class Keyboard implements iKeyboardInput {
     private static Keyboard instance; // Singleton instance of the Keyboard class
 
     // Private constructor to enforce the singleton pattern

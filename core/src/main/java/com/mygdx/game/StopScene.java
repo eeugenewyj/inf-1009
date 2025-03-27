@@ -9,9 +9,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.mygdx.game.AbstractIO.Audio;
-import com.mygdx.game.AbstractIO.IInputManager;
-import com.mygdx.game.AbstractIO.IOutputManager;
-import com.mygdx.game.AbstractScene.ISceneManager;
+import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.AbstractIO.iOutputManager;
+import com.mygdx.game.AbstractScene.iSceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
 public class StopScene extends Scene {
@@ -25,7 +25,7 @@ public class StopScene extends Scene {
     // Flag to indicate if game should restart on next show
     private static boolean shouldRestart = false;
 
-    public StopScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
+    public StopScene(iSceneManager sceneManager, iInputManager inputManager, iOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
 
         // Initialize stage

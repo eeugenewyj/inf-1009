@@ -1,6 +1,6 @@
 package com.mygdx.game.AbstractIO;
 
-public abstract class AbstractInputManager implements IInputManager {
+public abstract class AbstractInputManager implements iInputManager {
     // Flag to indicate whether a gamepad is being used (shared across all input
     // managers)
     protected static boolean useGamepad = false;
@@ -9,10 +9,10 @@ public abstract class AbstractInputManager implements IInputManager {
     protected static final ControllerInput controllerInput = new ControllerInput();
 
     // Instance of IKeyboardInput to handle keyboard input
-    protected final IKeyboardInput keyboardInput;
+    protected final iKeyboardInput keyboardInput;
 
     // Constructor to initialise the keyboard input manager
-    public AbstractInputManager(IKeyboardInput keyboardInput) {
+    public AbstractInputManager(iKeyboardInput keyboardInput) {
         this.keyboardInput = keyboardInput;
     }
 

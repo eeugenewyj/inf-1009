@@ -11,9 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.mygdx.game.AbstractIO.IInputManager;
-import com.mygdx.game.AbstractIO.IOutputManager;
-import com.mygdx.game.AbstractScene.ISceneManager;
+import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.AbstractIO.iOutputManager;
+import com.mygdx.game.AbstractScene.iSceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
 public class SettingsScene extends Scene {
@@ -29,7 +29,7 @@ public class SettingsScene extends Scene {
     private Table table;
     private float prevVolume = -1f; // Stores the last printed volume
 
-    public SettingsScene(ISceneManager sceneManager, IInputManager inputManager, IOutputManager outputManager) {
+    public SettingsScene(iSceneManager sceneManager, iInputManager inputManager, iOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
 
         // Fix: Use ScreenViewport for better UI scaling
@@ -73,7 +73,7 @@ public class SettingsScene extends Scene {
         stage.draw();
     }
 
-    private void volumeSlider(ISceneManager sceneManager) {
+    private void volumeSlider(iSceneManager sceneManager) {
         volumeSlider = new Slider(0f, 1f, 0.05f, false, skin); // Create slider
 
         // Get the current volume from SceneManager instead of IOManager
@@ -109,7 +109,7 @@ public class SettingsScene extends Scene {
         });
     }
 
-    private void muteButton(ISceneManager sceneManager) {
+    private void muteButton(iSceneManager sceneManager) {
         muteButton = new TextButton(isMuted ? "Unmute" : "Mute", skin); // Set initial button text
 
         muteButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {
@@ -138,7 +138,7 @@ public class SettingsScene extends Scene {
         muteButton.setText(isMuted ? "Unmute" : "Mute");
     }
 
-    private void backButton(ISceneManager sceneManager) {
+    private void backButton(iSceneManager sceneManager) {
         backButton = new TextButton("Back", skin);
 
         backButton.addListener(new com.badlogic.gdx.scenes.scene2d.utils.ClickListener() {

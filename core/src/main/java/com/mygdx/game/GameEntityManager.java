@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.AbstractEntity.AbstractEntityManager;
 import com.mygdx.game.AbstractEntity.Entity;
-import com.mygdx.game.AbstractIO.IInputManager;
+import com.mygdx.game.AbstractIO.iInputManager;
 
 public class GameEntityManager extends AbstractEntityManager implements CollisionCallback {
     // This class now implements CollisionCallback to provide collision detection for the Player
@@ -39,7 +39,7 @@ public class GameEntityManager extends AbstractEntityManager implements Collisio
         this.scoreHandler = scoreHandler;
     }
 
-    public void spawnPlayer(float x, float y, float speed, IInputManager inputManager) {
+    public void spawnPlayer(float x, float y, float speed, iInputManager inputManager) {
         // Create Player with the new constructor (without EntityManager)
         Player player = new Player(x, y, speed, inputManager);
         
@@ -128,7 +128,7 @@ public class GameEntityManager extends AbstractEntityManager implements Collisio
     }
 
     // Spawn player at bottom center
-    public void spawnPlayers(int count, IInputManager inputManager) {
+    public void spawnPlayers(int count, iInputManager inputManager) {
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
         int playerSize = 50; // Adjust based on actual player size

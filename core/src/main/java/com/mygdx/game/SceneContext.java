@@ -33,5 +33,5 @@ public interface SceneContext {
      * 
      * @return The input manager
      */
-    com.mygdx.game.AbstractIO.IInputManager getInputManager();
+    com.mygdx.game.AbstractIO.iInputManager getInputManager();
 }

@@ -1,6 +1,6 @@
 package com.mygdx.game;
 
-import com.mygdx.game.AbstractIO.IInputManager;
+import com.mygdx.game.AbstractIO.iInputManager;
 
 /**
  * Adapter that implements SceneContext to provide access to game components
@@ -8,7 +8,7 @@ import com.mygdx.game.AbstractIO.IInputManager;
 public class SceneContextAdapter implements SceneContext {
     private GameEntityManager entityManager;
     private GameUIManager uiManager;
-    private IInputManager inputManager;
+    private iInputManager inputManager;
     private GameStateManager gameStateManager;
     
     /**
@@ -22,7 +22,7 @@ public class SceneContextAdapter implements SceneContext {
     public SceneContextAdapter(
             GameEntityManager entityManager, 
             GameUIManager uiManager, 
-            IInputManager inputManager,
+            iInputManager inputManager,
             GameStateManager gameStateManager) {
         this.entityManager = entityManager;
         this.uiManager = uiManager;
@@ -71,7 +71,7 @@ public class SceneContextAdapter implements SceneContext {
     }
     
     @Override
-    public IInputManager getInputManager() {
+    public iInputManager getInputManager() {
         return inputManager;
     }
     

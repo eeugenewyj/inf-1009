@@ -1,18 +1,18 @@
 package com.mygdx.game;
 
 import com.mygdx.game.AbstractIO.Audio;
-import com.mygdx.game.AbstractIO.IInputManager;
-import com.mygdx.game.AbstractIO.IOutputManager;
+import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.AbstractIO.iOutputManager;
 import com.mygdx.game.AbstractScene.AbstractSceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
 public class GameSceneManager extends AbstractSceneManager {
     private Audio backgroundMusic;
-    private final IInputManager inputManager;
-    private final IOutputManager outputManager;
+    private final iInputManager inputManager;
+    private final iOutputManager outputManager;
     private final SceneFactory sceneFactory;
 
-    public GameSceneManager(IInputManager inputManager, IOutputManager outputManager) {
+    public GameSceneManager(iInputManager inputManager, iOutputManager outputManager) {
         this.inputManager = inputManager;
         this.outputManager = outputManager;
         this.sceneFactory = new SceneFactory(this, inputManager, outputManager);

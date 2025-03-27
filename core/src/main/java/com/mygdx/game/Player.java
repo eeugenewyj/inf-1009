@@ -7,11 +7,11 @@ import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractEntity.MovableEntity;
 import com.mygdx.game.AbstractEntity.iCollidable;
-import com.mygdx.game.AbstractIO.IInputManager;
+import com.mygdx.game.AbstractIO.iInputManager;
 
 public class Player extends MovableEntity {
     private Texture texture;
-    private IInputManager inputManager; // Injected Input Manager
+    private iInputManager inputManager; // Injected Input Manager
     private CollisionCallback collisionCallback; // Using callback instead of direct EntityManager reference
 
     // Define the movement boundary - player cannot go above this line
@@ -20,7 +20,7 @@ public class Player extends MovableEntity {
     // Add this field for inverted controls
     private boolean invertControls = false;
 
-    public Player(float x, float y, float speed, IInputManager inputManager) {
+    public Player(float x, float y, float speed, iInputManager inputManager) {
         super(x, y, speed);
         this.texture = new Texture(Gdx.files.internal("player.png"));
         this.inputManager = inputManager;

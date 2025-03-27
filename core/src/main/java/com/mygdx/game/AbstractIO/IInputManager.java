@@ -1,6 +1,6 @@
 package com.mygdx.game.AbstractIO;
 
-public interface IInputManager {
+public interface iInputManager {
     // Method to check if specific action is pressed, identified by an action code
     boolean isActionPressed(int actionCode);
 

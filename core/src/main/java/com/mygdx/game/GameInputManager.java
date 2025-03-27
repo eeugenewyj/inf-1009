@@ -1,11 +1,11 @@
 package com.mygdx.game;
 
 import com.mygdx.game.AbstractIO.AbstractInputManager;
-import com.mygdx.game.AbstractIO.IKeyboardInput;
+import com.mygdx.game.AbstractIO.iKeyboardInput;
 
 public class GameInputManager extends AbstractInputManager {
 
-    public GameInputManager(IKeyboardInput keyboardInput) {
+    public GameInputManager(iKeyboardInput keyboardInput) {
         super(keyboardInput);
     }
 

@@ -3,24 +3,24 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.mygdx.game.AbstractIO.IInputManager;
-import com.mygdx.game.AbstractIO.IKeyboardInput;
-import com.mygdx.game.AbstractIO.IOutputManager;
+import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.AbstractIO.iKeyboardInput;
+import com.mygdx.game.AbstractIO.iOutputManager;
 import com.mygdx.game.AbstractIO.Keyboard;
-import com.mygdx.game.AbstractScene.ISceneManager;
+import com.mygdx.game.AbstractScene.iSceneManager;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
  * platforms.
  */
 public class GameMaster extends ApplicationAdapter {
-    private IInputManager inputManager;
-    private IOutputManager outputManager;
-    private ISceneManager sceneManager;
+    private iInputManager inputManager;
+    private iOutputManager outputManager;
+    private iSceneManager sceneManager;
 
     @Override
     public void create() {
-        IKeyboardInput keyboardInput = Keyboard.getInstance(); // Inject Keyboard
+        iKeyboardInput keyboardInput = Keyboard.getInstance(); // Inject Keyboard
         // Initialise managers
         inputManager = new GameInputManager(keyboardInput);
         outputManager = new GameOutputManager();
@@ -38,7 +38,7 @@ public class GameMaster extends ApplicationAdapter {
     }
 
     // Add getter for SceneManager to allow access from other classes
-    public ISceneManager getSceneManager() {
+    public iSceneManager getSceneManager() {
         return sceneManager;
     }
 

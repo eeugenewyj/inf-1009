@@ -5,7 +5,7 @@ import com.mygdx.game.Spikes;
 
 import java.util.List;
 
-public interface IEntityManager {
+public interface iEntityManager {
     // Existing methods
     void addEntity(Entity entity);
     void updateEntities(float deltaTime);

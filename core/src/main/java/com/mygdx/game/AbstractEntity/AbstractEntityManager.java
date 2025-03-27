@@ -7,7 +7,7 @@ import com.mygdx.game.Spikes;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractEntityManager implements IEntityManager {
+public abstract class AbstractEntityManager implements iEntityManager {
     // Protected list to store all entities
     protected List<Entity> entities = new ArrayList<>();
 
