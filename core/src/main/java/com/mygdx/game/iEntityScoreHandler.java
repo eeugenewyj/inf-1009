@@ -19,5 +19,14 @@ public interface iEntityScoreHandler {
      * @param x           X position for effect
      * @param y           Y position for effect
      */
-    void processPowerUp(int powerUpType, float x, float y);
+    void processPowerUp(PowerUpType powerUpType, float x, float y);
+    
+    /**
+     * Processes a power-up effect (for backward compatibility)
+     * 
+     * @param powerUpTypeId The integer ID of the power-up type
+     * @param x           X position for effect
+     * @param y           Y position for effect
+     */
+    void processPowerUp(int powerUpTypeId, float x, float y);
 }

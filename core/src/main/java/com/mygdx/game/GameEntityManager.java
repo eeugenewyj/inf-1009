@@ -247,7 +247,12 @@ public class GameEntityManager extends AbstractEntityManager implements iCollisi
         addEntity(powerUp);
 
         System.out.println("Spawned PowerUp of type: " +
-                (powerUp.getType() == PowerUp.TYPE_DOUBLE_POINTS ? "Double Points" : "Extend Time"));
+        (powerUp.getType() == PowerUpType.DOUBLE_POINTS ? "Double Points" : 
+         powerUp.getType() == PowerUpType.EXTEND_TIME ? "Extend Time" :
+         powerUp.getType() == PowerUpType.REDUCE_TIME ? "Reduce Time" :
+         powerUp.getType() == PowerUpType.INVERT_CONTROLS ? "Invert Controls" :
+         powerUp.getType() == PowerUpType.SLOW_PLAYER ? "Slow Player" :
+         "Unknown"));
     }
 
     @Override

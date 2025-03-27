@@ -10,15 +10,12 @@ public class PowerUpManager {
     // Power-up states
     private boolean doublePointsActive = false;
     private float doublePointsTimer = 0;
-    private static final float DOUBLE_POINTS_DURATION = 3f;
 
     private boolean invertControlsActive = false;
     private float invertControlsTimer = 0;
-    private static final float INVERT_CONTROLS_DURATION = 5f;
 
     private boolean slowPlayerActive = false;
     private float slowPlayerTimer = 0;
-    private static final float SLOW_PLAYER_DURATION = 4f;
     private float originalPlayerSpeed = 200f;
 
     // Reference to scene context for UI updates and entity management
@@ -49,7 +46,7 @@ public class PowerUpManager {
             doublePointsTimer += deltaTime;
             updatePowerUpLabel();
 
-            if (doublePointsTimer >= DOUBLE_POINTS_DURATION) {
+            if (doublePointsTimer >= PowerUpType.DOUBLE_POINTS.getDuration()) {
                 doublePointsActive = false;
                 updatePowerUpLabel();
                 System.out.println("Double Points expired!");
@@ -61,7 +58,7 @@ public class PowerUpManager {
             invertControlsTimer += deltaTime;
             updatePowerUpLabel();
 
-            if (invertControlsTimer >= INVERT_CONTROLS_DURATION) {
+            if (invertControlsTimer >= PowerUpType.INVERT_CONTROLS.getDuration()) {
                 invertControlsActive = false;
                 // Reset invert flag on all players
                 for (Entity entity : sceneContext.getEntityManager().getEntities()) {
@@ -80,7 +77,7 @@ public class PowerUpManager {
             slowPlayerTimer += deltaTime;
             updatePowerUpLabel();
 
-            if (slowPlayerTimer >= SLOW_PLAYER_DURATION) {
+            if (slowPlayerTimer >= PowerUpType.SLOW_PLAYER.getDuration()) {
                 slowPlayerActive = false;
                 // Reset speed on all players
                 for (Entity entity : sceneContext.getEntityManager().getEntities()) {
@@ -103,7 +100,7 @@ public class PowerUpManager {
 
         if (doublePointsActive) {
             labelText += "DOUBLE POINTS! ";
-            float remaining = DOUBLE_POINTS_DURATION - doublePointsTimer;
+            float remaining = PowerUpType.DOUBLE_POINTS.getDuration() - doublePointsTimer;
             labelText += String.format("(%.1fs)", remaining);
         }
 
@@ -112,7 +109,7 @@ public class PowerUpManager {
                 labelText += " | ";
             }
             labelText += "INVERTED CONTROLS! ";
-            float remaining = INVERT_CONTROLS_DURATION - invertControlsTimer;
+            float remaining = PowerUpType.INVERT_CONTROLS.getDuration() - invertControlsTimer;
             labelText += String.format("(%.1fs)", remaining);
         }
 
@@ -121,7 +118,7 @@ public class PowerUpManager {
                 labelText += " | ";
             }
             labelText += "SLOWED! ";
-            float remaining = SLOW_PLAYER_DURATION - slowPlayerTimer;
+            float remaining = PowerUpType.SLOW_PLAYER.getDuration() - slowPlayerTimer;
             labelText += String.format("(%.1fs)", remaining);
         }
 
@@ -216,27 +213,61 @@ public class PowerUpManager {
      * @param x           X position for effect display
      * @param y           Y position for effect display
      */
-    public void processPowerUp(int powerUpType, float x, float y) {
+    public void processPowerUp(PowerUpType powerUpType, float x, float y) {
         switch (powerUpType) {
-            case PowerUp.TYPE_DOUBLE_POINTS:
+            case DOUBLE_POINTS:
                 activateDoublePoints();
                 break;
-            case PowerUp.TYPE_EXTEND_TIME:
+            case EXTEND_TIME:
                 extendGameTime(5f); // Add 5 seconds
                 break;
-            case PowerUp.TYPE_REDUCE_TIME:
+            case REDUCE_TIME:
                 reduceGameTime(3f); // Subtract 3 seconds
                 break;
-            case PowerUp.TYPE_INVERT_CONTROLS:
+            case INVERT_CONTROLS:
                 activateInvertControls();
                 break;
-            case PowerUp.TYPE_SLOW_PLAYER:
+            case SLOW_PLAYER:
                 activateSlowPlayer();
                 break;
         }
 
         // Create visual effect through the scene context
         sceneContext.createPowerUpEffect(powerUpType, x, y);
+    }
+    
+    /**
+     * Process power-up activation (overloaded for backward compatibility)
+     * 
+     * @param powerUpTypeId The integer ID of the power-up type
+     * @param x           X position for effect display
+     * @param y           Y position for effect display
+     */
+    public void processPowerUp(int powerUpTypeId, float x, float y) {
+        // Convert old int type to new enum type for backward compatibility
+        PowerUpType powerUpType;
+        switch (powerUpTypeId) {
+            case 0: // Old TYPE_DOUBLE_POINTS
+                powerUpType = PowerUpType.DOUBLE_POINTS;
+                break;
+            case 1: // Old TYPE_EXTEND_TIME
+                powerUpType = PowerUpType.EXTEND_TIME;
+                break;
+            case 2: // Old TYPE_REDUCE_TIME
+                powerUpType = PowerUpType.REDUCE_TIME;
+                break;
+            case 3: // Old TYPE_INVERT_CONTROLS
+                powerUpType = PowerUpType.INVERT_CONTROLS;
+                break;
+            case 4: // Old TYPE_SLOW_PLAYER
+                powerUpType = PowerUpType.SLOW_PLAYER;
+                break;
+            default:
+                System.out.println("Unknown power-up type ID: " + powerUpTypeId);
+                return;
+        }
+        
+        processPowerUp(powerUpType, x, y);
     }
 
     /**

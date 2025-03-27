@@ -9,66 +9,24 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.game.AbstractEntity.MovableEntity;
 import com.mygdx.game.AbstractEntity.iCollidable;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class PowerUp extends MovableEntity {
-    // Power-up types
-    public static final int TYPE_DOUBLE_POINTS = 0;
-    public static final int TYPE_EXTEND_TIME = 1;
-
-    // Debuff types
-    public static final int TYPE_REDUCE_TIME = 2;
-    public static final int TYPE_INVERT_CONTROLS = 3;
-    public static final int TYPE_SLOW_PLAYER = 4;
-
-    // Flag to determine if this is a buff or debuff
-    private boolean isDebuff;
-
-    private int type;
-    private String symbol; // Symbol to display inside the star
-
-    private ShapeRenderer shapeRenderer;
-    private BitmapFont font;
-    private GlyphLayout glyphLayout; // Use GlyphLayout for text measurements
-    private Color powerUpColor;
-
     // Constants for rendering
     private static final float POWERUP_SIZE = 55; // Larger size
     private static final float STAR_INNER_RATIO = 0.6f; // Fuller star ratio
 
-    public PowerUp(float x, float y, int type) {
+    private PowerUpType type;
+    private ShapeRenderer shapeRenderer;
+    private BitmapFont font;
+    private GlyphLayout glyphLayout; // Use GlyphLayout for text measurements
+
+    public PowerUp(float x, float y, PowerUpType type) {
         super(x, y, 120); // Slightly faster than balls
         this.type = type;
-
-        // Determine if this is a buff or debuff
-        this.isDebuff = type >= TYPE_REDUCE_TIME;
-
-        // Set symbol and color based on type - using simpler, more visible symbols
-        switch (type) {
-            case TYPE_DOUBLE_POINTS:
-                symbol = "2X";
-                powerUpColor = Color.GOLD;
-                break;
-            case TYPE_EXTEND_TIME:
-                symbol = "+5";
-                powerUpColor = Color.CYAN;
-                break;
-            case TYPE_REDUCE_TIME:
-                symbol = "-3";
-                powerUpColor = Color.RED;
-                break;
-            case TYPE_INVERT_CONTROLS:
-                symbol = "INV";
-                powerUpColor = Color.PURPLE;
-                break;
-            case TYPE_SLOW_PLAYER:
-                symbol = "SLOW";
-                powerUpColor = Color.ORANGE;
-                break;
-            default:
-                symbol = "?";
-                powerUpColor = Color.WHITE;
-        }
 
         shapeRenderer = new ShapeRenderer();
         font = new BitmapFont();
@@ -114,7 +72,7 @@ public class PowerUp extends MovableEntity {
 
         // Draw the power-up star
         drawStar(getX() + POWERUP_SIZE / 2, getY() + POWERUP_SIZE / 2, POWERUP_SIZE / 2, POWERUP_SIZE * STAR_INNER_RATIO / 2, 5,
-                powerUpColor);
+                type.getColor());
 
         shapeRenderer.end();
 
@@ -129,12 +87,12 @@ public class PowerUp extends MovableEntity {
         batch.begin();
 
         // Calculate the dimensions of the text for centering
-        glyphLayout.setText(font, symbol);
+        glyphLayout.setText(font, type.getSymbol());
         float textWidth = glyphLayout.width;
         float textHeight = glyphLayout.height;
 
         // Draw the symbol text centered in the star
-        font.draw(batch, symbol,
+        font.draw(batch, type.getSymbol(),
                 getX() + POWERUP_SIZE / 2 - textWidth / 2,
                 getY() + POWERUP_SIZE / 2 + textHeight / 2);
     }
@@ -181,27 +139,39 @@ public class PowerUp extends MovableEntity {
 
     // Static method to spawn a random power-up (including debuffs)
     public static PowerUp createRandomPowerUp(float x, float y) {
-        // 50% chance for a debuff (with 5 total power-up types)
+        // Get all power-up types
+        PowerUpType[] types = PowerUpType.values();
+        
+        // Separate buffs and debuffs
+        List<PowerUpType> buffs = Arrays.stream(types)
+            .filter(t -> !t.isDebuff())
+            .collect(Collectors.toList());
+            
+        List<PowerUpType> debuffs = Arrays.stream(types)
+            .filter(PowerUpType::isDebuff)
+            .collect(Collectors.toList());
+        
+        // 50% chance for a debuff
         Random rand = new Random();
-        int type;
-
+        PowerUpType selectedType;
+        
         if (rand.nextFloat() < 0.5f) {
-            // Select a random debuff (2-4)
-            type = rand.nextInt(3) + 2;
+            // Select a random debuff
+            selectedType = debuffs.get(rand.nextInt(debuffs.size()));
         } else {
-            // Select a random buff (0-1)
-            type = rand.nextInt(2);
+            // Select a random buff
+            selectedType = buffs.get(rand.nextInt(buffs.size()));
         }
-
-        return new PowerUp(x, y, type);
+        
+        return new PowerUp(x, y, selectedType);
     }
 
-    public int getType() {
+    public PowerUpType getType() {
         return type;
     }
 
     public boolean isDebuff() {
-        return isDebuff;
+        return type.isDebuff();
     }
 
     @Override

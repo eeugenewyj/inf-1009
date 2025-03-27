@@ -19,7 +19,15 @@ public interface iSceneContext {
      * @param x X position for effect display
      * @param y Y position for effect display
      */
-    void createPowerUpEffect(int powerUpType, float x, float y);
+    void createPowerUpEffect(PowerUpType powerUpType, float x, float y);
+    
+    /**
+     * Creates a power-up effect (for backward compatibility)
+     * @param powerUpTypeId The integer ID of the power-up type
+     * @param x X position for effect display
+     * @param y Y position for effect display
+     */
+    void createPowerUpEffect(int powerUpTypeId, float x, float y);
     
     /**
      * Updates the power-up status display

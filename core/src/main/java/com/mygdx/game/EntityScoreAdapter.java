@@ -24,7 +24,12 @@ public class EntityScoreAdapter implements iEntityScoreHandler {
     }
     
     @Override
-    public void processPowerUp(int powerUpType, float x, float y) {
+    public void processPowerUp(PowerUpType powerUpType, float x, float y) {
         powerUpManager.processPowerUp(powerUpType, x, y);
+    }
+    
+    @Override
+    public void processPowerUp(int powerUpTypeId, float x, float y) {
+        powerUpManager.processPowerUp(powerUpTypeId, x, y);
     }
 }
