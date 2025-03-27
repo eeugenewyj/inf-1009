@@ -19,8 +19,10 @@ public class PowerUp extends MovableEntity {
     private static final float POWERUP_SIZE = 55; // Larger size
     private static final float STAR_INNER_RATIO = 0.6f; // Fuller star ratio
 
+    // Static shared instance for all PowerUps - this is the key fix
+    private static ShapeRenderer sharedShapeRenderer;
+    
     private PowerUpType type;
-    private ShapeRenderer shapeRenderer;
     private BitmapFont font;
     private GlyphLayout glyphLayout; // Use GlyphLayout for text measurements
 
@@ -28,7 +30,11 @@ public class PowerUp extends MovableEntity {
         super(x, y, 120); // Slightly faster than balls
         this.type = type;
 
-        shapeRenderer = new ShapeRenderer();
+        // Initialize shared shape renderer if needed
+        if (sharedShapeRenderer == null) {
+            sharedShapeRenderer = new ShapeRenderer();
+        }
+        
         font = new BitmapFont();
         font.setColor(Color.WHITE); // White text for ALL power-ups
 
@@ -63,25 +69,30 @@ public class PowerUp extends MovableEntity {
 
     @Override
     public void draw(SpriteBatch batch) {
+        // Make sure we have a valid shapeRenderer
+        if (sharedShapeRenderer == null) {
+            sharedShapeRenderer = new ShapeRenderer();
+        }
+        
         // End SpriteBatch to use ShapeRenderer
         batch.end();
 
         // Draw star shape
-        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        sharedShapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+        sharedShapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         // Draw the power-up star
         drawStar(getX() + POWERUP_SIZE / 2, getY() + POWERUP_SIZE / 2, POWERUP_SIZE / 2, POWERUP_SIZE * STAR_INNER_RATIO / 2, 5,
                 type.getColor());
 
-        shapeRenderer.end();
+        sharedShapeRenderer.end();
 
         // Draw outline for better visibility
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(Color.BLACK); // Black outline for all stars
+        sharedShapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        sharedShapeRenderer.setColor(Color.BLACK); // Black outline for all stars
         drawStar(getX() + POWERUP_SIZE / 2, getY() + POWERUP_SIZE / 2, POWERUP_SIZE / 2, POWERUP_SIZE * STAR_INNER_RATIO / 2, 5,
-                shapeRenderer.getColor());
-        shapeRenderer.end();
+                sharedShapeRenderer.getColor());
+        sharedShapeRenderer.end();
 
         // Restart batch for text
         batch.begin();
@@ -99,7 +110,7 @@ public class PowerUp extends MovableEntity {
 
     // Helper method to draw a star shape
     private void drawStar(float x, float y, float outerRadius, float innerRadius, int points, Color color) {
-        shapeRenderer.setColor(color);
+        sharedShapeRenderer.setColor(color);
 
         float angle = 0;
         float angleIncrement = (float) (2 * Math.PI / points);
@@ -115,13 +126,13 @@ public class PowerUp extends MovableEntity {
             float innerY = y + (float) Math.sin(innerAngle) * innerRadius;
 
             if (i == 0) {
-                shapeRenderer.triangle(x, y, outerX, outerY, innerX, innerY);
+                sharedShapeRenderer.triangle(x, y, outerX, outerY, innerX, innerY);
             } else {
                 float prevOuterX = x + (float) Math.cos(angle - angleIncrement) * outerRadius;
                 float prevOuterY = y + (float) Math.sin(angle - angleIncrement) * outerRadius;
 
-                shapeRenderer.triangle(x, y, prevOuterX, prevOuterY, innerX, innerY);
-                shapeRenderer.triangle(x, y, outerX, outerY, innerX, innerY);
+                sharedShapeRenderer.triangle(x, y, prevOuterX, prevOuterY, innerX, innerY);
+                sharedShapeRenderer.triangle(x, y, outerX, outerY, innerX, innerY);
             }
 
             angle += angleIncrement;
@@ -134,7 +145,7 @@ public class PowerUp extends MovableEntity {
         float firstOuterX = x + (float) Math.cos(0) * outerRadius;
         float firstOuterY = y + (float) Math.sin(0) * outerRadius;
 
-        shapeRenderer.triangle(x, y, lastInnerX, lastInnerY, firstOuterX, firstOuterY);
+        sharedShapeRenderer.triangle(x, y, lastInnerX, lastInnerY, firstOuterX, firstOuterY);
     }
 
     // Static method to spawn a random power-up (including debuffs)
@@ -174,13 +185,22 @@ public class PowerUp extends MovableEntity {
         return type.isDebuff();
     }
 
+    // Clean up static resources when game is shutdown
+    public static void disposeSharedResources() {
+        if (sharedShapeRenderer != null) {
+            sharedShapeRenderer.dispose();
+            sharedShapeRenderer = null;
+        }
+    }
+
     @Override
     public void dispose() {
-        if (shapeRenderer != null) {
-            shapeRenderer.dispose();
-        }
+        // Only dispose non-shared resources
         if (font != null) {
             font.dispose();
+            font = null;
         }
+        
+        // Do NOT dispose the shared shape renderer here
     }
 }

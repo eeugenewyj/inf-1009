@@ -44,6 +44,10 @@ public class GameMaster extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        // Clean up static resources first
+        PowerUp.disposeSharedResources();
+        
+        // Then dispose regular resources
         if (inputManager != null)
             inputManager.dispose();
         if (outputManager != null)
