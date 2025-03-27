@@ -63,7 +63,15 @@ public class DifficultySelectionScene extends Scene {
             public void clicked(InputEvent event, float x, float y) {
                 // Set the difficulty to easy and switch to the play scene
                 GameSettings.setDifficulty(GameSettings.DIFFICULTY_EASY);
-                StopScene.setRestartFlag(true);
+                
+                // Get the StopScene instance and set restart flag if available
+                if (sceneManager instanceof GameSceneManager) {
+                    StopScene stopScene = ((GameSceneManager) sceneManager).getStopScene();
+                    if (stopScene != null) {
+                        stopScene.setRestartFlag(true);
+                    }
+                }
+                
                 sceneManager.setScene("play");
             }
         });
@@ -73,7 +81,15 @@ public class DifficultySelectionScene extends Scene {
             public void clicked(InputEvent event, float x, float y) {
                 // Set the difficulty to hard and switch to the play scene
                 GameSettings.setDifficulty(GameSettings.DIFFICULTY_HARD);
-                StopScene.setRestartFlag(true);
+                
+                // Get the StopScene instance and set restart flag if available
+                if (sceneManager instanceof GameSceneManager) {
+                    StopScene stopScene = ((GameSceneManager) sceneManager).getStopScene();
+                    if (stopScene != null) {
+                        stopScene.setRestartFlag(true);
+                    }
+                }
+                
                 sceneManager.setScene("play");
             }
         });

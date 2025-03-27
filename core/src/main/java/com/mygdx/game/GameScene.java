@@ -150,8 +150,14 @@ public class GameScene extends Scene {
     public void show() {
         super.show();
         
-        // First check if we should restart the game (flag set from StopScene)
-        if (StopScene.shouldRestartGame()) {
+        // Get the StopScene instance from the scene manager
+        StopScene stopScene = null;
+        if (sceneManager instanceof GameSceneManager) {
+            stopScene = ((GameSceneManager) sceneManager).getStopScene();
+        }
+        
+        // Check if we should restart the game using the instance method
+        if (stopScene != null && stopScene.shouldRestartGame()) {
             System.out.println("Restart flag detected - restarting game");
             GameStatePreserver.getInstance().clearPreservedState();
             restartGame();

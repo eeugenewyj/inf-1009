@@ -22,8 +22,8 @@ public class StopScene extends Scene {
     private TextButton homeButton;
     private Audio audio;
 
-    // Flag to indicate if game should restart on next show
-    private static boolean shouldRestart = false;
+    // Use instance variable instead of static variable
+    private boolean restartFlag = false;
 
     public StopScene(iSceneManager sceneManager, iInputManager inputManager, iOutputManager outputManager) {
         super(sceneManager, inputManager, outputManager, "background2.png");
@@ -59,7 +59,7 @@ public class StopScene extends Scene {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Resume Button Clicked! Returning to game...");
-                shouldRestart = false; // Explicitly ensure we're not restarting
+                restartFlag = false; // Explicitly ensure we're not restarting
                 audio.resumeMusic(); // Resume the music
                 sceneManager.setScene("play"); // Switch back to the game scene
             }
@@ -69,7 +69,7 @@ public class StopScene extends Scene {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Restart Game Button Clicked! Setting restart flag...");
-                shouldRestart = true; // Set flag to restart on next show
+                restartFlag = true; // Set flag to restart on next show
                 audio.stopMusic(); // Stop the current music
                 audio.playMusic(); // Restart the music
                 sceneManager.setScene("play"); // Switch to play scene directly
@@ -110,18 +110,18 @@ public class StopScene extends Scene {
         stage.draw();
     }
 
-    // Static method to check if game should restart
-    public static boolean shouldRestartGame() {
-        if (shouldRestart) {
-            shouldRestart = false; // Reset the flag
-            return true;
+    // Instance method to check restart flag instead of static method
+    public boolean shouldRestartGame() {
+        boolean shouldRestart = restartFlag;
+        if (restartFlag) {
+            restartFlag = false; // Reset flag after it's checked
         }
-        return false;
+        return shouldRestart;
     }
 
-    // Method to set the restart flag externally
-    public static void setRestartFlag(boolean value) {
-        shouldRestart = value;
+    // Instance method to set restart flag instead of static method
+    public void setRestartFlag(boolean value) {
+        this.restartFlag = value;
     }
 
     @Override

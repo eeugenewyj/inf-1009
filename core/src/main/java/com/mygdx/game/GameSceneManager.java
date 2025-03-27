@@ -11,6 +11,9 @@ public class GameSceneManager extends AbstractSceneManager {
     private final iInputManager inputManager;
     private final iOutputManager outputManager;
     private final SceneFactory sceneFactory;
+    
+    // Keep track of the StopScene instance
+    private StopScene stopScene;
 
     public GameSceneManager(iInputManager inputManager, iOutputManager outputManager) {
         this.inputManager = inputManager;
@@ -22,10 +25,18 @@ public class GameSceneManager extends AbstractSceneManager {
     /**
      * Factory method that creates scenes on demand by delegating to SceneFactory.
      * Each call returns a fresh instance of the requested scene.
+     * Now keeps a reference to the StopScene instance.
      */
     @Override
     protected Scene createScene(String sceneName) {
-        return sceneFactory.createScene(sceneName);
+        Scene scene = sceneFactory.createScene(sceneName);
+        
+        // Store reference to StopScene if that's what we created
+        if (scene instanceof StopScene) {
+            stopScene = (StopScene) scene;
+        }
+        
+        return scene;
     }
 
     /**
@@ -34,12 +45,25 @@ public class GameSceneManager extends AbstractSceneManager {
      */
     @Override
     protected Scene createScene(SceneType sceneType) {
-        return sceneFactory.createScene(sceneType);
+        Scene scene = sceneFactory.createScene(sceneType);
+        
+        // Store reference to StopScene if that's what we created
+        if (scene instanceof StopScene) {
+            stopScene = (StopScene) scene;
+        }
+        
+        return scene;
     }
 
     /**
-     * Initialize the game with the first scene (home/main menu)
+     * Getter for the StopScene instance
+     * @return The StopScene instance, or null if not yet created
      */
+    public StopScene getStopScene() {
+        return stopScene;
+    }
+
+    // Rest of the class remains unchanged
     @Override
     public void initialize() {
         // Start with the home scene using the enum for type safety
