@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import com.mygdx.game.PowerUps.PowerUpType;
+
 /**
  * Interface for handling score and power-up related functionality.
  * This breaks the circular dependency between GameScene and entity/collision managers.
