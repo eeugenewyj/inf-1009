@@ -12,7 +12,7 @@ import com.mygdx.game.AbstractIO.iInputManager;
 public class Player extends MovableEntity {
     private Texture texture;
     private iInputManager inputManager; // Injected Input Manager
-    private CollisionCallback collisionCallback; // Using callback instead of direct EntityManager reference
+    private iCollisionCallback collisionCallback; // Using callback instead of direct EntityManager reference
 
     // Define the movement boundary - player cannot go above this line
     private final float MAX_Y_POSITION;
@@ -40,7 +40,7 @@ public class Player extends MovableEntity {
      * Sets the collision callback for this player
      * @param callback The collision callback
      */
-    public void setCollisionCallback(CollisionCallback callback) {
+    public void setCollisionCallback(iCollisionCallback callback) {
         this.collisionCallback = callback;
     }
 

@@ -5,7 +5,7 @@ import com.mygdx.game.AbstractIO.iInputManager;
 /**
  * Adapter that implements SceneContext to provide access to game components
  */
-public class SceneContextAdapter implements SceneContext {
+public class SceneContextAdapter implements iSceneContext {
     private GameEntityManager entityManager;
     private GameUIManager uiManager;
     private iInputManager inputManager;

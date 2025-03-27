@@ -3,7 +3,7 @@ package com.mygdx.game;
 /**
  * Adapter that implements EntityScoreHandler to handle score and power-up events
  */
-public class EntityScoreAdapter implements EntityScoreHandler {
+public class EntityScoreAdapter implements iEntityScoreHandler {
     private GameStateManager gameStateManager;
     private PowerUpManager powerUpManager;
     

@@ -10,7 +10,7 @@ import com.mygdx.game.AbstractIO.Audio;
 
 public class GameCollisionManager extends AbstractCollisionManager {
     private final Audio audio = Audio.getInstance(); // Singleton instance of Audio class
-    private EntityScoreHandler scoreHandler; // Reference to score handler instead of GameScene
+    private iEntityScoreHandler scoreHandler; // Reference to score handler instead of GameScene
     private Circle tempCircle = new Circle(); // Reusable circle for collision detection
 
     public GameCollisionManager(iEntityManager entityManager) {
@@ -18,7 +18,7 @@ public class GameCollisionManager extends AbstractCollisionManager {
     }
 
     // Additional constructor that takes a reference to the EntityScoreHandler
-    public GameCollisionManager(iEntityManager entityManager, EntityScoreHandler scoreHandler) {
+    public GameCollisionManager(iEntityManager entityManager, iEntityScoreHandler scoreHandler) {
         super(entityManager);
         this.scoreHandler = scoreHandler;
     }
@@ -227,7 +227,7 @@ public class GameCollisionManager extends AbstractCollisionManager {
     }
 
     // Set the score handler (useful for changing scenes)
-    public void setScoreHandler(EntityScoreHandler scoreHandler) {
+    public void setScoreHandler(iEntityScoreHandler scoreHandler) {
         this.scoreHandler = scoreHandler;
     }
 

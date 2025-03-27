@@ -12,14 +12,14 @@ import com.mygdx.game.AbstractEntity.AbstractEntityManager;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractIO.iInputManager;
 
-public class GameEntityManager extends AbstractEntityManager implements CollisionCallback {
+public class GameEntityManager extends AbstractEntityManager implements iCollisionCallback {
     // This class now implements CollisionCallback to provide collision detection for the Player
     private static final Random random = new Random();
     private static final int NUM_BALLOONS = 8; // Number of balloons per row
     private static final float GAP_RATIO = 0.1f; // 10% gap between balloons
 
     private int rowsSpawned = 0; // Tracks the number of spawned rows
-    private EntityScoreHandler scoreHandler; // Reference to score handler instead of GameScene
+    private iEntityScoreHandler scoreHandler; // Reference to score handler instead of GameScene
 
     private float spikesSpawnTimer = 0; // Timer to track spikes spawn intervals
     private static final float SPIKES_LIFETIME = 5f; // Spikes disappear after 5 seconds
@@ -35,7 +35,7 @@ public class GameEntityManager extends AbstractEntityManager implements Collisio
     }
 
     // Constructor with EntityScoreHandler reference
-    public GameEntityManager(EntityScoreHandler scoreHandler) {
+    public GameEntityManager(iEntityScoreHandler scoreHandler) {
         this.scoreHandler = scoreHandler;
     }
 
@@ -308,7 +308,7 @@ public class GameEntityManager extends AbstractEntityManager implements Collisio
     }
 
     // Set EntityScoreHandler reference after initialization if needed
-    public void setScoreHandler(EntityScoreHandler scoreHandler) {
+    public void setScoreHandler(iEntityScoreHandler scoreHandler) {
         this.scoreHandler = scoreHandler;
     }
     

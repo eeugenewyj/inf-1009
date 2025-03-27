@@ -4,7 +4,7 @@ package com.mygdx.game;
  * Interface for components that need to respond to game state changes.
  * This breaks the circular dependency between GameStateManager and GameScene.
  */
-public interface GameStateListener {
+public interface iGameStateListener {
     /**
      * Called when the score changes
      * 

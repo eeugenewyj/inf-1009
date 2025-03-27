@@ -20,7 +20,7 @@ public class GameStateManager {
     private Audio audio;
     
     // Reference to game state listener (instead of direct GameScene reference)
-    private GameStateListener gameStateListener;
+    private iGameStateListener gameStateListener;
 
     /**
      * Creates a new GameStateManager
@@ -28,7 +28,7 @@ public class GameStateManager {
      * @param gameStateListener The listener that will respond to state changes
      * @param audio Audio system for sound effects
      */
-    public GameStateManager(GameStateListener gameStateListener, Audio audio) {
+    public GameStateManager(iGameStateListener gameStateListener, Audio audio) {
         this.gameStateListener = gameStateListener;
         this.audio = audio;
     }
@@ -39,7 +39,7 @@ public class GameStateManager {
      * 
      * @param listener The new listener
      */
-    public void setGameStateListener(GameStateListener listener) {
+    public void setGameStateListener(iGameStateListener listener) {
         this.gameStateListener = listener;
     }
 

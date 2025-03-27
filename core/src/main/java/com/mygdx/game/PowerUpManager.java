@@ -22,7 +22,7 @@ public class PowerUpManager {
     private float originalPlayerSpeed = 200f;
 
     // Reference to scene context for UI updates and entity management
-    private SceneContext sceneContext;
+    private iSceneContext sceneContext;
     
     // The game state manager is just used as a service, not creating a circular dependency
     private GameStateManager gameStateManager;
@@ -33,7 +33,7 @@ public class PowerUpManager {
      * @param sceneContext The scene context providing necessary callbacks and services
      * @param gameStateManager The game state manager for time and score manipulation
      */
-    public PowerUpManager(SceneContext sceneContext, GameStateManager gameStateManager) {
+    public PowerUpManager(iSceneContext sceneContext, GameStateManager gameStateManager) {
         this.sceneContext = sceneContext;
         this.gameStateManager = gameStateManager;
     }

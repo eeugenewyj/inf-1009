@@ -4,7 +4,7 @@ package com.mygdx.game;
  * Interface for handling score and power-up related functionality.
  * This breaks the circular dependency between GameScene and entity/collision managers.
  */
-public interface EntityScoreHandler {
+public interface iEntityScoreHandler {
     /**
      * Adds points to the player's score
      * 

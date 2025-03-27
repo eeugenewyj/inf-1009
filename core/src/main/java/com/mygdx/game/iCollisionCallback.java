@@ -4,7 +4,7 @@ package com.mygdx.game;
  * Interface for collision checking callbacks.
  * This breaks the circular dependency between Player and EntityManager.
  */
-public interface CollisionCallback {
+public interface iCollisionCallback {
     /**
      * Checks if a move to the specified position would collide with spikes
      * 

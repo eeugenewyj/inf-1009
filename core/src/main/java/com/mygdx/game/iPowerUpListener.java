@@ -4,7 +4,7 @@ package com.mygdx.game;
  * Interface for objects that can respond to power-up events.
  * This breaks the circular dependency between PowerUpManager and GameScene.
  */
-public interface PowerUpListener {
+public interface iPowerUpListener {
     /**
      * Updates the power-up label to show active effects
      * 

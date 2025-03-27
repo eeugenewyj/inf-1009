@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 /**
  * Adapter that implements GameStateListener to handle game state changes
  */
-public class GameStateAdapter implements GameStateListener {
+public class GameStateAdapter implements iGameStateListener {
     private GameUIManager uiManager;
     private GameLoopHandler gameLoop;
     private Runnable onGameOverAction;

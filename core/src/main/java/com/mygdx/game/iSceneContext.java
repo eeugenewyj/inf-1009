@@ -4,7 +4,7 @@ package com.mygdx.game;
  * Interface providing contextual information from the scene to managers.
  * This breaks circular dependencies by providing only the necessary methods.
  */
-public interface SceneContext {
+public interface iSceneContext {
     /**
      * Gets the entity manager
      * 
