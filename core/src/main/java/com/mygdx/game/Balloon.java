@@ -1,4 +1,4 @@
-package com.mygdx.game.Entities;
+package com.mygdx.game;
 
 import java.util.Random;
 
@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.mygdx.game.GameSettings;
 import com.mygdx.game.AbstractEntity.MovableEntity;
 import com.mygdx.game.AbstractEntity.iCollidable;
 
