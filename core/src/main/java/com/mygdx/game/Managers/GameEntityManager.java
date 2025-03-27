@@ -339,4 +339,9 @@ public class GameEntityManager extends AbstractEntityManager implements iCollisi
         
         return false; // No collision would occur
     }
+
+    public void resetSpawnTimers() {
+        spikesSpawnTimer = 0;
+        powerUpSpawnTimer = 0;
+    }
 }

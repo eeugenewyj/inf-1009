@@ -145,8 +145,9 @@ public class GameLoopHandler {
         // Reset power-ups
         powerUpManager.resetPowerUps();
 
-        // Reset entities
+        // Reset entity manager
         if (entityManager != null) {
+            entityManager.resetSpawnTimers();
             entityManager.dispose();
         }
 

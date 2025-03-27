@@ -21,7 +21,7 @@ public class GameCollisionManager extends AbstractCollisionManager {
     public GameCollisionManager(iEntityManager entityManager) {
         super(entityManager);
     }
-
+    
     // Additional constructor that takes a reference to the EntityScoreHandler
     public GameCollisionManager(iEntityManager entityManager, iEntityScoreHandler scoreHandler) {
         super(entityManager);
