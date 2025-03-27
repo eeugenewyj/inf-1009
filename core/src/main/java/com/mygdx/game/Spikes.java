@@ -36,7 +36,7 @@ public class Spikes extends StaticObject {
     public Rectangle getBoundingBox() {
         // Return a slightly smaller bounding box for better collision feel
         // This creates a 5-pixel "buffer" around the spikes
-        return new Rectangle(x + 5, y + 5, width - 10, height - 10);
+        return new Rectangle(getX() + 5, getY() + 5, getWidth() - 10, getHeight() - 10);
     }
 
     @Override

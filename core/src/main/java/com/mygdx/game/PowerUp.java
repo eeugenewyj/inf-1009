@@ -83,7 +83,7 @@ public class PowerUp extends MovableEntity {
     @Override
     public void moveAIControlled() {
         float delta = Gdx.graphics.getDeltaTime();
-        y -= speed * delta;
+        setY(getY() - getSpeed() * delta);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class PowerUp extends MovableEntity {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
         // Draw the power-up star
-        drawStar(x + POWERUP_SIZE / 2, y + POWERUP_SIZE / 2, POWERUP_SIZE / 2, POWERUP_SIZE * STAR_INNER_RATIO / 2, 5,
+        drawStar(getX() + POWERUP_SIZE / 2, getY() + POWERUP_SIZE / 2, POWERUP_SIZE / 2, POWERUP_SIZE * STAR_INNER_RATIO / 2, 5,
                 powerUpColor);
 
         shapeRenderer.end();
@@ -121,7 +121,7 @@ public class PowerUp extends MovableEntity {
         // Draw outline for better visibility
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(Color.BLACK); // Black outline for all stars
-        drawStar(x + POWERUP_SIZE / 2, y + POWERUP_SIZE / 2, POWERUP_SIZE / 2, POWERUP_SIZE * STAR_INNER_RATIO / 2, 5,
+        drawStar(getX() + POWERUP_SIZE / 2, getY() + POWERUP_SIZE / 2, POWERUP_SIZE / 2, POWERUP_SIZE * STAR_INNER_RATIO / 2, 5,
                 shapeRenderer.getColor());
         shapeRenderer.end();
 
@@ -135,8 +135,8 @@ public class PowerUp extends MovableEntity {
 
         // Draw the symbol text centered in the star
         font.draw(batch, symbol,
-                x + POWERUP_SIZE / 2 - textWidth / 2,
-                y + POWERUP_SIZE / 2 + textHeight / 2);
+                getX() + POWERUP_SIZE / 2 - textWidth / 2,
+                getY() + POWERUP_SIZE / 2 + textHeight / 2);
     }
 
     // Helper method to draw a star shape
@@ -213,5 +213,4 @@ public class PowerUp extends MovableEntity {
             font.dispose();
         }
     }
-
 }

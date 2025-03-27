@@ -17,8 +17,11 @@ public class Balloon extends MovableEntity {
     private String operation; // The math operation (+, -, ×)
     private int operand1, operand2; // The numbers in the operation
 
+    // These fields are marked as unused in IDE warnings
+    // Consider removing them if not needed
     private boolean collected = false; // Whether the balloon has been collected
     private boolean isFalling = false; // Whether the balloon is currently falling
+    
     private Texture balloonTexture; // Texture for the balloon
 
     // Constants for balloon dimensions and spacing
@@ -135,15 +138,15 @@ public class Balloon extends MovableEntity {
     @Override
     public void moveAIControlled() {
         // Store current position before moving
-        this.previousX = this.x;
-        this.previousY = this.y;
+        setPreviousPosition(getX(), getY());
 
         // Move the balloon downwards
         float delta = Gdx.graphics.getDeltaTime();
-        y -= speed * delta;
+        setY(getY() - getSpeed() * delta);
 
         // Add a small horizontal wobble for balloon effect
-        x += Math.sin(y * 0.05) * 0.5f;
+        // Cast the result to float since Math.sin returns a double
+        setX(getX() + (float)(Math.sin(getY() * 0.05) * 0.5));
     }
 
     @Override
@@ -160,7 +163,7 @@ public class Balloon extends MovableEntity {
     public void draw(SpriteBatch batch) {
         // Draw the balloon texture with the selected color
         batch.setColor(balloonColor);
-        batch.draw(balloonTexture, x, y, BALLOON_WIDTH, BALLOON_WIDTH * 1.2f); // Slightly taller for balloon shape
+        batch.draw(balloonTexture, getX(), getY(), BALLOON_WIDTH, BALLOON_WIDTH * 1.2f); // Slightly taller for balloon shape
         batch.setColor(Color.WHITE); // Reset color
 
         // Center the text for proper display
@@ -168,12 +171,12 @@ public class Balloon extends MovableEntity {
 
         // Simple number requires less space than math operation
         if (usesMathOperation) {
-            textX = x + BALLOON_RADIUS - 15; // Wider expression needs more offset
+            textX = getX() + BALLOON_RADIUS - 15; // Wider expression needs more offset
         } else {
-            textX = x + BALLOON_RADIUS - 8; // Single digit needs less offset
+            textX = getX() + BALLOON_RADIUS - 8; // Single digit needs less offset
         }
 
-        textY = y + BALLOON_RADIUS + 5;
+        textY = getY() + BALLOON_RADIUS + 5;
 
         // Choose text color based on balloon color for better contrast
         if (balloonColor.equals(Color.BLUE) ||

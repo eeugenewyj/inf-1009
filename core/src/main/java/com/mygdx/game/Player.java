@@ -26,14 +26,14 @@ public class Player extends MovableEntity {
         this.inputManager = inputManager;
         
         // Explicitly set previous position to match current position
-        this.previousX = x;
-        this.previousY = y;
+        setPreviousPosition(x, y);
         
-        this.width = 50; // Make sure width and height are explicitly set
-        this.height = 50;
+        // Set width and height explicitly using the setters
+        setWidth(50);
+        setHeight(50);
 
         // Set the movement boundary at 3/4 of the screen height
-        this.MAX_Y_POSITION = Gdx.graphics.getHeight() * 0.75f - this.height;
+        this.MAX_Y_POSITION = Gdx.graphics.getHeight() * 0.75f - getHeight();
     }
 
     /**
@@ -50,7 +50,7 @@ public class Player extends MovableEntity {
     }
 
     public void draw(SpriteBatch batch) { // Draw player image
-        batch.draw(texture, x, y, width, height);
+        batch.draw(texture, getX(), getY(), getWidth(), getHeight());
     }
 
     @Override
@@ -61,8 +61,7 @@ public class Player extends MovableEntity {
     @Override
     public void moveUserControlled(float deltaTime) {
         // Always store current position as previous before moving
-        this.previousX = this.x;
-        this.previousY = this.y;
+        setPreviousPosition(getX(), getY());
 
         float horizontal = inputManager.getMoveX();
         float vertical = inputManager.getMoveY();
@@ -75,25 +74,25 @@ public class Player extends MovableEntity {
 
         // Try moving horizontally
         if (horizontal != 0) {
-            float newX = this.x + speed * deltaTime * horizontal;
+            float newX = getX() + getSpeed() * deltaTime * horizontal;
             // Ensure entity stays within screen bounds
-            newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - width));
+            newX = Math.max(0, Math.min(newX, Gdx.graphics.getWidth() - getWidth()));
 
             // Check collision using the callback
-            if (collisionCallback == null || !collisionCallback.wouldCollideWithSpikes(newX, this.y, width, height)) {
-                this.x = newX; // Only move if no collision would occur or no callback is set
+            if (collisionCallback == null || !collisionCallback.wouldCollideWithSpikes(newX, getY(), getWidth(), getHeight())) {
+                setX(newX); // Only move if no collision would occur or no callback is set
             }
         }
 
         // Try moving vertically
         if (vertical != 0) {
-            float newY = this.y + speed * deltaTime * vertical;
+            float newY = getY() + getSpeed() * deltaTime * vertical;
             // Ensure player stays within vertical bounds
             newY = Math.max(0, Math.min(newY, MAX_Y_POSITION));
 
             // Check collision using the callback
-            if (collisionCallback == null || !collisionCallback.wouldCollideWithSpikes(this.x, newY, width, height)) {
-                this.y = newY; // Only move if no collision would occur or no callback is set
+            if (collisionCallback == null || !collisionCallback.wouldCollideWithSpikes(getX(), newY, getWidth(), getHeight())) {
+                setY(newY); // Only move if no collision would occur or no callback is set
             }
         }
     }
@@ -111,19 +110,21 @@ public class Player extends MovableEntity {
         // Not used for Player
     }
 
+    @Override
     public Rectangle getBoundingBox() {
-        return new Rectangle(x, y, width, height);
+        return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
 
     @Override
     public void setPosition(float x, float y) {
         // Also update previous position when manually setting position
-        this.previousX = this.x;
-        this.previousY = this.y;
+        setPreviousPosition(getX(), getY());
         
-        this.x = x;
-        // Apply the vertical movement restriction when setting position
-        this.y = Math.min(y, MAX_Y_POSITION);
+        // Set the x position
+        setX(x);
+        
+        // Apply the vertical movement restriction when setting y position
+        setY(Math.min(y, MAX_Y_POSITION));
     }
 
     @Override
@@ -133,16 +134,6 @@ public class Player extends MovableEntity {
         } else if (other instanceof Balloon) {
             System.out.println("Player collected a balloon: " + ((Balloon) other).getValue());
         }
-    }
-
-    @Override
-    public float getPreviousX() {
-        return previousX;
-    }
-
-    @Override
-    public float getPreviousY() {
-        return previousY;
     }
 
     @Override

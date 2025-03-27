@@ -4,9 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class MovableEntity extends Entity implements iMovable {
-    protected float speed;
-    protected float previousX, previousY; // Previous position of entity
-    protected float directionX, directionY; // Direction of movement
+    private float speed;
+    private float previousX, previousY; // Previous position of entity
+    private float directionX, directionY; // Direction of movement
 
     public MovableEntity(float x, float y, float speed) {
         super(x, y); // Call parent constructor
@@ -37,16 +37,16 @@ public abstract class MovableEntity extends Entity implements iMovable {
     // Protected method to move the entity based on deltaTime and direction
     protected void move(float deltaTime, float directionX, float directionY) {
         // Save current position as previous before moving
-        this.previousX = this.x;
-        this.previousY = this.y;
+        this.previousX = getX();
+        this.previousY = getY();
 
         // Update position using speed, deltaTime, and direction.
-        this.x += speed * deltaTime * directionX;
-        this.y += speed * deltaTime * directionY;
+        setX(getX() + speed * deltaTime * directionX);
+        setY(getY() + speed * deltaTime * directionY);
 
         // Ensure entity stays within screen bounds
-        this.x = Math.max(0, Math.min(this.x, Gdx.graphics.getWidth() - width));
-        this.y = Math.max(0, Math.min(this.y, Gdx.graphics.getHeight() - height));
+        setX(Math.max(0, Math.min(getX(), Gdx.graphics.getWidth() - getWidth())));
+        setY(Math.max(0, Math.min(getY(), Gdx.graphics.getHeight() - getHeight())));
     }
 
     // Method to change direction when entity collides with something horizontally

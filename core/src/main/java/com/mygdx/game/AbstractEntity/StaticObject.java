@@ -12,7 +12,9 @@ public class StaticObject extends Entity {
     public StaticObject(float x, float y, float width, float height, String texturePath) {
         super(x, y); // Call parent constructor
         this.texture = new Texture(Gdx.files.internal(texturePath)); // Load texture from file
-        this.boundingBox = new Rectangle(x, y, width, height); // Create bounding box for collisions
+        setWidth(width);
+        setHeight(height);
+        this.boundingBox = new Rectangle(getX(), getY(), getWidth(), getHeight()); // Create bounding box for collisions
     }
 
     @Override
@@ -25,13 +27,13 @@ public class StaticObject extends Entity {
     public void draw(SpriteBatch batch) {
         if (texture != null) {
             // Draw the texture at the object's position with its bounding box dimensions
-            batch.draw(texture, x, y, boundingBox.width, boundingBox.height);
+            batch.draw(texture, getX(), getY(), getWidth(), getHeight());
         }
     }
 
     @Override
     public void update(float deltaTime) {
-        // Static objects don’t move, so no update logic needed
+        // Static objects don't move, so no update logic needed
     }
 
     // Method to handle collisions with other collidable entities
@@ -39,8 +41,12 @@ public class StaticObject extends Entity {
     public void handleCollision(iCollidable other) {
     }
 
+    @Override
     public Rectangle getBoundingBox() {
-        return boundingBox; // Ensure bounding box can be accessed for collisions
+        // Ensure the bounding box is updated with the current position
+        boundingBox.setPosition(getX(), getY());
+        boundingBox.setSize(getWidth(), getHeight());
+        return boundingBox; // Return the updated bounding box
     }
 
     @Override

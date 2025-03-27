@@ -35,7 +35,7 @@ public class PowerUpEffect extends Entity {
         lifeTime += deltaTime;
 
         // Move upward slowly
-        y += 30 * deltaTime;
+        setY(getY() + 30 * deltaTime);
 
         // Fade out as it reaches end of life
         alpha = 1.0f - (lifeTime / maxLifeTime);
@@ -56,7 +56,7 @@ public class PowerUpEffect extends Entity {
         font.setColor(color.r, color.g, color.b, alpha);
 
         // Draw text
-        font.draw(batch, text, x, y);
+        font.draw(batch, text, getX(), getY());
     }
 
     @Override
