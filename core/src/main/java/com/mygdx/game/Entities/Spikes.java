@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.game.AbstractEntity.StaticObject;

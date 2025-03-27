@@ -1,6 +1,9 @@
-package com.mygdx.game;
+package com.mygdx.game.Managers;
 
+import com.mygdx.game.iSceneContext;
 import com.mygdx.game.AbstractEntity.Entity;
+import com.mygdx.game.Entities.Player;
+import com.mygdx.game.PowerUps.PowerUpType;
 
 /**
  * Manages power-ups and their effects in the game.

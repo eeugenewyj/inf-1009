@@ -1,6 +1,11 @@
-package com.mygdx.game;
+package com.mygdx.game.PowerUps;
 
+import com.mygdx.game.iSceneContext;
 import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.Entities.PowerUpEffect;
+import com.mygdx.game.Managers.GameEntityManager;
+import com.mygdx.game.Managers.GameStateManager;
+import com.mygdx.game.UI.GameUIManager;
 import com.badlogic.gdx.graphics.Color;
 
 /**

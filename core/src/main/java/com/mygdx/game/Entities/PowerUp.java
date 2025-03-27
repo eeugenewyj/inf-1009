@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.mygdx.game.AbstractEntity.MovableEntity;
 import com.mygdx.game.AbstractEntity.iCollidable;
+import com.mygdx.game.PowerUps.PowerUpType;
 
 import java.util.Arrays;
 import java.util.List;

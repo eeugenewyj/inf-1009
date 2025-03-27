@@ -1,5 +1,7 @@
-package com.mygdx.game;
+package com.mygdx.game.Managers;
 
+import com.mygdx.game.GameSettings;
+import com.mygdx.game.iGameStateListener;
 import com.mygdx.game.AbstractIO.Audio;
 
 /**

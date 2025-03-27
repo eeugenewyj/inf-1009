@@ -1,12 +1,17 @@
-package com.mygdx.game;
+package com.mygdx.game.Managers;
 
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.mygdx.game.iEntityScoreHandler;
 import com.mygdx.game.AbstractCollision.AbstractCollisionManager;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractEntity.iEntityManager;
 import com.mygdx.game.AbstractIO.Audio;
+import com.mygdx.game.Entities.Balloon;
+import com.mygdx.game.Entities.Player;
+import com.mygdx.game.Entities.PowerUp;
+import com.mygdx.game.Entities.Spikes;
 
 public class GameCollisionManager extends AbstractCollisionManager {
     private final Audio audio = Audio.getInstance(); // Singleton instance of Audio class

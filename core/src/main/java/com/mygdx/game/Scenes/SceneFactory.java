@@ -1,5 +1,6 @@
-package com.mygdx.game;
+package com.mygdx.game.Scenes;
 
+import com.mygdx.game.SceneType;
 import com.mygdx.game.AbstractIO.iInputManager;
 import com.mygdx.game.AbstractIO.iOutputManager;
 import com.mygdx.game.AbstractScene.iSceneManager;

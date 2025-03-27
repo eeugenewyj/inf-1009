@@ -1,4 +1,8 @@
-package com.mygdx.game;
+package com.mygdx.game.PowerUps;
+
+import com.mygdx.game.iGameStateListener;
+import com.mygdx.game.Managers.GameLoopHandler;
+import com.mygdx.game.UI.GameUIManager;
 
 //import com.badlogic.gdx.scenes.scene2d.Stage;
 

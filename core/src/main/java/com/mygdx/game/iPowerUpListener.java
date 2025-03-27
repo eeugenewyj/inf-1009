@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import com.mygdx.game.Managers.GameEntityManager;
+
 /**
  * Interface for objects that can respond to power-up events.
  * This breaks the circular dependency between PowerUpManager and GameScene.

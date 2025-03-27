@@ -1,9 +1,10 @@
-package com.mygdx.game;
+package com.mygdx.game.Entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.mygdx.game.iCollisionCallback;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractEntity.MovableEntity;
 import com.mygdx.game.AbstractEntity.iCollidable;

@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Scenes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.game.SceneType;
 import com.mygdx.game.AbstractIO.iInputManager;
 import com.mygdx.game.AbstractIO.iOutputManager;
 import com.mygdx.game.AbstractScene.iSceneManager;

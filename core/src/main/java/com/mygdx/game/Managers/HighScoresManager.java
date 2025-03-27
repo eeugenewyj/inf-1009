@@ -1,8 +1,10 @@
-package com.mygdx.game;
+package com.mygdx.game.Managers;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import com.mygdx.game.GameSettings;
 
 public class HighScoresManager {
     private static final int MAX_SCORES = 5; // Keep only top 5 scores

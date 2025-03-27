@@ -1,5 +1,8 @@
 package com.mygdx.game;
 
+import com.mygdx.game.Managers.GameEntityManager;
+import com.mygdx.game.PowerUps.PowerUpType;
+
 /**
  * Interface providing contextual information from the scene to managers.
  * This breaks circular dependencies by providing only the necessary methods.

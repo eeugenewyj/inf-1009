@@ -7,6 +7,14 @@ import java.util.Map;
 
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractEntity.MovableEntity;
+import com.mygdx.game.Entities.Balloon;
+import com.mygdx.game.Entities.Player;
+import com.mygdx.game.Entities.PowerUp;
+import com.mygdx.game.Entities.Spikes;
+import com.mygdx.game.Managers.GameEntityManager;
+import com.mygdx.game.Managers.GameStateManager;
+import com.mygdx.game.Managers.PowerUpManager;
+import com.mygdx.game.Scenes.GameScene;
 
 /**
  * Singleton class to preserve game state between scene transitions

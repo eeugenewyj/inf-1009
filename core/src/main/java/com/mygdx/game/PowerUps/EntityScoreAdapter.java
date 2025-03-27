@@ -1,4 +1,8 @@
-package com.mygdx.game;
+package com.mygdx.game.PowerUps;
+
+import com.mygdx.game.iEntityScoreHandler;
+import com.mygdx.game.Managers.GameStateManager;
+import com.mygdx.game.Managers.PowerUpManager;
 
 /**
  * Adapter that implements EntityScoreHandler to handle score and power-up events

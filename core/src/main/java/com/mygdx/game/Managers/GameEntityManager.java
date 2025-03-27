@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Managers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +8,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.iCollisionCallback;
+import com.mygdx.game.iEntityScoreHandler;
 import com.mygdx.game.AbstractEntity.AbstractEntityManager;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.Entities.Balloon;
+import com.mygdx.game.Entities.Player;
+import com.mygdx.game.Entities.PowerUp;
+import com.mygdx.game.Entities.Spikes;
+import com.mygdx.game.PowerUps.PowerUpType;
 
 public class GameEntityManager extends AbstractEntityManager implements iCollisionCallback {
     // This class now implements CollisionCallback to provide collision detection for the Player

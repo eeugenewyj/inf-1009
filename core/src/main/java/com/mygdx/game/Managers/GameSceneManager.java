@@ -1,10 +1,13 @@
-package com.mygdx.game;
+package com.mygdx.game.Managers;
 
+import com.mygdx.game.SceneType;
 import com.mygdx.game.AbstractIO.Audio;
 import com.mygdx.game.AbstractIO.iInputManager;
 import com.mygdx.game.AbstractIO.iOutputManager;
 import com.mygdx.game.AbstractScene.AbstractSceneManager;
 import com.mygdx.game.AbstractScene.Scene;
+import com.mygdx.game.Scenes.SceneFactory;
+import com.mygdx.game.Scenes.StopScene;
 
 public class GameSceneManager extends AbstractSceneManager {
     private Audio backgroundMusic;

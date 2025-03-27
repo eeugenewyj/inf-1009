@@ -8,6 +8,10 @@ import com.mygdx.game.AbstractIO.iKeyboardInput;
 import com.mygdx.game.AbstractIO.iOutputManager;
 import com.mygdx.game.AbstractIO.Keyboard;
 import com.mygdx.game.AbstractScene.iSceneManager;
+import com.mygdx.game.Entities.PowerUp;
+import com.mygdx.game.Managers.GameInputManager;
+import com.mygdx.game.Managers.GameOutputManager;
+import com.mygdx.game.Managers.GameSceneManager;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all

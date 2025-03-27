@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Scenes;
 
 import com.badlogic.gdx.Gdx;
 //import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -6,10 +6,22 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.mygdx.game.GameStatePreserver;
 import com.mygdx.game.AbstractIO.Audio;
 import com.mygdx.game.AbstractIO.iInputManager;
 import com.mygdx.game.AbstractIO.iOutputManager;
 import com.mygdx.game.AbstractScene.iSceneManager;
+import com.mygdx.game.Managers.GameCollisionManager;
+import com.mygdx.game.Managers.GameEntityManager;
+import com.mygdx.game.Managers.GameLoopHandler;
+import com.mygdx.game.Managers.GameSceneManager;
+import com.mygdx.game.Managers.GameStateManager;
+import com.mygdx.game.Managers.HighScoresManager;
+import com.mygdx.game.Managers.PowerUpManager;
+import com.mygdx.game.PowerUps.EntityScoreAdapter;
+import com.mygdx.game.PowerUps.GameStateAdapter;
+import com.mygdx.game.PowerUps.SceneContextAdapter;
+import com.mygdx.game.UI.GameUIManager;
 import com.mygdx.game.AbstractScene.Scene;
 
 /**

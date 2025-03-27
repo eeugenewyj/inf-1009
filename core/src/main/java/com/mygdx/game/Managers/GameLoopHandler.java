@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Managers;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 //import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractIO.iInputManager;
+import com.mygdx.game.Entities.Player;
 
 /**
  * Handles the main game loop logic including entity updates and collision

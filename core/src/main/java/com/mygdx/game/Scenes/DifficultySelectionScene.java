@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Scenes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -12,10 +12,11 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.graphics.Color;
-
+import com.mygdx.game.GameSettings;
 import com.mygdx.game.AbstractIO.iInputManager;
 import com.mygdx.game.AbstractIO.iOutputManager;
 import com.mygdx.game.AbstractScene.iSceneManager;
+import com.mygdx.game.Managers.GameSceneManager;
 import com.mygdx.game.AbstractScene.Scene;
 
 public class DifficultySelectionScene extends Scene {

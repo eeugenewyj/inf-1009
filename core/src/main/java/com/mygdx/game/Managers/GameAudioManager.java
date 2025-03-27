@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.Managers;
 
 import com.mygdx.game.AbstractIO.Audio;
 
