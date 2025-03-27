@@ -28,6 +28,9 @@ public class GameCollisionManager extends AbstractCollisionManager {
         // Improved spikes collision handling for players
         if (entity instanceof Player) {
             Player player = (Player) entity;
+            
+            // Access the entity manager through the protected getter
+            iEntityManager entityManager = getEntityManager();
 
             // First check for spikes collisions
             boolean hasSpikesCollision = false;
@@ -123,6 +126,7 @@ public class GameCollisionManager extends AbstractCollisionManager {
         // Enhanced Balloon and Spikes collision with multi-layered approach
         if (entity instanceof Balloon) {
             Balloon balloon = (Balloon) entity;
+            iEntityManager entityManager = getEntityManager();
 
             for (Entity other : entityManager.getEntities()) {
                 if (other instanceof Spikes) {

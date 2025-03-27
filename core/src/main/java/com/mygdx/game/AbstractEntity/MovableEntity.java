@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public abstract class MovableEntity extends Entity implements iMovable {
+    // Changed from private to private for consistency
     private float speed;
     private float previousX, previousY; // Previous position of entity
     private float directionX, directionY; // Direction of movement
@@ -57,6 +58,38 @@ public abstract class MovableEntity extends Entity implements iMovable {
     // Method to change direction when entity collides with something vertically
     public void reverseYDirection() {
         directionY *= -1;
+    }
+    
+    /**
+     * Gets the X direction multiplier
+     * @return The X direction multiplier (1 for right, -1 for left)
+     */
+    public float getDirectionX() {
+        return directionX;
+    }
+    
+    /**
+     * Gets the Y direction multiplier
+     * @return The Y direction multiplier (1 for up, -1 for down)
+     */
+    public float getDirectionY() {
+        return directionY;
+    }
+    
+    /**
+     * Sets the X direction multiplier
+     * @param dirX The new X direction
+     */
+    public void setDirectionX(float dirX) {
+        this.directionX = dirX;
+    }
+    
+    /**
+     * Sets the Y direction multiplier
+     * @param dirY The new Y direction
+     */
+    public void setDirectionY(float dirY) {
+        this.directionY = dirY;
     }
 
     // Method to set previous position explicitly (useful for state restoration)

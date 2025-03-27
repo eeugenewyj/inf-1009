@@ -4,7 +4,8 @@ import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractEntity.iEntityManager;
 
 public abstract class AbstractCollisionManager implements iCollisionManager {
-    protected final iEntityManager entityManager;
+    // Changed from protected to private for better encapsulation
+    private final iEntityManager entityManager;
 
     // Constructor to initialise the collision manager with an entity manager
     public AbstractCollisionManager(iEntityManager entityManager) {
@@ -16,6 +17,11 @@ public abstract class AbstractCollisionManager implements iCollisionManager {
         for (Entity entity : entityManager.getEntities()) {
             handleCollision(entity);
         }
+    }
+
+    // Protected getter method to allow subclasses to access the entity manager
+    protected iEntityManager getEntityManager() {
+        return entityManager;
     }
 
     // Abstract method to handle collision for a single entity

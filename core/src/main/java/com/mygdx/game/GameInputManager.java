@@ -9,36 +9,39 @@ public class GameInputManager extends AbstractInputManager {
         super(keyboardInput);
     }
 
+    @Override
     public void detectInputType() {
-        if (controllerInput.isControllerConnected()) {
-            useGamepad = true; // Use controller if detected
+        if (getControllerInput().isControllerConnected()) {
+            setUseGamepadStatic(true); // Use controller if detected
         } else {
-            useGamepad = false; // Default to keyboard if no controller
+            setUseGamepadStatic(false); // Default to keyboard if no controller
         }
     }
 
     @Override
     public float getMoveX() {
         detectInputType(); // Ensure input type is checked
-        return useGamepad ? controllerInput.getLeftStickX() : keyboardInput.getHorizontal();
+        return isUsingGamepad() ? getControllerInput().getLeftStickX() : getKeyboardInput().getHorizontal();
     }
 
     @Override
     public float getMoveY() {
         detectInputType(); // Ensure input type is checked
-        return useGamepad ? controllerInput.getLeftStickY() : keyboardInput.getVertical();
+        return isUsingGamepad() ? getControllerInput().getLeftStickY() : getKeyboardInput().getVertical();
     }
 
     @Override
     public boolean isActionPressed(int actionCode) {
-        return keyboardInput.isKeyPressed(actionCode);
+        return getKeyboardInput().isKeyPressed(actionCode);
     }
 
+    @Override
     public void setUseGamepad(boolean useGamepad) {
-        this.useGamepad = useGamepad;
+        setUseGamepadStatic(useGamepad);
     }
 
     @Override
     public void dispose() {
+        // Nothing to dispose
     }
 }

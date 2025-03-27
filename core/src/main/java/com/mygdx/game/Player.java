@@ -10,14 +10,15 @@ import com.mygdx.game.AbstractEntity.iCollidable;
 import com.mygdx.game.AbstractIO.iInputManager;
 
 public class Player extends MovableEntity {
+    // Changed to private for proper encapsulation
     private Texture texture;
-    private iInputManager inputManager; // Injected Input Manager
-    private iCollisionCallback collisionCallback; // Using callback instead of direct EntityManager reference
+    private iInputManager inputManager; // Properly encapsulated
+    private iCollisionCallback collisionCallback; // Properly encapsulated
 
     // Define the movement boundary - player cannot go above this line
     private final float MAX_Y_POSITION;
 
-    // Add this field for inverted controls
+    // Add this field for inverted controls - now private
     private boolean invertControls = false;
 
     public Player(float x, float y, float speed, iInputManager inputManager) {
@@ -42,6 +43,14 @@ public class Player extends MovableEntity {
      */
     public void setCollisionCallback(iCollisionCallback callback) {
         this.collisionCallback = callback;
+    }
+    
+    /**
+     * Gets the collision callback for this player
+     * @return The collision callback
+     */
+    public iCollisionCallback getCollisionCallback() {
+        return this.collisionCallback;
     }
 
     @Override
@@ -97,12 +106,36 @@ public class Player extends MovableEntity {
         }
     }
 
+    /**
+     * Sets whether controls should be inverted
+     * @param invert True to invert controls, false to use normal controls
+     */
     public void setInvertControls(boolean invert) {
         this.invertControls = invert;
     }
 
+    /**
+     * Checks if controls are currently inverted
+     * @return True if controls are inverted, false otherwise
+     */
     public boolean areControlsInverted() {
         return invertControls;
+    }
+    
+    /**
+     * Gets the maximum Y position the player can move to
+     * @return The maximum Y position
+     */
+    public float getMaxYPosition() {
+        return MAX_Y_POSITION;
+    }
+    
+    /**
+     * Gets the input manager used by this player
+     * @return The input manager
+     */
+    public iInputManager getInputManager() {
+        return inputManager;
     }
 
     @Override

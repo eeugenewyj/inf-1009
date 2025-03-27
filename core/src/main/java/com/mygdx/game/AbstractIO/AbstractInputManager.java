@@ -1,15 +1,14 @@
 package com.mygdx.game.AbstractIO;
 
 public abstract class AbstractInputManager implements iInputManager {
-    // Flag to indicate whether a gamepad is being used (shared across all input
-    // managers)
-    protected static boolean useGamepad = false;
+    // Changed from protected to private for better encapsulation
+    private static boolean useGamepad = false;
 
-    // Instance of ControllerInput to handle gamepad input
-    protected static final ControllerInput controllerInput = new ControllerInput();
+    // Instance of ControllerInput to handle gamepad input - now private
+    private static final ControllerInput controllerInput = new ControllerInput();
 
-    // Instance of IKeyboardInput to handle keyboard input
-    protected final iKeyboardInput keyboardInput;
+    // Instance of IKeyboardInput to handle keyboard input - now private
+    private final iKeyboardInput keyboardInput;
 
     // Constructor to initialise the keyboard input manager
     public AbstractInputManager(iKeyboardInput keyboardInput) {
@@ -23,7 +22,7 @@ public abstract class AbstractInputManager implements iInputManager {
     // Abstract method to set whether to use the gamepad
     public abstract void setUseGamepad(boolean useGamepad);
 
-    // Universal method to detect input type (Keyboard vs Gamepad)
+    // Universal method to detect input type (Keyboard vs Gamepad) - now protected
     protected void detectInputType() {
         if (controllerInput.isControllerConnected()) {
             useGamepad = true;
@@ -35,6 +34,21 @@ public abstract class AbstractInputManager implements iInputManager {
     // Helper method for subclasses to check if gamepad is active
     protected boolean isUsingGamepad() {
         return useGamepad;
+    }
+    
+    // Protected getter for keyboard input
+    protected iKeyboardInput getKeyboardInput() {
+        return keyboardInput;
+    }
+    
+    // Protected getter for controller input
+    protected ControllerInput getControllerInput() {
+        return controllerInput;
+    }
+    
+    // Static setter for useGamepad (since field is static)
+    protected static void setUseGamepadStatic(boolean value) {
+        useGamepad = value;
     }
 
     @Override
