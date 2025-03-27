@@ -18,6 +18,8 @@ public class Balloon extends MovableEntity {
     private String operation; // The math operation (+, -, ×)
     private int operand1, operand2; // The numbers in the operation
 
+    // These fields are marked as unused in IDE warnings
+    // Consider removing them if not needed
     private boolean collected = false; // Whether the balloon has been collected
     private boolean isFalling = false; // Whether the balloon is currently falling
     
