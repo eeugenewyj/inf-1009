@@ -40,6 +40,20 @@ public class HighScoresManager {
             return addHardScore(score);
         }
     }
+    
+    /**
+     * Checks if a score would be a new best score without adding it
+     * 
+     * @param score The score to check
+     * @return true if it would be a new best score
+     */
+    public boolean isNewBestScore(int score) {
+        if (GameSettings.isEasyMode()) {
+            return easyHighScores.isEmpty() || score > Collections.max(easyHighScores);
+        } else {
+            return hardHighScores.isEmpty() || score > Collections.max(hardHighScores);
+        }
+    }
 
     /**
      * Adds a score to the Easy mode high scores
@@ -163,5 +177,4 @@ public class HighScoresManager {
         }
         return hardHighScores.get(0);
     }
-
 }

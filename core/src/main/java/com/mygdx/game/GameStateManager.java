@@ -32,6 +32,16 @@ public class GameStateManager {
         this.gameStateListener = gameStateListener;
         this.audio = audio;
     }
+    
+    /**
+     * Sets the game state listener
+     * This allows the listener to be set after the manager is constructed
+     * 
+     * @param listener The new listener
+     */
+    public void setGameStateListener(GameStateListener listener) {
+        this.gameStateListener = listener;
+    }
 
     /**
      * Updates the game state
@@ -49,7 +59,9 @@ public class GameStateManager {
         float timeRemaining = GAME_DURATION - gameTimer;
 
         // Notify listener about timer update
-        gameStateListener.onTimerUpdated(timeRemaining);
+        if (gameStateListener != null) {
+            gameStateListener.onTimerUpdated(timeRemaining);
+        }
 
         // Check for game over
         if (timeRemaining <= 0) {
@@ -72,7 +84,9 @@ public class GameStateManager {
         playerScore += actualPoints;
 
         // Notify listener about score change
-        gameStateListener.onScoreChanged(playerScore);
+        if (gameStateListener != null) {
+            gameStateListener.onScoreChanged(playerScore);
+        }
 
         // Log double points bonus if applicable
         if (isDoublePoints) {
@@ -90,7 +104,9 @@ public class GameStateManager {
         System.out.println("Game time extended by " + seconds + " seconds!");
         
         // Notify listener about timer update
-        gameStateListener.onTimerUpdated(GAME_DURATION - gameTimer);
+        if (gameStateListener != null) {
+            gameStateListener.onTimerUpdated(GAME_DURATION - gameTimer);
+        }
     }
 
     /**
@@ -103,7 +119,9 @@ public class GameStateManager {
         System.out.println("Game time reduced by " + seconds + " seconds!");
         
         // Notify listener about timer update
-        gameStateListener.onTimerUpdated(GAME_DURATION - gameTimer);
+        if (gameStateListener != null) {
+            gameStateListener.onTimerUpdated(GAME_DURATION - gameTimer);
+        }
     }
 
     public void pauseGame() {
@@ -128,7 +146,9 @@ public class GameStateManager {
             System.out.println("Is new best score: " + isNewBestScore);
 
             // Notify listener about game over
-            gameStateListener.onGameOver(playerScore, isNewBestScore);
+            if (gameStateListener != null) {
+                gameStateListener.onGameOver(playerScore, isNewBestScore);
+            }
 
             scoreSaved = true;
         }
@@ -142,8 +162,10 @@ public class GameStateManager {
         scoreSaved = false;
 
         // Notify listener about state reset
-        gameStateListener.onScoreChanged(0);
-        gameStateListener.onTimerUpdated(GAME_DURATION);
+        if (gameStateListener != null) {
+            gameStateListener.onScoreChanged(0);
+            gameStateListener.onTimerUpdated(GAME_DURATION);
+        }
 
         System.out.println("Game state reset for restart!");
     }
@@ -197,13 +219,17 @@ public class GameStateManager {
     public void setPlayerScore(int score) {
         this.playerScore = score;
         // Notify listener about score change
-        gameStateListener.onScoreChanged(score);
+        if (gameStateListener != null) {
+            gameStateListener.onScoreChanged(score);
+        }
     }
 
     // Sets the game timer directly (for state restoration)
     public void setGameTimer(float timer) {
         this.gameTimer = timer;
         // Notify listener about timer update
-        gameStateListener.onTimerUpdated(GAME_DURATION - timer);
+        if (gameStateListener != null) {
+            gameStateListener.onTimerUpdated(GAME_DURATION - timer);
+        }
     }
 }

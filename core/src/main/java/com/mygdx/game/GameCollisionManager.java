@@ -57,9 +57,9 @@ public class GameCollisionManager extends AbstractCollisionManager {
             // After handling spikes collisions, check for balloon collisions
             Balloon collidedBalloon = null;
             for (Entity other : entityManager.getEntities()) {
-                if (other instanceof Balloon && player.getBoundingBox().overlaps(other.getBoundingBox())) {
+                if (other instanceof Balloon && other.isActive() && player.getBoundingBox().overlaps(other.getBoundingBox())) {
                     collidedBalloon = (Balloon) other;
-                    break; // Only detect first collision
+                    break; // Only handle first collision
                 }
             }
 
