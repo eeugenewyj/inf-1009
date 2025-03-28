@@ -20,7 +20,8 @@ import com.mygdx.game.Entities.Spikes;
 import com.mygdx.game.PowerUps.PowerUpType;
 
 public class GameEntityManager extends AbstractEntityManager implements iCollisionCallback {
-    // This class now implements CollisionCallback to provide collision detection for the Player
+    // This class now implements CollisionCallback to provide collision detection
+    // for the Player
     private static final Random random = new Random();
     private static final int NUM_BALLOONS = 8; // Number of balloons per row
     private static final float GAP_RATIO = 0.1f; // 10% gap between balloons
@@ -46,92 +47,69 @@ public class GameEntityManager extends AbstractEntityManager implements iCollisi
         this.scoreHandler = scoreHandler;
     }
 
+    @Override
+    public void updateEntities(float deltaTime) {
+        // Removes inactive entities from list
+        entities.removeIf(entity -> {
+            if (!entity.isActive()) {
+                entity.dispose();
+                return true;
+            }
+            return false;
+        });
+
+        // Updates the behavior of each entity
+        for (Entity entity : entities) {
+            entity.update(deltaTime);
+        }
+
+        // Handle spikes spawning timer
+        spikesSpawnTimer += deltaTime;
+        if (spikesSpawnTimer >= SPIKES_SPAWN_INTERVAL) {
+            spawnSpikes(4); // Spawn 4 spikes
+            spikesSpawnTimer = 0; // Reset timer
+        }
+
+        // Handle power-up spawning timer
+        powerUpSpawnTimer += deltaTime;
+        if (powerUpSpawnTimer >= POWERUP_SPAWN_INTERVAL) {
+            // Chance-based spawning
+            if (MathUtils.random() < POWERUP_SPAWN_CHANCE) {
+                spawnPowerUp();
+            }
+            powerUpSpawnTimer = 0; // Reset timer
+        }
+
+        // Remove spikes that have existed longer than SPIKES_LIFETIME
+        removeExpiredSpikes(deltaTime);
+        removeRowIfAtBottomAndSpawn();
+    }
+
+    // Implementation of CollisionCallback interface
+    @Override
+    public boolean wouldCollideWithSpikes(float x, float y, float width, float height) {
+        // Create a temporary rectangle at the potential new position
+        Rectangle potentialPosition = new Rectangle(x, y, width, height);
+
+        // Check for spikes collisions
+        for (Entity entity : entities) {
+            if (entity instanceof Spikes && potentialPosition.overlaps(entity.getBoundingBox())) {
+                return true; // Would collide with a spike
+            }
+        }
+
+        return false; // No collision would occur
+    }
+
     public void spawnPlayer(float x, float y, float speed, iInputManager inputManager) {
         // Create Player with the new constructor (without EntityManager)
         Player player = new Player(x, y, speed, inputManager);
-        
+
         // Set this manager as the collision callback
         player.setCollisionCallback(this);
-        
+
         // Add player to entities
         addEntity(player);
-    }
-
-    public void spawnBalloonsRow() {
-        float startX = 0; // Starting X position
-        float topYPosition = Gdx.graphics.getHeight() + (Balloon.getBalloonWidth() / 2); // Place it just outside the screen
-
-        // Spawn balloons in a row
-        for (int i = 0; i < NUM_BALLOONS; i++) {
-            float xPosition = startX + i * (Balloon.getBalloonWidth() * (1 + GAP_RATIO));
-            addEntity(new Balloon(xPosition, topYPosition));
-        }
-
-        rowsSpawned++;
-
-        // Start falling animation for previous row
-        makeBalloonsFall();
-    }
-
-    // Makes all active balloons fall down
-    private void makeBalloonsFall() {
-        for (Entity entity : getEntities()) {
-            if (entity instanceof Balloon) {
-                ((Balloon) entity).moveAIControlled();
-            }
-        }
-    }
-
-    // Remove all balloons in the same row as the collided balloon
-    public void removeBalloonRow(Balloon collidedBalloon) {
-        float rowY = collidedBalloon.getY(); // Get Y position of the collided balloon
-
-        // Just remove all balloons in the same row
-        List<Balloon> balloonsToRemove = new ArrayList<>();
-
-        // Identify all balloons to remove
-        for (Entity entity : getEntities()) {
-            if (entity instanceof Balloon && entity.getY() == rowY) {
-                Balloon balloon = (Balloon) entity;
-                balloonsToRemove.add(balloon);
-            }
-        }
-
-        // Remove the balloons
-        for (Balloon balloon : balloonsToRemove) {
-            balloon.setActive(false);
-        }
-    }
-
-    // Remove rows that reached the bottom and spawns new row
-    private void removeRowIfAtBottomAndSpawn() {
-        float bottomThreshold = 0; // bottom of the screen
-
-        List<Float> rowYs = new ArrayList<>();
-        for (Entity e : getEntities()) {
-            if (e instanceof Balloon) {
-                float y = e.getY();
-                if (!rowYs.contains(y))
-                    rowYs.add(y);
-            }
-        }
-
-        for (float rowY : rowYs) {
-            List<Balloon> rowBalloons = new ArrayList<>();
-            for (Entity e : getEntities()) {
-                if (e instanceof Balloon && e.getY() == rowY) {
-                    rowBalloons.add((Balloon) e);
-                }
-            }
-
-            if (!rowBalloons.isEmpty() && rowBalloons.get(0).getY() <= bottomThreshold) {
-                // Remove and spawn
-                for (Balloon balloon : rowBalloons) {
-                    balloon.setActive(false);
-                }
-                spawnBalloonsRow();
-            }
-        }
     }
 
     // Spawn player at bottom center
@@ -241,64 +219,6 @@ public class GameEntityManager extends AbstractEntityManager implements iCollisi
 
         System.out.println("Spawned " + spikesPlaced + " spikes below the top quarter of the screen");
     }
-    
-    // Method to spawn a power-up
-    public void spawnPowerUp() {
-        float screenWidth = Gdx.graphics.getWidth();
-        float topYPosition = Gdx.graphics.getHeight() + 20; // Just above screen
-
-        // Randomly position the power-up horizontally
-        float xPosition = MathUtils.random(50, screenWidth - 50);
-
-        PowerUp powerUp = PowerUp.createRandomPowerUp(xPosition, topYPosition);
-        addEntity(powerUp);
-
-        System.out.println("Spawned PowerUp of type: " +
-        (powerUp.getType() == PowerUpType.DOUBLE_POINTS ? "Double Points" : 
-         powerUp.getType() == PowerUpType.EXTEND_TIME ? "Extend Time" :
-         powerUp.getType() == PowerUpType.REDUCE_TIME ? "Reduce Time" :
-         powerUp.getType() == PowerUpType.INVERT_CONTROLS ? "Invert Controls" :
-         powerUp.getType() == PowerUpType.SLOW_PLAYER ? "Slow Player" :
-         "Unknown"));
-    }
-
-    @Override
-    public void updateEntities(float deltaTime) {
-        // Removes inactive entities from list
-        entities.removeIf(entity -> {
-            if (!entity.isActive()) {
-                entity.dispose();
-                return true;
-            }
-            return false;
-        });
-
-        // Updates the behavior of each entity
-        for (Entity entity : entities) {
-            entity.update(deltaTime);
-        }
-
-        // Handle spikes spawning timer
-        spikesSpawnTimer += deltaTime;
-        if (spikesSpawnTimer >= SPIKES_SPAWN_INTERVAL) {
-            spawnSpikes(4); // Spawn 4 spikes
-            spikesSpawnTimer = 0; // Reset timer
-        }
-
-        // Handle power-up spawning timer
-        powerUpSpawnTimer += deltaTime;
-        if (powerUpSpawnTimer >= POWERUP_SPAWN_INTERVAL) {
-            // Chance-based spawning
-            if (MathUtils.random() < POWERUP_SPAWN_CHANCE) {
-                spawnPowerUp();
-            }
-            powerUpSpawnTimer = 0; // Reset timer
-        }
-
-        // Remove spikes that have existed longer than SPIKES_LIFETIME
-        removeExpiredSpikes(deltaTime);
-        removeRowIfAtBottomAndSpawn();
-    }
 
     private void removeExpiredSpikes(float deltaTime) {
         for (Entity entity : getEntities()) {
@@ -312,36 +232,118 @@ public class GameEntityManager extends AbstractEntityManager implements iCollisi
         }
     }
 
-    @Override
-    public void dispose() {
-        for (Entity entity : getEntities()) {
-            entity.dispose();
+    public void spawnBalloonsRow() {
+        float startX = 0; // Starting X position
+        float topYPosition = Gdx.graphics.getHeight() + (Balloon.getBalloonWidth() / 2); // Place it just outside the
+                                                                                         // screen
+
+        // Spawn balloons in a row
+        for (int i = 0; i < NUM_BALLOONS; i++) {
+            float xPosition = startX + i * (Balloon.getBalloonWidth() * (1 + GAP_RATIO));
+            addEntity(new Balloon(xPosition, topYPosition));
         }
+
+        rowsSpawned++;
+
+        // Start falling animation for previous row
+        makeBalloonsFall();
+    }
+
+    // Makes all active balloons fall down
+    private void makeBalloonsFall() {
+        for (Entity entity : getEntities()) {
+            if (entity instanceof Balloon) {
+                ((Balloon) entity).moveAIControlled();
+            }
+        }
+    }
+
+    // Remove all balloons in the same row as the collided balloon
+    public void removeBalloonRow(Balloon collidedBalloon) {
+        float rowY = collidedBalloon.getY(); // Get Y position of the collided balloon
+
+        // Just remove all balloons in the same row
+        List<Balloon> balloonsToRemove = new ArrayList<>();
+
+        // Identify all balloons to remove
+        for (Entity entity : getEntities()) {
+            if (entity instanceof Balloon && entity.getY() == rowY) {
+                Balloon balloon = (Balloon) entity;
+                balloonsToRemove.add(balloon);
+            }
+        }
+
+        // Remove the balloons
+        for (Balloon balloon : balloonsToRemove) {
+            balloon.setActive(false);
+        }
+    }
+
+    // Remove rows that reached the bottom and spawns new row
+    private void removeRowIfAtBottomAndSpawn() {
+        float bottomThreshold = 0; // bottom of the screen
+
+        List<Float> rowYs = new ArrayList<>();
+        for (Entity e : getEntities()) {
+            if (e instanceof Balloon) {
+                float y = e.getY();
+                if (!rowYs.contains(y))
+                    rowYs.add(y);
+            }
+        }
+
+        for (float rowY : rowYs) {
+            List<Balloon> rowBalloons = new ArrayList<>();
+            for (Entity e : getEntities()) {
+                if (e instanceof Balloon && e.getY() == rowY) {
+                    rowBalloons.add((Balloon) e);
+                }
+            }
+
+            if (!rowBalloons.isEmpty() && rowBalloons.get(0).getY() <= bottomThreshold) {
+                // Remove and spawn
+                for (Balloon balloon : rowBalloons) {
+                    balloon.setActive(false);
+                }
+                spawnBalloonsRow();
+            }
+        }
+    }
+
+    // Method to spawn a power-up
+    public void spawnPowerUp() {
+        float screenWidth = Gdx.graphics.getWidth();
+        float topYPosition = Gdx.graphics.getHeight() + 20; // Just above screen
+
+        // Randomly position the power-up horizontally
+        float xPosition = MathUtils.random(50, screenWidth - 50);
+
+        PowerUp powerUp = PowerUp.createRandomPowerUp(xPosition, topYPosition);
+        addEntity(powerUp);
+
+        System.out.println("Spawned PowerUp of type: " +
+                (powerUp.getType() == PowerUpType.DOUBLE_POINTS ? "Double Points"
+                        : powerUp.getType() == PowerUpType.EXTEND_TIME ? "Extend Time"
+                                : powerUp.getType() == PowerUpType.REDUCE_TIME ? "Reduce Time"
+                                        : powerUp.getType() == PowerUpType.INVERT_CONTROLS ? "Invert Controls"
+                                                : powerUp.getType() == PowerUpType.SLOW_PLAYER ? "Slow Player"
+                                                        : "Unknown"));
+    }
+
+    public void resetSpawnTimers() {
+        spikesSpawnTimer = 0;
+        powerUpSpawnTimer = 0;
     }
 
     // Set EntityScoreHandler reference after initialization if needed
     public void setScoreHandler(iEntityScoreHandler scoreHandler) {
         this.scoreHandler = scoreHandler;
     }
-    
-    // Implementation of CollisionCallback interface
+
     @Override
-    public boolean wouldCollideWithSpikes(float x, float y, float width, float height) {
-        // Create a temporary rectangle at the potential new position
-        Rectangle potentialPosition = new Rectangle(x, y, width, height);
-
-        // Check for spikes collisions
-        for (Entity entity : entities) {
-            if (entity instanceof Spikes && potentialPosition.overlaps(entity.getBoundingBox())) {
-                return true; // Would collide with a spike
-            }
+    public void dispose() {
+        for (Entity entity : getEntities()) {
+            entity.dispose();
         }
-        
-        return false; // No collision would occur
-    }
-
-    public void resetSpawnTimers() {
-        spikesSpawnTimer = 0;
-        powerUpSpawnTimer = 0;
     }
 }

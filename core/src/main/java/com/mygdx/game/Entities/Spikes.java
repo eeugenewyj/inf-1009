@@ -13,6 +13,19 @@ public class Spikes extends StaticObject {
         this.lifetime = -1; // Default: spikes does not expire unless set
     }
 
+    @Override
+    public void handleCollision(iCollidable other) {
+        // Spikes don't need to print anything since other entities handle the printing
+        // This matches the original behavior where spikes didn't print messages
+    }
+
+    @Override
+    public Rectangle getBoundingBox() {
+        // Return a slightly smaller bounding box for better collision feel
+        // This creates a 5-pixel "buffer" around the spikes
+        return new Rectangle(getX() + 5, getY() + 5, getWidth() - 10, getHeight() - 10);
+    }
+
     public void setLifetime(float time) {
         this.lifetime = time;
         this.isTemporary = true;
@@ -32,16 +45,4 @@ public class Spikes extends StaticObject {
         return lifetime;
     }
 
-    @Override
-    public Rectangle getBoundingBox() {
-        // Return a slightly smaller bounding box for better collision feel
-        // This creates a 5-pixel "buffer" around the spikes
-        return new Rectangle(getX() + 5, getY() + 5, getWidth() - 10, getHeight() - 10);
-    }
-
-    @Override
-    public void handleCollision(iCollidable other) {
-        // Spikes don't need to print anything since other entities handle the printing
-        // This matches the original behavior where spikes didn't print messages
-    }
 }

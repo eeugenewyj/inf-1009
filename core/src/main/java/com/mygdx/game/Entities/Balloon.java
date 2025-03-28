@@ -20,7 +20,7 @@ public class Balloon extends MovableEntity {
 
     private boolean collected = false; // Whether the balloon has been collected
     private boolean isFalling = false; // Whether the balloon is currently falling
-    
+
     private Texture balloonTexture; // Texture for the balloon
 
     // Constants for balloon dimensions and spacing
@@ -65,73 +65,34 @@ public class Balloon extends MovableEntity {
         font.setColor(Color.BLACK);
         font.getData().setScale(1.1f); // Slightly larger font for better visibility
     }
-    
+
     /**
      * Special constructor for state restoration that lets us specify exact values
      * 
-     * @param x The x position
-     * @param y The y position
-     * @param value The numeric value of the balloon
-     * @param displayText The display text on the balloon
-     * @param usesMathOperation Whether this balloon uses a math operation 
+     * @param x                 The x position
+     * @param y                 The y position
+     * @param value             The numeric value of the balloon
+     * @param displayText       The display text on the balloon
+     * @param usesMathOperation Whether this balloon uses a math operation
      */
     public Balloon(float x, float y, int value, String displayText, boolean usesMathOperation) {
         super(x, y, 100); // Falling speed
-        
+
         this.value = value;
         this.displayText = displayText;
         this.usesMathOperation = usesMathOperation;
-        
+
         // Choose a consistent color based on the value to ensure same visual appearance
         int colorIndex = value % BALLOON_COLORS.length;
         this.balloonColor = BALLOON_COLORS[colorIndex];
-        
+
         // Load balloon texture
         balloonTexture = new Texture(Gdx.files.internal("balloon.png"));
-        
+
         // Initialize the font for displaying text
         font = new BitmapFont();
         font.setColor(Color.BLACK);
         font.getData().setScale(1.1f); // Slightly larger font for better visibility
-    }
-
-    /**
-     * Generates a random math operation
-     */
-    private void generateMathOperation() {
-        // Generate random numbers for the operation
-        operand1 = random.nextInt(9) + 1; // 1-9
-        operand2 = random.nextInt(9) + 1; // 1-9
-
-        // Choose a random operation
-        String[] operations = { "+", "-", "*" };
-        operation = operations[random.nextInt(operations.length)];
-
-        // Calculate the result
-        switch (operation) {
-            case "+":
-                value = operand1 + operand2;
-                break;
-            case "-":
-                // Ensure result is positive
-                if (operand1 < operand2) {
-                    int temp = operand1;
-                    operand1 = operand2;
-                    operand2 = temp;
-                }
-                value = operand1 - operand2;
-                break;
-            case "*":
-                value = operand1 * operand2;
-                break;
-        }
-
-        // Set the display text
-        displayText = operand1 + operation + operand2;
-    }
-
-    public int getValue() {
-        return value;
     }
 
     @Override
@@ -145,7 +106,15 @@ public class Balloon extends MovableEntity {
 
         // Add a small horizontal wobble for balloon effect
         // Cast the result to float since Math.sin returns a double
-        setX(getX() + (float)(Math.sin(getY() * 0.05) * 0.5));
+        setX(getX() + (float) (Math.sin(getY() * 0.05) * 0.5));
+    }
+
+    @Override
+    public void handleCollision(iCollidable other) {
+        if (other instanceof Player) {
+            collected = true;
+            setActive(false);
+        }
     }
 
     @Override
@@ -162,7 +131,8 @@ public class Balloon extends MovableEntity {
     public void draw(SpriteBatch batch) {
         // Draw the balloon texture with the selected color
         batch.setColor(balloonColor);
-        batch.draw(balloonTexture, getX(), getY(), BALLOON_WIDTH, BALLOON_WIDTH * 1.2f); // Slightly taller for balloon shape
+        batch.draw(balloonTexture, getX(), getY(), BALLOON_WIDTH, BALLOON_WIDTH * 1.2f); // Slightly taller for balloon
+                                                                                         // shape
         batch.setColor(Color.WHITE); // Reset color
 
         // Center the text for proper display
@@ -209,22 +179,66 @@ public class Balloon extends MovableEntity {
         font.draw(batch, displayText, textX, textY);
     }
 
-    @Override
-    public void handleCollision(iCollidable other) {
-        if (other instanceof Player) {
-            collected = true;
-            setActive(false);
+    // Generate a random math operation for the balloon
+    private void generateMathOperation() {
+        // Generate random numbers for the operation
+        operand1 = random.nextInt(9) + 1; // 1-9
+        operand2 = random.nextInt(9) + 1; // 1-9
+
+        // Choose a random operation
+        String[] operations = { "+", "-", "*" };
+        operation = operations[random.nextInt(operations.length)];
+
+        // Calculate the result
+        switch (operation) {
+            case "+":
+                value = operand1 + operand2;
+                break;
+            case "-":
+                // Ensure result is positive
+                if (operand1 < operand2) {
+                    int temp = operand1;
+                    operand1 = operand2;
+                    operand2 = temp;
+                }
+                value = operand1 - operand2;
+                break;
+            case "*":
+                value = operand1 * operand2;
+                break;
+        }
+
+        // Set the display text
+        displayText = operand1 + operation + operand2;
+    }
+
+    /**
+     * Sets the balloon color (for state restoration)
+     * 
+     * @param colorIndex Index into the BALLOON_COLORS array
+     */
+    public void setBalloonColor(int colorIndex) {
+        if (colorIndex >= 0 && colorIndex < BALLOON_COLORS.length) {
+            this.balloonColor = BALLOON_COLORS[colorIndex];
         }
     }
 
-    @Override
-    public void dispose() {
-        if (balloonTexture != null) {
-            balloonTexture.dispose();
+    /**
+     * Gets the color index of this balloon
+     * 
+     * @return The index in the BALLOON_COLORS array
+     */
+    public int getBalloonColorIndex() {
+        for (int i = 0; i < BALLOON_COLORS.length; i++) {
+            if (balloonColor.equals(BALLOON_COLORS[i])) {
+                return i;
+            }
         }
-        if (font != null) {
-            font.dispose();
-        }
+        return 0; // Default to first color if not found
+    }
+
+    public int getValue() {
+        return value;
     }
 
     public static float getBalloonRadius() {
@@ -242,27 +256,14 @@ public class Balloon extends MovableEntity {
     public boolean usesMathOperation() {
         return usesMathOperation;
     }
-    
-    /**
-     * Sets the balloon color (for state restoration)
-     * @param colorIndex Index into the BALLOON_COLORS array
-     */
-    public void setBalloonColor(int colorIndex) {
-        if (colorIndex >= 0 && colorIndex < BALLOON_COLORS.length) {
-            this.balloonColor = BALLOON_COLORS[colorIndex];
+
+    @Override
+    public void dispose() {
+        if (balloonTexture != null) {
+            balloonTexture.dispose();
         }
-    }
-    
-    /**
-     * Gets the color index of this balloon
-     * @return The index in the BALLOON_COLORS array
-     */
-    public int getBalloonColorIndex() {
-        for (int i = 0; i < BALLOON_COLORS.length; i++) {
-            if (balloonColor.equals(BALLOON_COLORS[i])) {
-                return i;
-            }
+        if (font != null) {
+            font.dispose();
         }
-        return 0; // Default to first color if not found
     }
 }

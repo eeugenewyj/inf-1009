@@ -3,7 +3,6 @@ package com.mygdx.game.Managers;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Input;
-//import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.AbstractEntity.Entity;
 import com.mygdx.game.AbstractIO.iInputManager;
 import com.mygdx.game.Entities.Player;
@@ -99,24 +98,6 @@ public class GameLoopHandler {
     }
 
     /**
-     * Sets whether the game is active
-     * 
-     * @param active Whether the game is active
-     */
-    public void setGameActive(boolean active) {
-        this.gameActive = active;
-    }
-
-    /**
-     * Checks if the game is active
-     * 
-     * @return true if the game is active
-     */
-    public boolean isGameActive() {
-        return gameActive;
-    }
-
-    /**
      * Initializes a new game
      */
     public void initializeGame() {
@@ -155,5 +136,23 @@ public class GameLoopHandler {
         initializeGame();
 
         System.out.println("Game restarted!");
+    }
+
+    /**
+     * Sets whether the game is active
+     * 
+     * @param active Whether the game is active
+     */
+    public void setGameActive(boolean active) {
+        this.gameActive = active;
+    }
+
+    /**
+     * Checks if the game is active
+     * 
+     * @return true if the game is active
+     */
+    public boolean isGameActive() {
+        return gameActive;
     }
 }
