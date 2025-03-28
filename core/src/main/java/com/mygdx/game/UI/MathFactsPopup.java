@@ -62,11 +62,6 @@ public class MathFactsPopup extends Window {
                     "Even-numbered results end in 0.\n" +
                     "Odd-numbered results end in 5.",
 
-            "Infinity isn't a number\n" +
-                    "You can't reach infinity, add to it, or subtract from it in normal math—because it's a concept, not a number.\n"
-                    +
-                    "Yet, weirdly, ∞ + 1 = ∞.",
-
             "A number divisible by 3 has digits that sum to a multiple of 3\n" +
                     "Example: 123 → 1+2+3 = 6 → divisible by 3\n" +
                     "Works for any size number!"
