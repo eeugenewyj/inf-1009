@@ -1,7 +1,6 @@
 package com.mygdx.game.Scenes;
 
 import com.badlogic.gdx.Gdx;
-//import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -297,19 +296,6 @@ public class GameScene extends Scene {
         return inputManager;
     }
 
-    @Override
-    public void dispose() {
-        super.dispose();
-        if (stage != null)
-            stage.dispose();
-        if (skin != null)
-            skin.dispose();
-        if (entityManager != null)
-            entityManager.dispose();
-        if (collisionManager != null)
-            collisionManager.dispose();
-    }
-
     /**
      * Method needed to support state restoration
      * 
@@ -326,5 +312,18 @@ public class GameScene extends Scene {
      */
     public void reduceGameTime(float seconds) {
         gameStateManager.reduceGameTime(seconds);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (stage != null)
+            stage.dispose();
+        if (skin != null)
+            skin.dispose();
+        if (entityManager != null)
+            entityManager.dispose();
+        if (collisionManager != null)
+            collisionManager.dispose();
     }
 }

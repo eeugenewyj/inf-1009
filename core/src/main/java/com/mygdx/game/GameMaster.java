@@ -1,4 +1,3 @@
-// core/src/main/java/com/mygdx/game/GameMaster.java
 package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -50,7 +49,7 @@ public class GameMaster extends ApplicationAdapter {
     public void dispose() {
         // Clean up static resources first
         PowerUp.disposeSharedResources();
-        
+
         // Then dispose regular resources
         if (inputManager != null)
             inputManager.dispose();

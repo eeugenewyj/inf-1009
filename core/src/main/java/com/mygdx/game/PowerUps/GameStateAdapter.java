@@ -4,8 +4,6 @@ import com.mygdx.game.iGameStateListener;
 import com.mygdx.game.Managers.GameLoopHandler;
 import com.mygdx.game.UI.GameUIManager;
 
-//import com.badlogic.gdx.scenes.scene2d.Stage;
-
 /**
  * Adapter that implements GameStateListener to handle game state changes
  */
@@ -25,10 +23,6 @@ public class GameStateAdapter implements iGameStateListener {
         this.uiManager = uiManager;
         this.gameLoop = gameLoop;
         this.onGameOverAction = onGameOverAction;
-    }
-
-    public void setGameLoop(GameLoopHandler gameLoop) {
-        this.gameLoop = gameLoop;
     }
 
     @Override
@@ -67,5 +61,9 @@ public class GameStateAdapter implements iGameStateListener {
             // Then show the game over screen once popup is closed
             showGameOver(finalScore, isNewHighScore);
         });
+    }
+
+    public void setGameLoop(GameLoopHandler gameLoop) {
+        this.gameLoop = gameLoop;
     }
 }
