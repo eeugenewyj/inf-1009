@@ -1,6 +1,6 @@
 package com.mygdx.game.AbstractScene;
 
-import com.mygdx.game.SceneType;
+import com.mygdx.game.GameScenes.SceneType;
 
 public abstract class AbstractSceneManager implements iSceneManager {
     protected Scene currentScene; // Currently active scene

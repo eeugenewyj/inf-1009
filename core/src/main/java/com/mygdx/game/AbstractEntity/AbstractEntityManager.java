@@ -2,7 +2,7 @@ package com.mygdx.game.AbstractEntity;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.mygdx.game.Entities.Spikes;
+import com.mygdx.game.GameEntity.Spikes;
 
 import java.util.ArrayList;
 import java.util.List;

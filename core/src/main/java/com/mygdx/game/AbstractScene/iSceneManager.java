@@ -1,6 +1,6 @@
 package com.mygdx.game.AbstractScene;
 
-import com.mygdx.game.SceneType;
+import com.mygdx.game.GameScenes.SceneType;
 
 public interface iSceneManager {
     // Abstract method to set the current scene by name
